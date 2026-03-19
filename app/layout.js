@@ -7,7 +7,7 @@ const rubik = Rubik({
 });
 
 export const metadata = {
-  // metadataBase: new URL(process.env.website_url),
+  metadataBase: new URL(process.env.website_url),
   title: "إنترنت تيليكوم | طلب خط إنترنت جديد وخدمات الإنترنت في تركيا",
   description:
     "قدّم الآن على خط إنترنت جديد في تركيا بسهولة مع إنترنت تيليكوم. نوفر أفضل خدمات الإنترنت المنزلي، الاستعلام عن الاشتراك، وباقات تناسب جميع الاحتياجات في جميع المدن التركية.",
@@ -22,29 +22,25 @@ export const metadata = {
     title: "إنترنت تيليكوم | خدمات الإنترنت في تركيا",
     description:
       "احصل على أفضل عروض الإنترنت في تركيا. قدّم الآن على خط جديد بسهولة واستعلم عن خدماتك.",
-    // url: process.env.website_url,
+    url: process.env.website_url,
     siteName: "إنترنت تيليكوم",
     locale: "ar_TR",
     type: "website",
-    // images: [
-    //   {
-    //     url: `${process.env.website_url}/full-logo.png`,
-    //     width: 1200,
-    //     height: 630,
-    //     alt: "إنترنت تيليكوم | خدمات الإنترنت في تركيا",
-    //   },
-    // ],
+    images: [
+      {
+        url: `${process.env.website_url}/logo.png`,
+        width: 1200,
+        height: 630,
+        alt: "إنترنت تيليكوم | خدمات الإنترنت في تركيا",
+      },
+    ],
   },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl">
-      <body
-        className={`${rubik.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${rubik.variable} antialiased`}>{children}</body>
     </html>
   );
 }
