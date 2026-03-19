@@ -249,9 +249,9 @@ const ApplyPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-cyan-50 overflow-x-hidden">
+    <div className="min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50 overflow-x-hidden">
       {isCompleted ? (
-        <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="flex flex-col items-center justify-center min-h-svh p-6">
           <div className="max-w-2xl mx-auto text-center space-y-8">
             {/* Success Icon */}
             <div className="relative">
@@ -388,7 +388,7 @@ const ApplyPage = () => {
           innerRef={formRef}
         >
           {({ setFieldValue, errors, touched, values }) => (
-            <Form className="min-h-screen bg-linear-to-br from-blue-50 via-white to-cyan-50 flex flex-col">
+            <Form className="min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50 flex flex-col">
               {isConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-3 sm:p-4">
                   <div
