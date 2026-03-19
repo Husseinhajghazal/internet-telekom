@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center text-center h-screen gap-6 px-10 bg-linear-to-br from-blue-50 via-white to-cyan-50 relative overflow-hidden overflow-x-hidden">
+    <div className="flex flex-col items-center justify-center text-center h-svh gap-6 px-10 bg-linear-to-br from-blue-50 via-white to-cyan-50 relative overflow-hidden overflow-x-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full blur-xl"></div>
