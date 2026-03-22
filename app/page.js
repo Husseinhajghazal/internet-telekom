@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Button from "../components/Button";
 
 export default function Home() {
   return (
@@ -27,11 +28,26 @@ export default function Home() {
           أنت على بعد ضغطة زر واحدة للحصول على أفضل خدمات الإنترنت في تركيا
         </p>
 
-        <button className="cursor-pointer bg-linear-to-r from-[#18a2e3] to-[#0d8bc9] text-white text-lg fond-semibold lg:font-bold px-8 lg:px-10 py-2 md:py-3 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in-up">
-          <Link href="/apply" className="block w-full h-full">
-            ابدأ الآن
-          </Link>
-        </button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md animate-fade-in-up">
+          <Button
+            variant="primary"
+            size="large"
+            className="font-semibold lg:font-bold rounded-lg hover:scale-105 w-full sm:w-auto min-w-[200px]"
+          >
+            <Link href="/apply" className="block w-full h-full py-1">
+              ابدأ الآن
+            </Link>
+          </Button>
+          <Button
+            variant="secondary"
+            size="large"
+            className="font-semibold lg:font-bold rounded-lg hover:scale-105 w-full sm:w-auto min-w-[200px]"
+          >
+            <Link href="/inquiry" className="block w-full h-full py-1">
+              استعلام
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

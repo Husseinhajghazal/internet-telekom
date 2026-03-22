@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ApplicationStatus {
+  NOT_COMPLETED
+  UNDER_REVIEW
+  REJECTED
+  COMPLETED
+}
+
+model Application {
+  id                  String            @id @default(cuid())
+  appCode             String            @unique @db.Char(6)
+  status              ApplicationStatus @default(NOT_COMPLETED)
+  step                Int               @default(1)
+  name                String
+  phone               String
+  hasInternet         String?
+  serviceType         String?
+  contractPreference  String?
+  selectedService     String?
+  selectedPackage     String?
+  address             String?
+  note                String?
+  invoiceFileUrl      String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+}
