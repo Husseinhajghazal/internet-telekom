@@ -51,10 +51,13 @@ const formatPhoneNumber = (value = "") => {
   if (formatted.startsWith("90")) {
     formatted = formatted.substring(2);
   }
+  if (formatted.startsWith("0")) {
+    formatted = formatted.substring(1);
+  }
   if (formatted.length > 10) {
     formatted = formatted.substring(0, 10);
   }
-  let display = "+90 ";
+  let display = "0 ";
   if (formatted.length > 0) {
     display += `(${formatted.substring(0, 3)}`;
   }
@@ -88,7 +91,8 @@ const getNextStep = (step, values) => {
   if (step === 1) return 2;
   if (step === 2) return 3;
   if (step === 3) {
-    if (values.serviceType === "services" || values.serviceType === "newline") return 4;
+    if (values.serviceType === "services" || values.serviceType === "newline")
+      return 4;
     if (values.serviceType === "inquiry") return 6;
   }
   if (step === 4) {

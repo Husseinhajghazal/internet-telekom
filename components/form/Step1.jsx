@@ -4,7 +4,13 @@ import React from "react";
 import { Field } from "formik";
 import FormFieldBlock from "../FormFieldBlock";
 
-const Step1 = ({ errors, touched, handlePhoneChange, setFieldValue, onClearStep1Error }) => {
+const Step1 = ({
+  errors,
+  touched,
+  handlePhoneChange,
+  setFieldValue,
+  onClearStep1Error,
+}) => {
   return (
     <div className="max-w-md mx-auto space-y-6">
       <FormFieldBlock label="الاسم الكامل" name="name">
@@ -23,7 +29,11 @@ const Step1 = ({ errors, touched, handlePhoneChange, setFieldValue, onClearStep1
         />
       </FormFieldBlock>
 
-      <FormFieldBlock label="رقم الهاتف" name="phone" hint="أدخل رقم هاتفك التركي">
+      <FormFieldBlock
+        label="رقم الهاتف"
+        name="phone"
+        hint="أدخل رقم هاتفك التركي"
+      >
         <Field
           type="tel"
           name="phone"
@@ -31,7 +41,7 @@ const Step1 = ({ errors, touched, handlePhoneChange, setFieldValue, onClearStep1
           className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
             errors.phone && touched.phone ? "border-red-500" : "border-gray-300"
           }`}
-          placeholder="+90 (XXX) XXX XX XX"
+          placeholder="0 (538) 734 58 20"
           onChange={(e) => handlePhoneChange(e, setFieldValue)}
           style={{ direction: "ltr" }}
         />

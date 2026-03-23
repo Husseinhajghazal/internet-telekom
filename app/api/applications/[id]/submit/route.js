@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../lib/prisma";
+import { notifyApplicationSubmittedWhatsApp } from "../../../../../lib/whatsappNotify";
 
 export async function POST(request, { params }) {
   try {
@@ -17,17 +18,26 @@ export async function POST(request, { params }) {
         status: "UNDER_REVIEW",
         step: Number.isInteger(step) && step >= 1 ? step : 6,
       },
-      select: {
-        id: true,
-        appCode: true,
-        status: true,
-        step: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
 
-    return NextResponse.json(updated);
+    try {
+      await notifyApplicationSubmittedWhatsApp(updated);
+    } catch (err) {
+      console.error(
+        "[whatsapp notify]",
+        err?.message || err,
+        err?.details || "",
+      );
+    }
+
+    return NextResponse.json({
+      id: updated.id,
+      appCode: updated.appCode,
+      status: updated.status,
+      step: updated.step,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "فشل إرسال الطلب، يرجى المحاولة مرة أخرى." },

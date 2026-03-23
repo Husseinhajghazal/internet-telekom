@@ -43,7 +43,10 @@ function buildWhere(searchParams) {
 
   const q = searchParams.get("q")?.trim();
   if (q) {
-    const codePart = q.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    const codePart = q
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 6);
     const digits = q.replace(/\D/g, "");
     const orCond = [
       { name: { contains: q, mode: "insensitive" } },
@@ -70,21 +73,39 @@ export async function GET(request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+    const page = Math.max(
+      1,
+      parseInt(searchParams.get("page") || "1", 10) || 1,
+    );
     const skip = (page - 1) * PAGE_SIZE;
 
     const where = buildWhere(searchParams);
 
-    const [total, applications] = await Promise.all([
+    const [total, allApplications] = await Promise.all([
       prisma.application.count({ where }),
       prisma.application.findMany({
         where,
-        orderBy: { createdAt: "desc" },
-        skip,
-        take: PAGE_SIZE,
       }),
     ]);
 
+    // Custom status priority ordering
+    const statusPriority = {
+      UNDER_REVIEW: 0,
+      NOT_COMPLETED: 1,
+      REJECTED: 2,
+      COMPLETED: 3,
+    };
+
+    // Sort by status priority first, then by creation date (newest first)
+    allApplications.sort((a, b) => {
+      const statusDiff =
+        (statusPriority[a.status] ?? 999) - (statusPriority[b.status] ?? 999);
+      if (statusDiff !== 0) return statusDiff;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    // Apply pagination to sorted results
+    const applications = allApplications.slice(skip, skip + PAGE_SIZE);
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
     return NextResponse.json({

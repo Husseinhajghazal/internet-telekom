@@ -14,7 +14,7 @@ import {
 
 const initialValues = {
   name: "",
-  phone: "+90 ",
+  phone: "",
   hasInternet: "",
   serviceType: "",
   contractPreference: "",
@@ -63,7 +63,7 @@ const useApplicationForm = () => {
               .required("رقم الهاتف مطلوب")
               .test("phone-format", "رقم الهاتف غير صحيح", (value = "") => {
                 const digits = value.replace(/\D/g, "");
-                return digits.length === 12 && digits.startsWith("90");
+                return digits.length === 11;
               })
           : Yup.string(),
 
@@ -90,7 +90,8 @@ const useApplicationForm = () => {
           ? Yup.string().required("يرجى اختيار الباقة المناسبة")
           : Yup.string(),
 
-      address: step === 6 ? Yup.string().required("العنوان مطلوب") : Yup.string(),
+      address:
+        step === 6 ? Yup.string().required("العنوان مطلوب") : Yup.string(),
     });
 
   const validate = async (values) => {
@@ -110,7 +111,7 @@ const useApplicationForm = () => {
   const mapApplicationToFormValues = (app) => ({
     ...initialValues,
     name: app.name ?? "",
-    phone: app.phone ?? "+90 ",
+    phone: app.phone ?? "",
     hasInternet: app.hasInternet ?? "",
     serviceType: app.serviceType ?? "",
     contractPreference: app.contractPreference ?? "",
@@ -157,7 +158,6 @@ const useApplicationForm = () => {
 
     setApplicationId(app.id);
 
-    
     if (data.action === "resume") {
       setFormInitialValues(mapApplicationToFormValues(app));
       const { family, vip } = parsePackageDurations(app.selectedPackage);
@@ -232,7 +232,9 @@ const useApplicationForm = () => {
       }
     } else {
       if (!resolvedId) {
-        setStep1Error("انتهت الجلسة. ارجع للخطوة الأولى وأعد إدخال الاسم والهاتف.");
+        setStep1Error(
+          "انتهت الجلسة. ارجع للخطوة الأولى وأعد إدخال الاسم والهاتف.",
+        );
         return;
       }
     }
