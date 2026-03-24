@@ -32,19 +32,19 @@ export default function Home() {
           <Button
             variant="primary"
             size="large"
-            className="font-semibold lg:font-bold rounded-lg hover:scale-105 w-full sm:w-auto min-w-[200px]"
+            className="font-semibold lg:font-bold rounded-lg hover:scale-105 w-full sm:w-auto min-w-50"
           >
             <Link href="/apply" className="block w-full h-full py-1">
-              ابدأ الآن
+              سجل الأن
             </Link>
           </Button>
           <Button
             variant="secondary"
             size="large"
-            className="font-semibold lg:font-bold rounded-lg hover:scale-105 w-full sm:w-auto min-w-[200px]"
+            className="font-semibold lg:font-bold rounded-lg hover:scale-105 w-full sm:w-auto min-w-50"
           >
             <Link href="/inquiry" className="block w-full h-full py-1">
-              استعلام
+              استعلم عن طلبك
             </Link>
           </Button>
         </div>

@@ -134,6 +134,42 @@ const parsePackageDurations = (selectedPackage) => {
   };
 };
 
+const maskValue = (
+  value = "",
+  visiblePrefix = 3,
+  visibleSuffix = 0,
+  maskChar = "*",
+) => {
+  const str = String(value || "");
+  if (!str) return "—";
+  if (str.length <= visiblePrefix + visibleSuffix) return str;
+  const maskedLength = str.length - visiblePrefix - visibleSuffix;
+  return (
+    str.slice(0, visiblePrefix) +
+    maskChar.repeat(maskedLength) +
+    (visibleSuffix > 0 ? str.slice(-visibleSuffix) : "")
+  );
+};
+
+const maskPhone = (value = "") => {
+  const digits = String(value).replace(/\D/g, "");
+  if (!digits) return "—";
+  // show first 4 digits, hide rest
+  return maskValue(digits, 4, 0);
+};
+
+const maskName = (name = "") => {
+  if (!name) return "—";
+  // show first 2 characters
+  return maskValue(name.trim(), 2, 0);
+};
+
+const maskAddress = (address = "") => {
+  if (!address) return "—";
+  // show first 5 chars
+  return maskValue(address.trim(), 5, 0);
+};
+
 export {
   describeContractPreference,
   describeSelectedPackage,
@@ -144,4 +180,8 @@ export {
   getPreviousStep,
   getStepFieldOrder,
   parsePackageDurations,
+  maskValue,
+  maskPhone,
+  maskName,
+  maskAddress,
 };

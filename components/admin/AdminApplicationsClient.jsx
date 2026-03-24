@@ -16,9 +16,15 @@ import {
   MdSearch,
   MdVisibility,
 } from "react-icons/md";
-import Button from "../Button";
+import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
+import * as XLSX from "xlsx";
 import AdminConfirmDialog from "./AdminConfirmDialog";
 import ApplicationDetailModal from "./ApplicationDetailModal";
+import {
+  describeSelectedPackage,
+  describeSelectedService,
+  describeServiceType,
+} from "@/utils/general";
 
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
@@ -55,11 +61,14 @@ export default function AdminApplicationsClient() {
 
   const [confirm, setConfirm] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
+  const [exportLoading, setExportLoading] = useState(false);
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
+  const [dateFrom, setDateFrom] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
   const [dateTo, setDateTo] = useState("");
   const searchFirstRun = useRef(true);
 
@@ -108,6 +117,71 @@ export default function AdminApplicationsClient() {
   useEffect(() => {
     load(page);
   }, [page, load]);
+
+  const exportToExcel = useCallback(async () => {
+    setExportLoading(true);
+    try {
+      const allApplications = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const query = buildQuery(currentPage);
+        const res = await fetch(`/api/admin/applications?${query}`);
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(json.error || "فشل التحميل");
+        }
+        allApplications.push(...json.applications);
+        totalPages = json.totalPages;
+        currentPage++;
+      } while (currentPage <= totalPages);
+
+      // Prepare data for Excel
+      const worksheetData = [
+        [
+          "الرمز",
+          "الاسم",
+          "رقم الهاتف",
+          "الحالة",
+          "تاريخ الإنشاء",
+          "العنوان",
+          "هل لديه انترنت؟",
+          "نوع الطلب",
+          "الباقة المختارة",
+          "الخدمة المختارة",
+          "ملاحظة",
+        ],
+        ...allApplications.map((app) => [
+          app.appCode,
+          app.name,
+          app.phone,
+          STATUS_LABELS[app.status] || app.status,
+          app.createdAt ? new Date(app.createdAt).toLocaleString("ar-SA") : "",
+          app.address,
+          app.hasInternet ? "نعم" : "لا",
+          describeServiceType(app.serviceType),
+          describeSelectedPackage(app.selectedPackage),
+          describeSelectedService(app.selectedService),
+          app.note || "",
+        ]),
+      ];
+
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "الطلبات");
+
+      // Download the file
+      XLSX.writeFile(
+        workbook,
+        `applications_${new Date().toISOString().slice(0, 10)}.xlsx`,
+      );
+    } catch (e) {
+      setAlertMsg(e.message || "فشل التصدير");
+    } finally {
+      setExportLoading(false);
+    }
+  }, [buildQuery]);
 
   const refreshDetail = async (id) => {
     try {
@@ -164,20 +238,26 @@ export default function AdminApplicationsClient() {
   };
 
   const hasActiveFilters =
-    Boolean(debouncedQ) || Boolean(statusFilter) || Boolean(dateFrom) || Boolean(dateTo);
+    Boolean(debouncedQ) ||
+    Boolean(statusFilter) ||
+    Boolean(dateFrom) ||
+    Boolean(dateTo);
 
   return (
     <div className="space-y-8">
       {/* Section header */}
-      <div
-      
-      >
-        <div className="absolute top-0 left-0 h-full w-1 rounded-r-full" style={{ background: ACCENT }} />
+      <div>
+        <div
+          className="absolute top-0 left-0 h-full w-1 rounded-r-full"
+          style={{ background: ACCENT }}
+        />
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pr-2">
           <div className="flex items-start gap-4">
             <span
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-md"
-              style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
+              style={{
+                background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`,
+              }}
             >
               <MdOutlineAssignment size={26} />
             </span>
@@ -187,7 +267,11 @@ export default function AdminApplicationsClient() {
               </h2>
               <p className="text-sm text-gray-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="inline-flex items-center gap-1">
-                  <MdOutlineTag className="opacity-70" style={{ color: ACCENT }} size={16} />
+                  <MdOutlineTag
+                    className="opacity-70"
+                    style={{ color: ACCENT }}
+                    size={16}
+                  />
                   إجمالي: <strong className="text-gray-800">{total}</strong>
                 </span>
                 <span className="text-gray-300 hidden sm:inline">|</span>
@@ -198,19 +282,37 @@ export default function AdminApplicationsClient() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => load(page)}
-            disabled={loading}
-            className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
-            style={{ background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})` }}
-          >
-            <MdOutlineRefresh
-              size={20}
-              className={loading ? "animate-spin" : ""}
-            />
-            تحديث القائمة
-          </button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => load(page)}
+              disabled={loading}
+              className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
+              style={{
+                background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
+              }}
+            >
+              <MdOutlineRefresh
+                size={20}
+                className={loading ? "animate-spin" : ""}
+              />
+              تحديث القائمة
+            </button>
+            <button
+              type="button"
+              onClick={exportToExcel}
+              disabled={exportLoading}
+              className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
+              style={{
+                background: `linear-gradient(to left, #18e32f, #12c90d)`,
+              }}
+            >
+              <PiMicrosoftExcelLogoFill
+                size={20}
+                className={exportLoading ? "animate-spin" : ""}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -222,7 +324,9 @@ export default function AdminApplicationsClient() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
           <div className="lg:col-span-4 relative">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">بحث (الاسم، الرمز، الهاتف)</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              بحث (الاسم، الرمز، الهاتف)
+            </label>
             <div className="relative">
               <MdSearch
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
@@ -239,7 +343,9 @@ export default function AdminApplicationsClient() {
             </div>
           </div>
           <div className="lg:col-span-3">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">حالة الطلب</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              حالة الطلب
+            </label>
             <select
               value={statusFilter}
               onChange={(e) => {
@@ -249,14 +355,18 @@ export default function AdminApplicationsClient() {
               className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
             >
               <option value="">كل الحالات</option>
-              <option value="NOT_COMPLETED">{STATUS_LABELS.NOT_COMPLETED}</option>
+              <option value="NOT_COMPLETED">
+                {STATUS_LABELS.NOT_COMPLETED}
+              </option>
               <option value="UNDER_REVIEW">{STATUS_LABELS.UNDER_REVIEW}</option>
               <option value="REJECTED">{STATUS_LABELS.REJECTED}</option>
               <option value="COMPLETED">{STATUS_LABELS.COMPLETED}</option>
             </select>
           </div>
           <div className="lg:col-span-2">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">من تاريخ</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              من تاريخ
+            </label>
             <input
               type="date"
               value={dateFrom}
@@ -268,7 +378,9 @@ export default function AdminApplicationsClient() {
             />
           </div>
           <div className="lg:col-span-2">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">إلى تاريخ</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              إلى تاريخ
+            </label>
             <input
               type="date"
               value={dateTo}
@@ -301,7 +413,11 @@ export default function AdminApplicationsClient() {
 
       {loading && !data ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-500">
-          <MdOutlineRefresh className="animate-spin" size={40} style={{ color: ACCENT }} />
+          <MdOutlineRefresh
+            className="animate-spin"
+            size={40}
+            style={{ color: ACCENT }}
+          />
           <p className="font-medium">جاري تحميل الطلبات…</p>
         </div>
       ) : (
@@ -311,7 +427,9 @@ export default function AdminApplicationsClient() {
               <thead>
                 <tr
                   className="text-white"
-                  style={{ background: `linear-gradient(to left, ${ACCENT_DARK}, ${ACCENT})` }}
+                  style={{
+                    background: `linear-gradient(to left, ${ACCENT_DARK}, ${ACCENT})`,
+                  }}
                 >
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
@@ -331,14 +449,16 @@ export default function AdminApplicationsClient() {
                       الهاتف
                     </span>
                   </th>
-                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">الحالة</th>
+                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                    الحالة
+                  </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdCalendarMonth size={18} />
                       التاريخ
                     </span>
                   </th>
-                  <th className="px-3 py-3.5 font-bold whitespace-nowrap min-w-[240px] text-center">
+                  <th className="px-3 py-3.5 font-bold whitespace-nowrap min-w-60 text-center">
                     إجراءات
                   </th>
                 </tr>
@@ -365,13 +485,23 @@ export default function AdminApplicationsClient() {
                         idx % 2 === 0 ? "bg-white" : "bg-slate-50/40"
                       }`}
                     >
-                      <td className="px-3 py-3.5 font-mono font-bold tabular-nums" dir="ltr" style={{ color: ACCENT }}>
+                      <td
+                        className="px-3 py-3.5 font-mono font-bold tabular-nums"
+                        dir="ltr"
+                        style={{ color: ACCENT }}
+                      >
                         {app.appCode}
                       </td>
-                      <td className="px-3 py-3.5 text-gray-800 max-w-[160px] truncate font-medium" title={app.name}>
+                      <td
+                        className="px-3 py-3.5 text-gray-800 max-w-40 truncate font-medium"
+                        title={app.name}
+                      >
                         {app.name}
                       </td>
-                      <td className="px-3 py-3.5 whitespace-nowrap text-gray-700" dir="ltr">
+                      <td
+                        className="px-3 py-3.5 whitespace-nowrap text-gray-700"
+                        dir="ltr"
+                      >
                         {app.phone}
                       </td>
                       <td className="px-3 py-3.5">
@@ -392,14 +522,19 @@ export default function AdminApplicationsClient() {
                             type="button"
                             onClick={() => openDetail(app)}
                             className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:opacity-95"
-                            style={{ background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})` }}
+                            style={{
+                              background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
+                            }}
                           >
                             <MdVisibility size={16} />
                             تفاصيل
                           </button>
                           <button
                             type="button"
-                            disabled={!canChangeStatus(app.status) || actionId === app.id}
+                            disabled={
+                              !canChangeStatus(app.status) ||
+                              actionId === app.id
+                            }
                             onClick={() =>
                               setConfirm({
                                 kind: "reject",
@@ -414,7 +549,10 @@ export default function AdminApplicationsClient() {
                           </button>
                           <button
                             type="button"
-                            disabled={!canChangeStatus(app.status) || actionId === app.id}
+                            disabled={
+                              !canChangeStatus(app.status) ||
+                              actionId === app.id
+                            }
                             onClick={() =>
                               setConfirm({
                                 kind: "complete",
@@ -450,7 +588,7 @@ export default function AdminApplicationsClient() {
             السابق
           </button>
           <span
-            className="inline-flex min-w-[100px] items-center justify-center rounded-2xl px-4 py-2 text-sm font-bold text-gray-700"
+            className="inline-flex min-w-25 items-center justify-center rounded-2xl px-4 py-2 text-sm font-bold text-gray-700"
             style={{
               background: `linear-gradient(180deg, rgba(24,162,227,0.12), rgba(255,255,255,0.9))`,
               border: `1px solid rgba(24,162,227,0.25)`,
@@ -481,18 +619,17 @@ export default function AdminApplicationsClient() {
         open={!!confirm}
         kind={confirm?.kind === "reject" ? "reject" : "complete"}
         title={confirm?.kind === "reject" ? "رفض الطلب؟" : "إكمال الطلب؟"}
-        message={
-          confirm
-            ? `هل أنت متأكد؟ الطلب #${confirm.appCode}`
-            : ""
-        }
+        message={confirm ? `هل أنت متأكد؟ الطلب #${confirm.appCode}` : ""}
         confirmLabel={confirm?.kind === "reject" ? "نعم، رفض" : "نعم، إكمال"}
         cancelLabel="إلغاء"
         loading={!!actionId && confirm && actionId === confirm.appId}
         onCancel={() => setConfirm(null)}
         onConfirm={() => {
           if (!confirm) return;
-          updateStatus(confirm.appId, confirm.kind === "reject" ? "REJECTED" : "COMPLETED");
+          updateStatus(
+            confirm.appId,
+            confirm.kind === "reject" ? "REJECTED" : "COMPLETED",
+          );
         }}
       />
 

@@ -39,7 +39,9 @@ const Row = ({ label, icon, children, className = "" }) => (
       {icon && <span style={{ color: ACCENT }}>{icon}</span>}
       <span>{label}</span>
     </div>
-    <div className="text-gray-800 font-semibold text-sm whitespace-pre-wrap break-words">{children}</div>
+    <div className="text-gray-800 font-semibold text-sm whitespace-pre-wrap wrap-break-word">
+      {children}
+    </div>
   </div>
 );
 
@@ -64,7 +66,11 @@ export default function ApplicationDetailModal({ application, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-3 sm:p-4">
-      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden
+      />
       <div
         className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden flex flex-col"
         role="dialog"
@@ -73,14 +79,19 @@ export default function ApplicationDetailModal({ application, onClose }) {
       >
         <div
           className="flex items-start justify-between gap-3 p-4 md:p-5 text-white"
-          style={{ background: `linear-gradient(to left, ${ACCENT_DARK}, ${ACCENT})` }}
+          style={{
+            background: `linear-gradient(to left, ${ACCENT_DARK}, ${ACCENT})`,
+          }}
         >
           <div className="text-right space-y-1 min-w-0 flex-1">
             <div className="inline-flex items-center gap-2 text-white/90 text-sm font-medium">
               <MdDescription size={20} />
               تفاصيل الطلب
             </div>
-            <h2 id="detail-title" className="text-xl md:text-2xl font-extrabold tracking-tight">
+            <h2
+              id="detail-title"
+              className="text-xl md:text-2xl font-extrabold tracking-tight"
+            >
               #{application.appCode}
             </h2>
             <p className="text-sm text-white/85">عرض كامل للبيانات المسجّلة</p>
@@ -90,7 +101,7 @@ export default function ApplicationDetailModal({ application, onClose }) {
             type="button"
             onClick={onClose}
             aria-label="إغلاق"
-            className="!text-white hover:!bg-white/15 shrink-0"
+            className="text-white! hover:bg-white/15! shrink-0"
           >
             <MdCancel size={26} />
           </Button>
@@ -99,11 +110,11 @@ export default function ApplicationDetailModal({ application, onClose }) {
         <div className="overflow-y-auto p-4 md:p-6 space-y-4 bg-linear-to-b from-slate-50/50 to-white">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Row label="الاسم" icon={<MdPerson size={18} />}>
-              {application.name || "—"}
+              {application.name}
             </Row>
             <Row label="رقم الهاتف" icon={<MdPhone size={18} />}>
               <span dir="ltr" className="inline-block">
-                {application.phone || "—"}
+                {application.phone}
               </span>
             </Row>
             <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
@@ -113,9 +124,6 @@ export default function ApplicationDetailModal({ application, onClose }) {
               >
                 {statusLabel}
               </span>
-            </Row>
-            <Row label="الخطوة" icon={<MdDescription size={18} />}>
-              {application.step ?? "—"}
             </Row>
             <Row label="تاريخ الإنشاء" icon={<MdCalendarMonth size={18} />}>
               {createdAtLabel}
@@ -143,20 +151,33 @@ export default function ApplicationDetailModal({ application, onClose }) {
                 {describeSelectedService(application.selectedService)}
               </Row>
             )}
-            {application.serviceType === "newline" && application.contractPreference === "with" && (
-              <Row label="الباقة المختارة" icon={<MdSpeed size={18} />}>
-                {describeSelectedPackage(application.selectedPackage)}
-              </Row>
-            )}
-            <Row label="العنوان" className="sm:col-span-2" icon={<MdHome size={18} />}>
-              {application.address || "—"}
+            {application.serviceType === "newline" &&
+              application.contractPreference === "with" && (
+                <Row label="الباقة المختارة" icon={<MdSpeed size={18} />}>
+                  {describeSelectedPackage(application.selectedPackage)}
+                </Row>
+              )}
+            <Row
+              label="العنوان"
+              className="sm:col-span-2"
+              icon={<MdHome size={18} />}
+            >
+              {application.address}
             </Row>
             {(application.note || "").trim() ? (
-              <Row label="ملاحظة" className="sm:col-span-2" icon={<MdDescription size={18} />}>
+              <Row
+                label="ملاحظة"
+                className="sm:col-span-2"
+                icon={<MdDescription size={18} />}
+              >
                 {application.note}
               </Row>
             ) : null}
-            <Row label="صورة الفاتورة" className="sm:col-span-2" icon={<MdOutlineReceiptLong size={18} />}>
+            <Row
+              label="صورة الفاتورة"
+              className="sm:col-span-2"
+              icon={<MdOutlineReceiptLong size={18} />}
+            >
               {application.invoiceFileUrl ? (
                 <a
                   href={application.invoiceFileUrl}
@@ -179,8 +200,10 @@ export default function ApplicationDetailModal({ application, onClose }) {
             variant="primary"
             type="button"
             onClick={onClose}
-            className="!rounded-xl min-w-[120px]"
-            style={{ background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})` }}
+            className="rounded-xl! min-w-30"
+            style={{
+              background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
+            }}
           >
             إغلاق
           </Button>

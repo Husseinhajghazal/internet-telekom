@@ -8,6 +8,9 @@ import {
   describeSelectedPackage,
   describeSelectedService,
   describeServiceType,
+  maskName,
+  maskPhone,
+  maskAddress,
 } from "../utils/general";
 
 const ACCENT = "#18a2e3";
@@ -35,9 +38,13 @@ const statusBadgeClass = (status) => {
 };
 
 const Row = ({ label, children, className = "" }) => (
-  <div className={`rounded-2xl border border-gray-200 p-4 text-right space-y-2 ${className}`}>
+  <div
+    className={`rounded-2xl border border-gray-200 p-4 text-right space-y-2 ${className}`}
+  >
     <div className="text-sm text-gray-500 font-bold">{label}</div>
-    <div className="text-gray-800 font-semibold whitespace-pre-wrap">{children}</div>
+    <div className="text-gray-800 font-semibold whitespace-pre-wrap">
+      {children}
+    </div>
   </div>
 );
 
@@ -55,7 +62,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
       <div className="min-h-svh flex flex-col items-center justify-center p-6 gap-4">
         <p className="text-red-600">{error || "لم يتم العثور على الطلب."}</p>
         <Link href="/apply">
-          <Button variant="primary">العودة للطلب</Button>
+          <Button variant="primary">سجل الان</Button>
         </Link>
       </div>
     );
@@ -70,20 +77,24 @@ const ApplicationInfoView = ({ application, loading, error }) => {
     <div className="min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50 py-10 px-4">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">تفاصيل الطلب</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+            تفاصيل الطلب
+          </h1>
           <p className="text-gray-600">رقم الطلب: #{application.appCode}</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Row label="الاسم">{application.name || "—"}</Row>
+            <Row label="الاسم">{maskName(application.name)}</Row>
             <Row label="رقم الهاتف">
               <span dir="ltr" className="inline-block">
-                {application.phone || "—"}
+                {maskPhone(application.phone)}
               </span>
             </Row>
             <Row label="حالة الطلب">
-              <span className={`px-3 py-1 rounded-full text-sm ${statusBadgeClass(application.status)}`}>
+              <span
+                className={`px-3 py-1 rounded-full text-sm ${statusBadgeClass(application.status)}`}
+              >
                 {statusLabel}
               </span>
             </Row>
@@ -95,7 +106,9 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                   ? "لا"
                   : "—"}
             </Row>
-            <Row label="نوع الطلب">{describeServiceType(application.serviceType)}</Row>
+            <Row label="نوع الطلب">
+              {describeServiceType(application.serviceType)}
+            </Row>
             {application.serviceType === "newline" && (
               <Row label="نوع العروض">
                 {describeContractPreference(application.contractPreference)}
@@ -113,27 +126,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 </Row>
               )}
             <Row label="العنوان" className="md:col-span-2">
-              {application.address || "—"}
-            </Row>
-            {(application.note || "").trim() ? (
-              <Row label="ملاحظة" className="md:col-span-2">
-                {application.note}
-              </Row>
-            ) : null}
-            <Row label="صورة الفاتورة" className="md:col-span-2">
-              {application.invoiceFileUrl ? (
-                <a
-                  href={application.invoiceFileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-bold underline break-all text-sm"
-                  style={{ color: ACCENT }}
-                >
-                  فتح / عرض الصورة
-                </a>
-              ) : (
-                "—"
-              )}
+              {maskAddress(application.address)}
             </Row>
           </div>
         </div>
