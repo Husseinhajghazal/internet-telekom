@@ -2,9 +2,9 @@
 
 import React from "react";
 import { ErrorMessage } from "formik";
-import { MdWifiOff, MdWifi } from "react-icons/md";
 import Card from "../Card";
 import StepHeader from "../StepHeader";
+import LottieAnimation from "../LottieAnimation";
 
 const Step2 = ({ values, errors, touched }) => {
   const options = [
@@ -12,7 +12,7 @@ const Step2 = ({ values, errors, touched }) => {
       name: "hasInternet",
       value: "no",
       selected: values.hasInternet === "no",
-      icon: MdWifiOff,
+      icon: "/animations/No%20Internet%20Connection.json",
       title: "لا",
       description: "لا أملك خط انترنت حالياً",
       size: "large",
@@ -22,7 +22,7 @@ const Step2 = ({ values, errors, touched }) => {
       name: "hasInternet",
       value: "yes",
       selected: values.hasInternet === "yes",
-      icon: MdWifi,
+      icon: "/animations/Wifi%20Signal%20-%20Zortex.json",
       title: "نعم",
       description: "أملك خط انترنت بالفعل",
       size: "large",
@@ -31,12 +31,17 @@ const Step2 = ({ values, errors, touched }) => {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8 md:py-8">
+    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
         title="هل لديك خط إنترنت؟"
         subTitle="هذا سيساعدنا على تقديم أفضل خدمة لك"
       >
-        <MdWifi className="inline-block text-[#18a2e3]" size={60} />
+        <LottieAnimation
+          path="/animations/WiFi%20Connecting.json"
+          width={150}
+          height={150}
+          className="inline-block"
+        />
       </StepHeader>
 
       <div className="grid grid-cols-2 gap-3 md:gap-6 md:px-6">

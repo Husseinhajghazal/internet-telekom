@@ -2,8 +2,6 @@
 
 import React from "react";
 import { ErrorMessage } from "formik";
-import { GiWifiRouter } from "react-icons/gi";
-import { FaFileCircleQuestion } from "react-icons/fa6";
 import {
   MdCancel,
   MdPerson,
@@ -12,10 +10,9 @@ import {
   MdAcUnit,
   MdUpgrade,
 } from "react-icons/md";
-import { FaFileContract } from "react-icons/fa6";
-import { RiFileCloseLine } from "react-icons/ri";
 import Card from "../Card";
 import StepHeader from "../StepHeader";
+import LottieAnimation from "../LottieAnimation";
 
 const Step4 = ({ values, errors, touched }) => {
   const showServiceCards = values.serviceType === "services";
@@ -109,7 +106,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "contractPreference",
       value: "with",
       selected: values.contractPreference === "with",
-      icon: FaFileContract,
+      icon: "/animations/Contract%20Sign.json",
       title: "مع عقد",
       description: "عروض حصرية مع عقد اشتراك",
       size: "large",
@@ -121,7 +118,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "contractPreference",
       value: "without",
       selected: values.contractPreference === "without",
-      icon: RiFileCloseLine,
+      icon: "/animations/no%20transactions.json",
       title: "بدون عقد",
       description: "سرعات متنوعة بدون التزام عقد",
       size: "large",
@@ -132,7 +129,7 @@ const Step4 = ({ values, errors, touched }) => {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8 md:py-8">
+    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
         title={showServiceCards ? "اختر الخدمة المناسبة لك" : "اختر نوع العروض"}
         subTitle={
@@ -142,11 +139,18 @@ const Step4 = ({ values, errors, touched }) => {
         }
       >
         {showServiceCards ? (
-          <GiWifiRouter className="inline-block text-[#18a2e3]" size={60} />
+          <LottieAnimation
+            path="/animations/Thinking.json"
+            width={150}
+            height={150}
+            className="inline-block"
+          />
         ) : (
-          <FaFileCircleQuestion
-            className="inline-block text-purple-500"
-            size={60}
+          <LottieAnimation
+            path="/animations/Customer%20Service%20Man%20Waving%20(Mobile%20Phone%20Repair).json"
+            width={150}
+            height={150}
+            className="inline-block"
           />
         )}
       </StepHeader>

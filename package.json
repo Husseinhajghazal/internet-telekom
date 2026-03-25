@@ -12,10 +12,12 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "formik": "^2.4.9",
+    "lottie-web": "^5.12.2",
     "next": "16.1.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-icons": "^5.6.0",
+    "turkey_province_image": "^3.3.0",
     "xlsx": "^0.18.5",
     "yup": "^1.7.1"
   },

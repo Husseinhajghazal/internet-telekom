@@ -2,61 +2,62 @@
 
 import React from "react";
 import { ErrorMessage } from "formik";
-import { GiWifiRouter } from "react-icons/gi";
-import { LuPackageSearch } from "react-icons/lu";
-import { RiCustomerService2Line } from "react-icons/ri";
-import { BiHelpCircle } from "react-icons/bi";
 import Card from "../Card";
 import StepHeader from "../StepHeader";
+import LottieAnimation from "../LottieAnimation";
+
 const Step3 = ({ values, errors, touched }) => {
   const options = [
     {
       name: "serviceType",
       value: "newline",
       selected: values.serviceType === "newline",
-      icon: GiWifiRouter,
+      icon: '/animations/router%20blue%20wifi.json',
       title: "خط جديد",
       description: "طلب خط انترنت جديد",
       size: "large",
       color: "green",
-      className: "col-span-2 md:col-span-1",
       hidden: values.hasInternet !== "no",
     },
     {
       name: "serviceType",
       value: "services",
       selected: values.serviceType === "services",
-      icon: LuPackageSearch,
+      icon: '/animations/Customer%20Service%20Man%20Waving%20(Mobile%20Phone%20Repair).json',
       title: "خدمات",
       description: "معرفة الخدمات المتاحة لديك",
       size: "large",
       color: "blue",
+      hidden: values.hasInternet === "no",
     },
     {
       name: "serviceType",
       value: "inquiry",
       selected: values.serviceType === "inquiry",
-      icon: RiCustomerService2Line,
-      title: "استعلام",
-      description: "الاستعلام عن الاشتراك الحالي",
+      icon: "/animations/Consulting.json",
+      title: "استشارات",
+      description: "حول الخدمات والاشتراكات",
       size: "large",
-      color: "purple",
+      color: "orange",
     },
   ];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8 md:py-8">
+    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
         title="هل تبحث عن خدمة معينة أو خط جديد؟"
         subTitle="اختر الخيار الذي يناسبك"
       >
-        <BiHelpCircle className="inline-block text-[#18a2e3]" size={60} />
+        <LottieAnimation
+          path="/animations/Thinking.json"
+          width={150}
+          height={150}
+          className="inline-block"
+        />
       </StepHeader>
 
       <div
-        className={`grid gap-3 md:gap-6 justify-center md:px-6 grid-cols-2 ${
-          values.hasInternet === "no" ? "md:grid-cols-3" : ""
-        }`}
+        className={`grid gap-3 md:gap-6 justify-center md:px-6 grid-cols-2`}
       >
         {options
           .filter((option) => option.hidden !== true)

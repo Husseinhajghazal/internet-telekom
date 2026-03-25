@@ -2,9 +2,9 @@
 
 import React from "react";
 import { ErrorMessage } from "formik";
-import { MdSpeed } from "react-icons/md";
 import StepHeader from "../StepHeader";
 import PackageSection from "../PackageSection";
+import LottieAnimation from "../LottieAnimation";
 
 const Step5 = ({
   values,
@@ -31,12 +31,17 @@ const Step5 = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8 md:py-8">
+    <div className="max-w-6xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
         title="اختر الباقة المناسبة لك"
         subTitle="اختر من الباقات المتاحة"
       >
-        <MdSpeed className="inline-block text-blue-500" size={60} />
+        <LottieAnimation
+          path="/animations/Thinking.json"
+          width={150}
+          height={150}
+          className="inline-block"
+        />
       </StepHeader>
 
       <div className="space-y-16 md:px-6">

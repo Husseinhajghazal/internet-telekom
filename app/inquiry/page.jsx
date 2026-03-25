@@ -60,7 +60,7 @@ export default function InquiryPage() {
           setLoading(false);
           return;
         }
-        router.push(`/apply/status/${normalized}`);
+        router.push(`/internet-basvuru-formu/status/${normalized}`);
       } else {
         // Phone search
         const normalized = phone.replace(/\D/g, "");
@@ -83,7 +83,7 @@ export default function InquiryPage() {
         }
 
         // Redirect to the status page with the app code
-        router.push(`/apply/status/${data.appCode}`);
+        router.push(`/internet-basvuru-formu/status/${data.appCode}`);
       }
     } catch (err) {
       setError("حدث خطأ، يرجى المحاولة مرة أخرى.");
@@ -231,7 +231,7 @@ export default function InquiryPage() {
 
         <p className="text-xs text-gray-500">
           <Link
-            href="/apply"
+            href="/internet-basvuru-formu"
             className="text-[#18a2e3] font-medium hover:underline"
           >
             ليس لديك طلب؟ تقديم طلب جديد

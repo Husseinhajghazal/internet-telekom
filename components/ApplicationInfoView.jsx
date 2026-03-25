@@ -61,7 +61,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
     return (
       <div className="min-h-svh flex flex-col items-center justify-center p-6 gap-4">
         <p className="text-red-600">{error || "لم يتم العثور على الطلب."}</p>
-        <Link href="/apply">
+        <Link href="/internet-basvuru-formu">
           <Button variant="primary">سجل الان</Button>
         </Link>
       </div>
@@ -132,7 +132,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
         </div>
 
         <div className="flex justify-center gap-4 flex-wrap">
-          <Link href="/apply">
+          <Link href="/internet-basvuru-formu">
             <Button variant="secondary" size="large">
               طلب جديد
             </Button>

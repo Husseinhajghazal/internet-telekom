@@ -83,7 +83,7 @@ const getStepFieldOrder = (step, values) => {
     return ["contractPreference", "selectedService"];
   }
   if (step === 5) return ["selectedPackage"];
-  if (step === 6) return ["address"];
+  if (step === 6) return values?.serviceType === "inquiry" ? [] : ["address"];
   return [];
 };
 

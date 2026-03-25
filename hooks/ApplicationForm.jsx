@@ -11,15 +11,27 @@ import {
   getStepFieldOrder,
   parsePackageDurations,
 } from "../utils/general";
+import { USER_AGREEMENT_TEXT } from "../utils/data";
 
 const initialValues = {
   name: "",
   phone: "",
+  userAgreementAccepted: false,
   hasInternet: "",
   serviceType: "",
   contractPreference: "",
   selectedService: "",
   selectedPackage: "",
+  addressProvinceCode: "",
+  addressProvinceName: "",
+  addressDistrictCode: "",
+  addressDistrictName: "",
+  addressNeighborhoodCode: "",
+  addressNeighborhoodName: "",
+  addressStreetCode: "",
+  addressStreetName: "",
+  addressOutsideDoorNo: "",
+  addressInsideDoorNo: "",
   address: "",
   note: "",
   invoiceFile: null,
@@ -41,6 +53,7 @@ const useApplicationForm = () => {
   const [vipContractDuration, setVipContractDuration] = useState("12");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [confirmValues, setConfirmValues] = useState(null);
+  const [isUserAgreementOpen, setIsUserAgreementOpen] = useState(false);
   const formRef = useRef();
 
   useEffect(() => {
@@ -67,6 +80,11 @@ const useApplicationForm = () => {
               })
           : Yup.string(),
 
+      userAgreementAccepted:
+        step === 1
+          ? Yup.boolean().oneOf([true], "يرجى الموافقة على اتفاقية المستخدم")
+          : Yup.boolean(),
+
       hasInternet:
         step === 2 ? Yup.string().required("يرجى اختيار إجابة") : Yup.string(),
 
@@ -89,9 +107,6 @@ const useApplicationForm = () => {
         step === 5 && values?.serviceType === "newline"
           ? Yup.string().required("يرجى اختيار الباقة المناسبة")
           : Yup.string(),
-
-      address:
-        step === 6 ? Yup.string().required("العنوان مطلوب") : Yup.string(),
     });
 
   const validate = async (values) => {
@@ -107,6 +122,8 @@ const useApplicationForm = () => {
     setFieldValue("phone", formatPhoneNumber(e.target.value));
     setStep1Error(null);
   };
+  const openUserAgreement = () => setIsUserAgreementOpen(true);
+  const closeUserAgreement = () => setIsUserAgreementOpen(false);
 
   const mapApplicationToFormValues = (app) => ({
     ...initialValues,
@@ -119,6 +136,7 @@ const useApplicationForm = () => {
     selectedPackage: app.selectedPackage ?? "",
     address: app.address ?? "",
     note: app.note ?? "",
+    userAgreementAccepted: false,
     invoiceFile: null,
     invoiceFileUrl: app.invoiceFileUrl ?? "",
   });
@@ -146,7 +164,9 @@ const useApplicationForm = () => {
 
     /** Under-review: API returns appCode only (no application). Resume/created always include application. */
     if (data.appCode && !data.application) {
-      router.push(`/apply/status/${String(data.appCode).trim().toUpperCase()}`);
+      router.push(
+        `/internet-basvuru-formu/status/${String(data.appCode).trim().toUpperCase()}`,
+      );
       return { redirected: true };
     }
 
@@ -316,12 +336,16 @@ const useApplicationForm = () => {
     initialValues,
     step1Error,
     setStep1Error,
+    isUserAgreementOpen,
+    agreementText: USER_AGREEMENT_TEXT,
     validate,
     handleSubmit,
     handleConfirmSubmission,
     handleBack,
     handleForward,
     handlePhoneChange,
+    openUserAgreement,
+    closeUserAgreement,
     setFamilyContractDuration,
     setVipContractDuration,
     setIsConfirmOpen,

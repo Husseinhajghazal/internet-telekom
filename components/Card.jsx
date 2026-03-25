@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Field } from "formik";
+import LottieAnimation from "./LottieAnimation";
 
 const Card = ({
   name,
@@ -83,7 +84,17 @@ const Card = ({
         </div>
 
         <div className={`text-5xl ${cls.icon}`}>
+          {typeof Icon == 'string' ?
+          <LottieAnimation
+            path={Icon}
+            width={100}
+            height={100}
+            className="inline-block"
+          />
+          :
           <Icon size={60} />
+
+        }
         </div>
 
         <span

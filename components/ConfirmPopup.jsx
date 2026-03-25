@@ -8,6 +8,8 @@ import {
 } from "../utils/general"
 
 const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
+  const isInquiry = confirmValues?.serviceType === "inquiry";
+
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-3 sm:p-4">
       <div className="absolute inset-0 bg-black/40" onClick={handleCancel} />
@@ -85,12 +87,14 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
               </div>
             )}
 
-            <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-              <div className="text-sm text-gray-500 font-bold">العنوان</div>
-              <div className="text-gray-800 font-semibold whitespace-pre-wrap">
-                {confirmValues?.address || "—"}
+            {!isInquiry && (
+              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
+                <div className="text-sm text-gray-500 font-bold">العنوان</div>
+                <div className="text-gray-800 font-semibold whitespace-pre-wrap">
+                  {confirmValues?.address || "—"}
+                </div>
               </div>
-            </div>
+            )}
 
             {(confirmValues?.note || "").trim() && (
               <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
@@ -101,16 +105,18 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
               </div>
             )}
 
-            <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-              <div className="text-sm text-gray-500 font-bold">
-                صورة الفاتورة
+            {!isInquiry && (
+              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
+                <div className="text-sm text-gray-500 font-bold">
+                  صورة الفاتورة
+                </div>
+                <div className="text-gray-800 font-semibold break-all">
+                  {confirmValues?.invoiceFile?.name ||
+                    confirmValues?.invoiceFileUrl ||
+                    "—"}
+                </div>
               </div>
-              <div className="text-gray-800 font-semibold break-all">
-                {confirmValues?.invoiceFile?.name ||
-                  confirmValues?.invoiceFileUrl ||
-                  "—"}
-              </div>
-            </div>
+            )}
           </div>
 
           <div className="flex flex-col md:flex-row gap-3 md:gap-4">

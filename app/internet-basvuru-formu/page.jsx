@@ -6,6 +6,7 @@ import FooterButtons from "../../components/FooterButtons";
 import ProgressBar from "../../components/ProgressBar";
 import Header from "../../components/Header";
 import ConfirmPopup from "../../components/ConfirmPopup";
+import UserAgreementPopup from "../../components/UserAgreementPopup";
 import SuccessStep from "../../components/SuccessStep";
 import Step1 from "../../components/form/Step1";
 import Step2 from "../../components/form/Step2";
@@ -28,6 +29,8 @@ const ApplyPage = () => {
     formRef,
     formInitialValues,
     step1Error,
+    isUserAgreementOpen,
+    agreementText,
     validate,
     handleSubmit,
     handleConfirmSubmission,
@@ -38,6 +41,8 @@ const ApplyPage = () => {
     setVipContractDuration,
     setIsConfirmOpen,
     setStep1Error,
+    openUserAgreement,
+    closeUserAgreement,
   } = useApplicationForm();
 
   return (
@@ -70,6 +75,12 @@ const ApplyPage = () => {
                   handleCancel={() => setIsConfirmOpen(false)}
                 />
               )}
+              {isUserAgreementOpen && (
+                <UserAgreementPopup
+                  agreementText={agreementText}
+                  handleCancel={closeUserAgreement}
+                />
+              )}
 
               <Header step={step} />
               <ProgressBar step={step} />
@@ -85,11 +96,13 @@ const ApplyPage = () => {
                 >
                   {step === 1 && (
                     <Step1
+                      values={values}
                       errors={errors}
                       touched={touched}
                       setFieldValue={setFieldValue}
                       handlePhoneChange={handlePhoneChange}
                       onClearStep1Error={() => setStep1Error(null)}
+                      onOpenUserAgreement={openUserAgreement}
                     />
                   )}
 

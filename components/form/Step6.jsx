@@ -1,18 +1,93 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Field } from "formik";
 import { MdPhoneInTalk } from "react-icons/md";
 import { TbFileInvoiceFilled } from "react-icons/tb";
 import FormFieldBlock from "../FormFieldBlock";
 
 const Step6 = ({ values, errors, touched, setFieldValue }) => {
+  const isInquiry = values.serviceType === "inquiry";
   const hasSavedInvoice = Boolean(values.invoiceFileUrl);
   const hasNewInvoice = Boolean(values.invoiceFile);
   const showInvoicePreview = hasNewInvoice || hasSavedInvoice;
 
+  const [turkeyData, setTurkeyData] = useState(null);
+  const [cities, setCities] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [neighborhoods, setNeighborhoods] = useState([]);
+
+  const buildAddressString = ({
+    addressProvinceName,
+    addressDistrictName,
+    addressNeighborhoodName,
+    addressStreetName,
+    addressOutsideDoorNo,
+    addressInsideDoorNo,
+  }) => {
+    const outsideDoorNo = String(addressOutsideDoorNo ?? "").trim();
+    const insideDoorNo = String(addressInsideDoorNo ?? "").trim();
+
+    if (
+      !addressProvinceName ||
+      !addressDistrictName ||
+      !addressNeighborhoodName ||
+      !addressStreetName ||
+      outsideDoorNo.length === 0
+    ) {
+      return "";
+    }
+
+    const insidePart = insideDoorNo
+      ? `, iç kapı no: ${insideDoorNo}`
+      : "";
+
+    return `${addressProvinceName}, ${addressDistrictName}, ${addressNeighborhoodName}, ${addressStreetName}, dış kapı no: ${outsideDoorNo}${insidePart}`;
+  };
+
+  useEffect(() => {
+    if (isInquiry) return;
+
+    let active = true;
+    import("turkey_province_image")
+      .then((mod) => {
+        if (!active) return;
+        const data = mod?.default ?? mod;
+        setTurkeyData(data);
+        setCities(data.getAllCities());
+      })
+      .catch(() => {
+        if (!active) return;
+        setCities([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isInquiry]);
+
+  useEffect(() => {
+    if (!turkeyData || isInquiry) return;
+    const cityCode = values.addressProvinceCode;
+    if (!cityCode) {
+      setDistricts([]);
+      return;
+    }
+    setDistricts(turkeyData.getDistrictsByCity(cityCode));
+  }, [turkeyData, values.addressProvinceCode, isInquiry]);
+
+  useEffect(() => {
+    if (!turkeyData || isInquiry) return;
+    const districtCode = values.addressDistrictCode;
+    if (!districtCode) {
+      setNeighborhoods([]);
+      return;
+    }
+    setNeighborhoods(turkeyData.getNeighborhoodsByDistrict(districtCode));
+  }, [turkeyData, values.addressDistrictCode, isInquiry]);
+
   return (
-    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8 md:py-8">
+    <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <div className="text-center space-y-3">
         <div className="text-6xl mb-4">
           <MdPhoneInTalk className="inline-block text-[#18a2e3]" size={60} />
@@ -26,25 +101,231 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
       </div>
 
       <div className="space-y-4 md:space-y-8 md:px-6">
-        <FormFieldBlock
-          label="العنوان"
-          name="address"
-          labelClassName="md:text-lg mb-4"
-          errorClassName="text-red-500 text-sm text-right"
-        >
-          <Field
-            as="textarea"
-            name="address"
-            id="address"
-            rows={4}
-            className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right resize-none ${
-              errors.address && touched.address
-                ? "border-red-500"
-                : "border-gray-300"
-            }`}
-            placeholder="أدخل عنوانك الكامل (المدينة، الحي، الشارع، رقم المبنى، إلخ)"
-          />
-        </FormFieldBlock>
+        {!isInquiry && (
+          <>
+            <div className="space-y-1">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
+                اختر عنوانك
+              </h3>
+              <p className="text-sm text-gray-500 text-right">
+                الولاية، المنطقة، المحلة، الشارع، رقم الباب الخارجي، الباب الداخلي
+              </p>
+            </div>
+
+            {errors.address && touched.address && (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-right text-red-800 text-sm">
+                {errors.address}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormFieldBlock
+                label="الولاية"
+                name="addressProvinceCode"
+              >
+                <select
+                  name="addressProvinceCode"
+                  id="addressProvinceCode"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.addressProvinceCode && touched.addressProvinceCode ? "border-red-500" : "border-gray-300"
+                  }`}
+                  value={values.addressProvinceCode}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    const city = cities.find((c) => String(c.cityCode) === String(code));
+                    setFieldValue("addressProvinceCode", code);
+                    setFieldValue("addressProvinceName", city?.cityName || "");
+
+                    setFieldValue("addressDistrictCode", "");
+                    setFieldValue("addressDistrictName", "");
+                    setFieldValue("addressNeighborhoodCode", "");
+                    setFieldValue("addressNeighborhoodName", "");
+                    setFieldValue("addressStreetCode", "");
+                    setFieldValue("addressStreetName", "");
+                    setFieldValue("addressOutsideDoorNo", "");
+                    setFieldValue("addressInsideDoorNo", "");
+                    setFieldValue("address", "");
+                  }}
+                >
+                  <option value="">يرجى اختيار الولاية</option>
+                  {cities.map((c) => (
+                    <option key={c.cityCode} value={c.cityCode}>
+                      {c.cityName}
+                    </option>
+                  ))}
+                </select>
+              </FormFieldBlock>
+
+              <FormFieldBlock
+                label="المنطقة"
+                name="addressDistrictCode"
+              >
+                <select
+                  disabled={!values.addressProvinceCode}
+                  name="addressDistrictCode"
+                  id="addressDistrictCode"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.addressDistrictCode && touched.addressDistrictCode ? "border-red-500" : "border-gray-300"
+                  }`}
+                  value={values.addressDistrictCode}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    const district = districts.find(
+                      (d) => String(d.districtCode) === String(code),
+                    );
+                    setFieldValue("addressDistrictCode", code);
+                    setFieldValue(
+                      "addressDistrictName",
+                      district?.districtName || "",
+                    );
+
+                    setFieldValue("addressNeighborhoodCode", "");
+                    setFieldValue("addressNeighborhoodName", "");
+                    setFieldValue("addressStreetCode", "");
+                    setFieldValue("addressStreetName", "");
+                    setFieldValue("addressOutsideDoorNo", "");
+                    setFieldValue("addressInsideDoorNo", "");
+                    setFieldValue("address", "");
+                  }}
+                >
+                  <option value="">يرجى اختيار المنطقة</option>
+                  {districts.map((d) => (
+                    <option key={d.districtCode} value={d.districtCode}>
+                      {d.districtName}
+                    </option>
+                  ))}
+                </select>
+              </FormFieldBlock>
+
+              <FormFieldBlock
+                label="المحلة"
+                name="addressDistrictCode"
+              >
+                <select
+                  disabled={!values.addressDistrictCode}
+                  name="addressNeighborhoodCode"
+                  id="addressNeighborhoodCode"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.addressNeighborhoodCode && touched.addressNeighborhoodCode ? "border-red-500" : "border-gray-300"
+                  }`}
+                  value={values.addressNeighborhoodCode}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    const nh = neighborhoods.find(
+                      (n) => String(n.neighborhoodCode) === String(code),
+                    );
+                    setFieldValue("addressNeighborhoodCode", code);
+                    setFieldValue(
+                      "addressNeighborhoodName",
+                      nh?.neighborhoodName || "",
+                    );
+
+                    setFieldValue("addressStreetCode", "");
+                    setFieldValue("addressStreetName", "");
+                    setFieldValue("addressOutsideDoorNo", "");
+                    setFieldValue("addressInsideDoorNo", "");
+                    setFieldValue("address", "");
+                  }}
+                >
+                  <option value="">يرجى اختيار المحلة</option>
+                  {neighborhoods.map((n) => (
+                    <option key={n.neighborhoodCode} value={n.neighborhoodCode}>
+                      {n.neighborhoodName}
+                    </option>
+                  ))}
+                </select>
+              </FormFieldBlock>
+
+              <FormFieldBlock
+                label="الشارع"
+                name="addressStreetName"
+              >
+                <Field
+                  type="text"
+                  name="addressStreetName"
+                  id="addressStreetName"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.addressStreetName && touched.addressStreetName ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="اكتب اسم الشارع"
+                  onChange={(e) => {
+                    const streetName = e.target.value;
+                    setFieldValue("addressStreetCode", "");
+                    setFieldValue("addressStreetName", streetName);
+
+                    const nextAddress = buildAddressString({
+                      addressProvinceName: values.addressProvinceName,
+                      addressDistrictName: values.addressDistrictName,
+                      addressNeighborhoodName: values.addressNeighborhoodName,
+                      addressStreetName: streetName,
+                      addressOutsideDoorNo: values.addressOutsideDoorNo,
+                      addressInsideDoorNo: values.addressInsideDoorNo,
+                    });
+                    setFieldValue("address", nextAddress);
+                  }}
+                />
+              </FormFieldBlock>
+
+              <FormFieldBlock
+                label="رقم الباب الخارجي"
+                name="addressOutsideDoorNo"
+              >
+                <Field
+                  type="text"
+                  name="addressOutsideDoorNo"
+                  id="addressOutsideDoorNo"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.addressOutsideDoorNo && touched.addressOutsideDoorNo ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="اكتب رقم الباب الخارجي"
+                  onChange={(e) => {
+                    const nextOutside = e.target.value;
+                    setFieldValue("addressOutsideDoorNo", nextOutside);
+
+                    const nextAddress = buildAddressString({
+                      addressProvinceName: values.addressProvinceName,
+                      addressDistrictName: values.addressDistrictName,
+                      addressNeighborhoodName: values.addressNeighborhoodName,
+                      addressStreetName: values.addressStreetName,
+                      addressOutsideDoorNo: nextOutside,
+                      addressInsideDoorNo: values.addressInsideDoorNo,
+                    });
+                    setFieldValue("address", nextAddress);
+                  }}
+                />
+              </FormFieldBlock>
+
+              <FormFieldBlock
+                label="رقم الباب الداخلي"
+                name="addressInsideDoorNo"
+              >
+                <Field
+                  type="text"
+                  name="addressInsideDoorNo"
+                  id="addressInsideDoorNo"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.addressInsideDoorNo && touched.addressInsideDoorNo ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="اكتب رقم الباب الداخلي"
+                  onChange={(e) => {
+                    const nextInside = e.target.value;
+                    setFieldValue("addressInsideDoorNo", nextInside);
+
+                    const nextAddress = buildAddressString({
+                      addressProvinceName: values.addressProvinceName,
+                      addressDistrictName: values.addressDistrictName,
+                      addressNeighborhoodName: values.addressNeighborhoodName,
+                      addressStreetName: values.addressStreetName,
+                      addressOutsideDoorNo: values.addressOutsideDoorNo,
+                      addressInsideDoorNo: nextInside,
+                    });
+                    setFieldValue("address", nextAddress);
+                  }}
+                />
+              </FormFieldBlock>
+            </div>
+          </>
+        )}
 
         <FormFieldBlock
           label="ملاحظة إضافية (اختياري)"
@@ -61,9 +342,10 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
           />
         </FormFieldBlock>
 
-        <div className="space-y-4">
+        {!isInquiry && (
+          <div className="space-y-4">
           <label className="block text-right text-gray-700 font-medium md:text-lg">
-            صورة فاتورة (كهرباء، ماء، غاز، أو إنترنت)
+            ارفق صورة عن عنوانك (عقد, او فاتورة ماء او فاتورة غاز...)
           </label>
           <div
             className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer group ${
@@ -206,10 +488,8 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
               </div>
             )}
           </div>
-          <p className="text-sm text-gray-500 text-right">
-            يرجى رفع صورة واضحة لفاتورتك (PNG, JPG, JPEG - حد أقصى 5MB)
-          </p>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

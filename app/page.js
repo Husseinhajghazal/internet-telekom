@@ -34,7 +34,10 @@ export default function Home() {
             size="large"
             className="font-semibold lg:font-bold rounded-lg hover:scale-105 w-full sm:w-auto min-w-50"
           >
-            <Link href="/apply" className="block w-full h-full py-1">
+            <Link
+              href="/internet-basvuru-formu"
+              className="block w-full h-full py-1"
+            >
               سجل الأن
             </Link>
           </Button>
