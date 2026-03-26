@@ -95,7 +95,7 @@ const useApplicationForm = () => {
 
       contractPreference:
         step === 4 && values?.serviceType === "newline"
-          ? Yup.string().required("يرجى اختيار نوع العروض")
+          ? Yup.string().required("يرجى اختيار نوع العرض")
           : Yup.string(),
 
       selectedService:

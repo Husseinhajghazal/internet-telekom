@@ -20,8 +20,8 @@ export default function Home() {
           />
         </div>
 
-        <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight animate-fade-in-up">
-          أهلاً وسهلاً بك في إنترنت تيليكوم
+        <h1 className="text-lg md:text-3xl lg:text-5xl font-bold text-gray-800 leading-tight animate-fade-in-up">
+          أهلاً وسهلاً بك في شركة إنترنت تيليكوم
         </h1>
 
         <p className="text-base md:text-xl text-gray-600 leading-relaxed max-w-lg animate-fade-in-up">
@@ -38,7 +38,7 @@ export default function Home() {
               href="/internet-basvuru-formu"
               className="block w-full h-full py-1"
             >
-              سجل الأن
+              تقديم طلب الآن
             </Link>
           </Button>
           <Button

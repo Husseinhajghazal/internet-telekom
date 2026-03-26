@@ -42,10 +42,10 @@ const SuccessStep = ({ submissionInfo }) => {
         {/* Success Message */}
         <div className="space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
-            تم إرسال طلبك بنجاح!
+            تم إستلام طلبك بنجاح!
           </h1>
           <p className="text-xl text-gray-600">
-            شكراً لك على تقديم طلبك عن طريق إنترنت تيليكوم
+            شكراً لك على تقديم الطلب
           </p>
         </div>
 
@@ -82,7 +82,7 @@ const SuccessStep = ({ submissionInfo }) => {
                   <span className="text-blue-600 font-bold text-sm">1</span>
                 </div>
                 <span className="text-gray-700">
-                  سيتم مراجعة طلبك من قبل فريقنا
+                  سيتم مراجعة طلبك من قبل موظفينا
                 </span>
               </div>
               <div className="flex items-center gap-3">

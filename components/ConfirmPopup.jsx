@@ -54,7 +54,7 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
             {confirmValues?.serviceType === "newline" && (
               <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
                 <div className="text-sm text-gray-500 font-bold">
-                  نوع العروض
+                  نوع العرض
                 </div>
                 <div className="text-gray-800 font-semibold">
                   {describeContractPreference(

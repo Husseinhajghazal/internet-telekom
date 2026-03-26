@@ -14,8 +14,8 @@ const Button = ({
 
   const variants = {
     primary:
-      "bg-linear-to-r from-[#18a2e3] to-[#0d8bc9] text-white shadow-lg hover:shadow-xl",
-    secondary: "bg-gray-200 text-gray-700 hover:bg-gray-300",
+      "bg-linear-to-r from-[#18a2e3] to-[#5898b7] text-white shadow-lg hover:shadow-xl",
+    secondary: "bg-linear-to-r from-[#f36802] to-[#ffb245] text-white shadow-lg hover:shadow-xl",
     icon: "p-2 text-gray-600 hover:bg-gray-100 rounded-xl",
   };
 

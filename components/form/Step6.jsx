@@ -110,7 +110,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 اختر عنوانك
               </h3>
               <p className="text-sm text-gray-500 text-right">
-                الولاية، المنطقة، المحلة، الشارع، رقم البناء، الباب الداخلي
+                الولاية، المنطقة، المحلة، الشارع، رقم البناء، رقم الشقة
               </p>
             </div>
 
@@ -298,7 +298,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
               </FormFieldBlock>
 
               <FormFieldBlock
-                label="رقم الباب الداخلي"
+                label="رقم الشقة"
                 name="addressInsideDoorNo"
               >
                 <Field
@@ -308,7 +308,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
                     errors.addressInsideDoorNo && touched.addressInsideDoorNo ? "border-red-500" : "border-gray-300"
                   }`}
-                  placeholder="اكتب رقم الباب الداخلي"
+                  placeholder="اكتب رقم الباب الداخلي (الشقة)"
                   onChange={(e) => {
                     const nextInside = e.target.value;
                     setFieldValue("addressInsideDoorNo", nextInside);
@@ -340,14 +340,14 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
             id="note"
             rows={3}
             className="w-full outline-0 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right resize-none"
-            placeholder="أي ملاحظات إضافية تريد إضافتها..."
+            placeholder="اكتب هنا اي ملاحظات اخرى تريد اضافتها لنا..."
           />
         </FormFieldBlock>
 
         {!isInquiry && (
           <div className="space-y-4">
           <label className="block text-right text-gray-700 font-medium md:text-lg">
-            ارفق صورة عن عنوانك (عقد, او فاتورة ماء او فاتورة غاز...)
+            أرفق صورة عن عنوانك (عقد ايجار, أو فاتورة ماء أو فاتورة غاز, أو فاتورة كهرباء...)
           </label>
           <div
             className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer group ${
@@ -464,8 +464,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   <div className="absolute inset-0 bg-linear-to-br from-blue-400/20 to-cyan-400/20 rounded-full opacity-0 transition-opacity duration-300"></div>
                 </div>
                 <div className="text-gray-600">
-                  <p className="font-semibold text-lg">اسحب وأفلت الصورة هنا</p>
-                  <p className="text-sm">أو انقر لاختيار الملف</p>
+                  <p className="font-semibold text-lg">اضغط هنا لتحميل الصورة</p>
                 </div>
                 <input
                   type="file"

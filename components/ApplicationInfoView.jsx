@@ -111,7 +111,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
               {describeServiceType(application.serviceType)}
             </Row>
             {application.serviceType === "newline" && (
-              <Row label="نوع العروض">
+              <Row label="نوع العرض">
                 {describeContractPreference(application.contractPreference)}
               </Row>
             )}

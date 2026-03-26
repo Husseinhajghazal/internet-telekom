@@ -131,7 +131,7 @@ const Step4 = ({ values, errors, touched }) => {
   return (
     <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
-        title={showServiceCards ? "اختر الخدمة المناسبة لك" : "اختر نوع العروض"}
+        title={showServiceCards ? "اختر الخدمة المناسبة لك" : "اختر نوع العرض"}
         subTitle={
           showServiceCards
             ? "اختر من القائمة التالية"

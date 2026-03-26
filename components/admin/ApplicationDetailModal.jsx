@@ -143,7 +143,7 @@ export default function ApplicationDetailModal({ application, onClose }) {
               {describeServiceType(application.serviceType)}
             </Row>
             {application.serviceType === "newline" && (
-              <Row label="نوع العروض" icon={<MdDescription size={18} />}>
+              <Row label="نوع العرض" icon={<MdDescription size={18} />}>
                 {describeContractPreference(application.contractPreference)}
               </Row>
             )}
