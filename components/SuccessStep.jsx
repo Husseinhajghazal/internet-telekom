@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "./Button";
+import { formatDate } from "@/utils/general";
 
 const STATUS_LABELS = {
   NOT_COMPLETED: "غير مكتمل",
@@ -9,9 +10,9 @@ const STATUS_LABELS = {
 };
 
 const SuccessStep = ({ submissionInfo }) => {
-  const appCode = submissionInfo?.appCode || "------";
+  const appIndex = submissionInfo?.appIndex ?? "------";
   const createdAtLabel = submissionInfo?.createdAt
-    ? new Date(submissionInfo.createdAt).toLocaleString("ar-SA")
+    ? formatDate(submissionInfo.createdAt)
     : "—";
   const statusLabel = STATUS_LABELS[submissionInfo?.status] || "—";
 
@@ -54,7 +55,7 @@ const SuccessStep = ({ submissionInfo }) => {
             <div className="flex items-center justify-start gap-3">
               <span className="text-gray-700 font-medium">رقم الطلب:</span>
               <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">
-                #{appCode}
+                {appIndex}
               </span>
             </div>
             <div className="flex items-center justify-start gap-3">
@@ -88,7 +89,7 @@ const SuccessStep = ({ submissionInfo }) => {
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-sm">2</span>
                 </div>
-                <span className="text-gray-700">سنتواصل معك خلال 24 ساعة</span>
+                <span className="text-gray-700">سنتواصل معك في اسرع وقت ممكن</span>
               </div>
             </div>
           </div>
@@ -101,21 +102,12 @@ const SuccessStep = ({ submissionInfo }) => {
               هل تحتاج مساعدة؟
             </h4>
             <p className="text-gray-600">
-              تواصل معنا على الرقم:{" "}
+              تواصل معنا على واتساب:{" "}
               <a
-                href="tel:00905387345820"
+                href="https://wa.me/2126112122"
                 className="font-bold text-blue-600 block md:inline"
               >
-                +90 (538) 734-5820
-              </a>
-            </p>
-            <p className="text-gray-600">
-              أو عبر البريد الإلكتروني:{" "}
-              <a
-                href="mailto:support@telekom.com"
-                className="font-bold text-blue-600"
-              >
-                support@telekom.com
+                02126112122
               </a>
             </p>
           </div>
@@ -127,7 +119,7 @@ const SuccessStep = ({ submissionInfo }) => {
             طلب جديد
           </Button>
           <Button variant="secondary" size="large" onClick={() => window.history.back()}>
-            العودة للرئيسية
+            الصفحة الرئيسية
           </Button>
         </div>
       </div>

@@ -162,10 +162,10 @@ const useApplicationForm = () => {
       return { error: true };
     }
 
-    /** Under-review: API returns appCode only (no application). Resume/created always include application. */
-    if (data.appCode && !data.application) {
+    /** Under-review: API returns appIndex only (no application). Resume/created always include application. */
+    if (data.appIndex && !data.application) {
       router.push(
-        `/internet-basvuru-formu/status/${String(data.appCode).trim().toUpperCase()}`,
+        `/internet-basvuru-formu/status/${String(data.appIndex).trim()}`,
       );
       return { redirected: true };
     }

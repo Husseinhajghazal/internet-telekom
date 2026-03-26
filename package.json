@@ -13,6 +13,7 @@
     "@prisma/client": "^6.5.0",
     "formik": "^2.4.9",
     "lottie-web": "^5.12.2",
+    "moment": "^2.30.1",
     "next": "16.1.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",

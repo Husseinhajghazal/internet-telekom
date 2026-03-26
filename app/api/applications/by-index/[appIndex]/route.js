@@ -3,7 +3,7 @@ import prisma from "../../../../../lib/prisma";
 
 const applicationSelect = {
   id: true,
-  appCode: true,
+  appIndex: true,
   status: true,
   step: true,
   name: true,
@@ -23,13 +23,18 @@ const applicationSelect = {
 export async function GET(request, { params }) {
   try {
     const resolvedParams = await params;
-    const appCode = resolvedParams?.appCode?.trim()?.toUpperCase();
-    if (!appCode || appCode.length !== 6) {
-      return NextResponse.json({ error: "رمز الطلب غير صالح." }, { status: 400 });
+    const raw = resolvedParams?.appIndex;
+    const appIndex = Number(raw);
+
+    if (!Number.isInteger(appIndex) || appIndex < 1) {
+      return NextResponse.json(
+        { error: "رقم الطلب غير صالح." },
+        { status: 400 },
+      );
     }
 
     const application = await prisma.application.findUnique({
-      where: { appCode },
+      where: { appIndex },
       select: applicationSelect,
     });
 
@@ -45,3 +50,4 @@ export async function GET(request, { params }) {
     );
   }
 }
+

@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import {
-  generateAppCode,
   normalizeNameForMatch,
   normalizePhoneForMatch,
 } from "../../../../lib/application";
 
 const applicationSelect = {
   id: true,
-  appCode: true,
+  appIndex: true,
   status: true,
   step: true,
   name: true,
@@ -36,7 +35,7 @@ async function findMatchesByNameAndPhone(name, phone) {
   const rows = await prisma.$queryRaw`
     SELECT
       "id",
-      "appCode",
+      "appIndex",
       "status",
       "step",
       "name",
@@ -52,12 +51,20 @@ async function findMatchesByNameAndPhone(name, phone) {
       "createdAt",
       "updatedAt"
     FROM "Application"
-    WHERE regexp_replace("phone", '[^0-9]', '', 'g') = ${nPhone}
+    WHERE "phone" = ${nPhone}
     AND lower(trim("name")) = lower(trim(${nName}))
     ORDER BY "updatedAt" DESC
   `;
 
   return Array.isArray(rows) ? rows : [];
+}
+
+async function getNextAppIndex() {
+  const latest = await prisma.application.findFirst({
+    orderBy: { appIndex: "desc" },
+    select: { appIndex: true },
+  });
+  return (latest?.appIndex ?? 0) + 1;
 }
 
 export async function POST(request) {
@@ -87,16 +94,17 @@ export async function POST(request) {
     if (underReview) {
       return NextResponse.json({
         action: "redirect",
-        appCode: underReview.appCode,
+        appIndex: underReview.appIndex,
       });
     }
 
     let application = null;
     for (let attempt = 0; attempt < 5; attempt += 1) {
       try {
+        const nextAppIndex = await getNextAppIndex();
         application = await prisma.application.create({
           data: {
-            appCode: generateAppCode(),
+            appIndex: nextAppIndex,
             name,
             phone,
             status: "NOT_COMPLETED",

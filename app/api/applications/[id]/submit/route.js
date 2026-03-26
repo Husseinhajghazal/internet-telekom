@@ -32,7 +32,7 @@ export async function POST(request, { params }) {
 
     return NextResponse.json({
       id: updated.id,
-      appCode: updated.appCode,
+      appIndex: updated.appIndex,
       status: updated.status,
       step: updated.step,
       createdAt: updated.createdAt,

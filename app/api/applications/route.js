@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
-import { generateAppCode } from "../../../lib/application";
+
+async function getNextAppIndex() {
+  const latest = await prisma.application.findFirst({
+    orderBy: { appIndex: "desc" },
+    select: { appIndex: true },
+  });
+  return (latest?.appIndex ?? 0) + 1;
+}
 
 export async function POST(request) {
   try {
@@ -18,9 +25,10 @@ export async function POST(request) {
     let application = null;
     for (let attempt = 0; attempt < 5; attempt += 1) {
       try {
+        const nextAppIndex = await getNextAppIndex();
         application = await prisma.application.create({
           data: {
-            appCode: generateAppCode(),
+            appIndex: nextAppIndex,
             name,
             phone,
             status: "NOT_COMPLETED",
@@ -28,7 +36,7 @@ export async function POST(request) {
           },
           select: {
             id: true,
-            appCode: true,
+            appIndex: true,
             status: true,
             step: true,
             createdAt: true,

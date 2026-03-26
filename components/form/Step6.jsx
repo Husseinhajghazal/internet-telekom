@@ -5,6 +5,8 @@ import { Field } from "formik";
 import { MdPhoneInTalk } from "react-icons/md";
 import { TbFileInvoiceFilled } from "react-icons/tb";
 import FormFieldBlock from "../FormFieldBlock";
+import StepHeader from "../StepHeader";
+import LottieAnimation from "../LottieAnimation";
 
 const Step6 = ({ values, errors, touched, setFieldValue }) => {
   const isInquiry = values.serviceType === "inquiry";
@@ -42,7 +44,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
       ? `, iç kapı no: ${insideDoorNo}`
       : "";
 
-    return `${addressProvinceName}, ${addressDistrictName}, ${addressNeighborhoodName}, ${addressStreetName}, dış kapı no: ${outsideDoorNo}${insidePart}`;
+    return `${addressProvinceName}, ${addressDistrictName}, ${addressNeighborhoodName}, ${addressStreetName}, bina no: ${outsideDoorNo}${insidePart}`;
   };
 
   useEffect(() => {
@@ -88,17 +90,17 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
-      <div className="text-center space-y-3">
-        <div className="text-6xl mb-4">
-          <MdPhoneInTalk className="inline-block text-[#18a2e3]" size={60} />
-        </div>
-        <h2 className="text-xl md:text-4xl font-bold text-gray-800">
-          أكمل إدخال معلوماتك
-        </h2>
-        <p className="text-gray-600 md:text-lg">
-          يرجى إكمال البيانات المطلوبة لمعالجة طلبك
-        </p>
-      </div>
+      <StepHeader
+        title="أكمل إدخال معلوماتك"
+        subTitle="يرجى إكمال البيانات المطلوبة لمعالجة طلبك"
+      >
+        <LottieAnimation
+          path="/animations/registration.json"
+          width={150}
+          height={150}
+          className="inline-block"
+        />
+      </StepHeader>
 
       <div className="space-y-4 md:space-y-8 md:px-6">
         {!isInquiry && (
@@ -108,7 +110,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 اختر عنوانك
               </h3>
               <p className="text-sm text-gray-500 text-right">
-                الولاية، المنطقة، المحلة، الشارع، رقم الباب الخارجي، الباب الداخلي
+                الولاية، المنطقة، المحلة، الشارع، رقم البناء، الباب الداخلي
               </p>
             </div>
 
@@ -267,7 +269,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
               </FormFieldBlock>
 
               <FormFieldBlock
-                label="رقم الباب الخارجي"
+                label="رقم البناء"
                 name="addressOutsideDoorNo"
               >
                 <Field
@@ -277,7 +279,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
                     errors.addressOutsideDoorNo && touched.addressOutsideDoorNo ? "border-red-500" : "border-gray-300"
                   }`}
-                  placeholder="اكتب رقم الباب الخارجي"
+                  placeholder="اكتب رقم البناء"
                   onChange={(e) => {
                     const nextOutside = e.target.value;
                     setFieldValue("addressOutsideDoorNo", nextOutside);

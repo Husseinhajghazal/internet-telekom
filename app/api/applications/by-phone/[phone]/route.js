@@ -4,7 +4,7 @@ import { formatPhoneNumber } from "@/utils/general";
 
 const applicationSelect = {
   id: true,
-  appCode: true,
+  appIndex: true,
   status: true,
   step: true,
   name: true,

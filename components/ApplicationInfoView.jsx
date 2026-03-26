@@ -11,6 +11,7 @@ import {
   maskName,
   maskPhone,
   maskAddress,
+  formatDate,
 } from "../utils/general";
 
 const ACCENT = "#18a2e3";
@@ -70,7 +71,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
 
   const statusLabel = STATUS_LABELS[application.status] || application.status;
   const createdAtLabel = application.createdAt
-    ? new Date(application.createdAt).toLocaleString("ar-SA")
+    ? formatDate(application.createdAt)
     : "—";
 
   return (
@@ -80,7 +81,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             تفاصيل الطلب
           </h1>
-          <p className="text-gray-600">رقم الطلب: #{application.appCode}</p>
+          <p className="text-gray-600">رقم الطلب: {application.appIndex}</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 space-y-4">

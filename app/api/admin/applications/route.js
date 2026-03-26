@@ -43,21 +43,19 @@ function buildWhere(searchParams) {
 
   const q = searchParams.get("q")?.trim();
   if (q) {
-    const codePart = q
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, "")
-      .slice(0, 6);
     const digits = q.replace(/\D/g, "");
     const orCond = [
       { name: { contains: q, mode: "insensitive" } },
       { phone: { contains: q, mode: "insensitive" } },
     ];
-    if (codePart.length > 0) {
-      orCond.push({ appCode: { contains: codePart, mode: "insensitive" } });
+    // `appIndex` is an integer, so we can only do an exact match here.
+    if (digits.length > 0) {
+      const idx = Number(digits);
+      if (Number.isInteger(idx) && idx > 0) {
+        orCond.push({ appIndex: idx });
+      }
     }
-    if (digits.length >= 3) {
-      orCond.push({ phone: { contains: digits } });
-    }
+    if (digits.length >= 3) orCond.push({ phone: { contains: digits } });
     andConditions.push({ OR: orCond });
   }
 

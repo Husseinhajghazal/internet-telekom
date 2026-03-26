@@ -11,7 +11,7 @@ const UserAgreementPopup = ({ agreementText, handleCancel }) => {
             onClick={handleCancel}
             className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-100"
           >
-            إغلاق
+            X
           </button>
           <h3 className="text-lg font-bold text-slate-800 sm:text-xl">
             اتفاقية المستخدم

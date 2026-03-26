@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 const describeServiceType = (serviceType = "") => {
   if (serviceType === "newline") return "خط جديد";
   if (serviceType === "services") return "خدمات";
@@ -170,6 +172,23 @@ const maskAddress = (address = "") => {
   return maskValue(address.trim(), 5, 0);
 };
 
+function formatDate(date, type = '2') {
+	const curDate = new Date(date);
+	let dt;
+	if (type == '1') {
+		dt = moment(curDate).format('DD.MM.YYYY');
+	} else if (type == '2') {
+		dt = moment(curDate).format('YYYY-MM-DD HH:mm');
+	} else if (type == '3') {
+		dt = moment(curDate).format('YYYY-MM-DD  HH:mm:ss.000');
+	} else if (type == '4') {
+		dt = moment(curDate).format('YYYY-MM-DD');
+	} else if (type == '5') {
+		dt = moment(curDate).format('HH:mm');
+	}
+	return dt;
+}
+
 export {
   describeContractPreference,
   describeSelectedPackage,
@@ -184,4 +203,5 @@ export {
   maskPhone,
   maskName,
   maskAddress,
+  formatDate
 };

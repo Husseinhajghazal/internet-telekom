@@ -6,20 +6,22 @@ import ApplicationInfoView from "../../../../components/ApplicationInfoView";
 
 const ApplicationStatusPage = () => {
   const params = useParams();
-  const appCode = params?.appCode;
+  const appIndex = params?.appIndex;
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!appCode) return;
+    if (!appIndex) return;
 
     let cancelled = false;
     (async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/applications/by-code/${encodeURIComponent(appCode)}`);
+        const res = await fetch(
+          `/api/applications/by-index/${encodeURIComponent(appIndex)}`,
+        );
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(data.error || "تعذر تحميل الطلب.");
@@ -35,7 +37,7 @@ const ApplicationStatusPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [appCode]);
+  }, [appIndex]);
 
   return (
     <ApplicationInfoView application={application} loading={loading} error={error} />
@@ -43,3 +45,4 @@ const ApplicationStatusPage = () => {
 };
 
 export default ApplicationStatusPage;
+

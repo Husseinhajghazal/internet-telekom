@@ -19,6 +19,7 @@ import {
   describeSelectedPackage,
   describeSelectedService,
   describeServiceType,
+  formatDate,
 } from "../../utils/general";
 
 const ACCENT = "#18a2e3";
@@ -58,10 +59,10 @@ export default function ApplicationDetailModal({ application, onClose }) {
 
   const statusLabel = STATUS_LABELS[application.status] || application.status;
   const createdAtLabel = application.createdAt
-    ? new Date(application.createdAt).toLocaleString("ar-SA")
+    ? formatDate(application.createdAt)
     : "—";
   const updatedAtLabel = application.updatedAt
-    ? new Date(application.updatedAt).toLocaleString("ar-SA")
+    ? formatDate(application.updatedAt)
     : "—";
 
   return (
@@ -92,7 +93,7 @@ export default function ApplicationDetailModal({ application, onClose }) {
               id="detail-title"
               className="text-xl md:text-2xl font-extrabold tracking-tight"
             >
-              #{application.appCode}
+              #{application.appIndex}
             </h2>
             <p className="text-sm text-white/85">عرض كامل للبيانات المسجّلة</p>
           </div>
@@ -205,7 +206,7 @@ export default function ApplicationDetailModal({ application, onClose }) {
               background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
             }}
           >
-            إغلاق
+            X
           </Button>
         </div>
       </div>

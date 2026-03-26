@@ -28,7 +28,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "cancel",
       selected: values.selectedService === "cancel",
-      icon: MdCancel,
+      icon: '/animations/Cross,%20Close,%20Cancel%20Icon%20Animation.json',
       title: "إبطال خط الإنترنت",
       description: "",
       size: "small",
@@ -41,7 +41,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "transfer-name",
       selected: values.selectedService === "transfer-name",
-      icon: MdPerson,
+      icon: '/animations/Photo%20ID%20Scan%20loader.json',
       title: "نقل ملكية خط الإنترنت",
       description: "",
       size: "small",
@@ -54,21 +54,8 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "transfer-address",
       selected: values.selectedService === "transfer-address",
-      icon: MdLocationOn,
+      icon: '/animations/Address.json',
       title: "نقل خط الإنترنت لعنوان آخر",
-      description: "",
-      size: "small",
-      color: "orange",
-      titleSize: "text-lg",
-      centerTitle: true,
-      hidden: !showServiceCards,
-    },
-    {
-      name: "selectedService",
-      value: "renew",
-      selected: values.selectedService === "renew",
-      icon: MdRefresh,
-      title: "تجديد عقد خط الإنترنت",
       description: "",
       size: "small",
       color: "green",
@@ -78,9 +65,22 @@ const Step4 = ({ values, errors, touched }) => {
     },
     {
       name: "selectedService",
+      value: "renew",
+      selected: values.selectedService === "renew",
+      icon: "/animations/Sign%20contract%20-%20contract%20approved.json",
+      title: "تجديد عقد خط الإنترنت",
+      description: "",
+      size: "small",
+      color: "orange",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showServiceCards,
+    },
+    {
+      name: "selectedService",
       value: "freeze",
       selected: values.selectedService === "freeze",
-      icon: MdAcUnit,
+      icon: "/animations/Snowflake%20loading%20screen.json",
       title: "تجميد خط الإنترنت",
       description: "",
       size: "small",
@@ -93,7 +93,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "upgrade",
       selected: values.selectedService === "upgrade",
-      icon: MdUpgrade,
+      icon: "/animations/Update%20app.json",
       title: "تحديث الخدمة الحالية",
       description: "",
       size: "small",
@@ -138,21 +138,12 @@ const Step4 = ({ values, errors, touched }) => {
             : "هل تفضل عروض مع عقد أم بدون عقد؟"
         }
       >
-        {showServiceCards ? (
-          <LottieAnimation
-            path="/animations/Thinking.json"
-            width={150}
-            height={150}
-            className="inline-block"
-          />
-        ) : (
-          <LottieAnimation
-            path="/animations/Customer%20Service%20Man%20Waving%20(Mobile%20Phone%20Repair).json"
-            width={150}
-            height={150}
-            className="inline-block"
-          />
-        )}
+        <LottieAnimation
+          path="/animations/Thinking.json"
+          width={150}
+          height={150}
+          className="inline-block"
+        />
       </StepHeader>
 
       <div className="grid md:grid-cols-2 gap-3 md:gap-6 md:px-6">

@@ -6,11 +6,8 @@ import { useRouter } from "next/navigation";
 import { MdPhone, MdOutlineTag } from "react-icons/md";
 import Button from "../../components/Button";
 
-const normalizeCode = (value) =>
-  String(value || "")
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .toUpperCase()
-    .slice(0, 6);
+const normalizeIndex = (value) =>
+  String(value || "").replace(/\D/g, "");
 
 const normalizePhone = (value = "") => {
   let formatted = value.replace(/\D/g, "");
@@ -54,9 +51,10 @@ export default function InquiryPage() {
 
     try {
       if (searchMode === "code") {
-        const normalized = normalizeCode(code);
-        if (normalized.length !== 6) {
-          setError("يرجى إدخال رقم الطلب المكوّن من 6 أحرف أو أرقام.");
+        const normalized = normalizeIndex(code);
+        const idx = Number(normalized);
+        if (!Number.isInteger(idx) || idx < 1) {
+          setError("يرجى إدخال رقم الطلب (عدد صحيح أكبر من 0).");
           setLoading(false);
           return;
         }
@@ -82,8 +80,8 @@ export default function InquiryPage() {
           return;
         }
 
-        // Redirect to the status page with the app code
-        router.push(`/internet-basvuru-formu/status/${data.appCode}`);
+        // Redirect to the status page with the app index
+        router.push(`/internet-basvuru-formu/status/${data.appIndex}`);
       }
     } catch (err) {
       setError("حدث خطأ، يرجى المحاولة مرة أخرى.");
@@ -155,16 +153,15 @@ export default function InquiryPage() {
               <input
                 id="app-code"
                 type="text"
-                inputMode="text"
+                inputMode="numeric"
                 autoComplete="off"
-                autoCapitalize="characters"
-                maxLength={6}
+                maxLength={10}
                 value={code}
                 onChange={(e) => {
-                  setCode(normalizeCode(e.target.value));
+                  setCode(normalizeIndex(e.target.value));
                   setError(null);
                 }}
-                placeholder="مثال: A1B2C3"
+                placeholder="مثال: 25"
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl text-center text-xl font-mono tracking-widest focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent outline-none"
                 dir="ltr"
               />
@@ -224,7 +221,7 @@ export default function InquiryPage() {
               className="flex-1 sm:flex-none min-w-35"
               onClick={() => router.push("/")}
             >
-              الرئيسية
+              الصفحة الرئيسية
             </Button>
           </div>
         </form>

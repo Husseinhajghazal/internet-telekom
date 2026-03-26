@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { MdRefresh, MdWifi } from "react-icons/md";
+import { MdRefresh } from "react-icons/md";
 import PackageSpeedGrid from "./PackageSpeedGrid";
+import LottieAnimation from "./LottieAnimation";
 
 const PackageSection = ({
   accent = "blue",
@@ -42,11 +43,23 @@ const PackageSection = ({
 
       <div className="relative py-6 md:py-8 space-y-7 md:space-y-8">
         <div className="text-center space-y-4">
-          <div
-            className={`mx-auto inline-flex items-center justify-center w-16 h-16 bg-linear-to-br ${ringClass} rounded-full shadow-lg ring-1 ring-white/40`}
-          >
-            <MdWifi className="text-white text-2xl" />
-          </div>
+          {
+            packageKind === 'family' ? (
+              <LottieAnimation
+                path="/animations/Discount%20Coupon.json"
+                width={120}
+                height={120}
+                className="inline-block"
+              />
+            ) : (
+              <LottieAnimation
+              path="/animations/Network%20Speed%20-%20Animation.json"
+              width={120}
+              height={120}
+              className="inline-block"
+            />
+            )
+          }
           <h3 className={`text-xl md:text-3xl font-bold ${titleClass}`}>{title}</h3>
           <p className="text-gray-600 md:text-lg max-w-2xl mx-auto">{description}</p>
         </div>

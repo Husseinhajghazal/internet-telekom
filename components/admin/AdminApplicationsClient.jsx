@@ -24,6 +24,7 @@ import {
   describeSelectedPackage,
   describeSelectedService,
   describeServiceType,
+  formatDate,
 } from "@/utils/general";
 
 const ACCENT = "#18a2e3";
@@ -140,7 +141,7 @@ export default function AdminApplicationsClient() {
       // Prepare data for Excel
       const worksheetData = [
         [
-          "الرمز",
+          "رقم الطلب",
           "الاسم",
           "رقم الهاتف",
           "الحالة",
@@ -153,11 +154,11 @@ export default function AdminApplicationsClient() {
           "ملاحظة",
         ],
         ...allApplications.map((app) => [
-          app.appCode,
+          app.appIndex,
           app.name,
           app.phone,
           STATUS_LABELS[app.status] || app.status,
-          app.createdAt ? new Date(app.createdAt).toLocaleString("ar-SA") : "",
+          app.createdAt ? formatDate(app.createdAt) : "",
           app.address,
           app.hasInternet ? "نعم" : "لا",
           describeServiceType(app.serviceType),
@@ -325,7 +326,7 @@ export default function AdminApplicationsClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
           <div className="lg:col-span-4 relative">
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              بحث (الاسم، الرمز، الهاتف)
+              بحث (الاسم، رقم الطلب، الهاتف)
             </label>
             <div className="relative">
               <MdSearch
@@ -434,7 +435,7 @@ export default function AdminApplicationsClient() {
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdOutlineTag size={18} />
-                      الرمز
+                      رقم الطلب
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
@@ -490,7 +491,7 @@ export default function AdminApplicationsClient() {
                         dir="ltr"
                         style={{ color: ACCENT }}
                       >
-                        {app.appCode}
+                      {app.appIndex}
                       </td>
                       <td
                         className="px-3 py-3.5 text-gray-800 max-w-40 truncate font-medium"
@@ -513,7 +514,7 @@ export default function AdminApplicationsClient() {
                       </td>
                       <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                         {app.createdAt
-                          ? new Date(app.createdAt).toLocaleString("ar-SA")
+                          ? formatDate(app.createdAt)
                           : "—"}
                       </td>
                       <td className="px-3 py-2.5">
@@ -539,7 +540,7 @@ export default function AdminApplicationsClient() {
                               setConfirm({
                                 kind: "reject",
                                 appId: app.id,
-                                appCode: app.appCode,
+                                appIndex: app.appIndex,
                               })
                             }
                             className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-800 transition hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -557,7 +558,7 @@ export default function AdminApplicationsClient() {
                               setConfirm({
                                 kind: "complete",
                                 appId: app.id,
-                                appCode: app.appCode,
+                                appIndex: app.appIndex,
                               })
                             }
                             className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-900 transition hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -619,7 +620,7 @@ export default function AdminApplicationsClient() {
         open={!!confirm}
         kind={confirm?.kind === "reject" ? "reject" : "complete"}
         title={confirm?.kind === "reject" ? "رفض الطلب؟" : "إكمال الطلب؟"}
-        message={confirm ? `هل أنت متأكد؟ الطلب #${confirm.appCode}` : ""}
+        message={confirm ? `هل أنت متأكد؟ الطلب #${confirm.appIndex}` : ""}
         confirmLabel={confirm?.kind === "reject" ? "نعم، رفض" : "نعم، إكمال"}
         cancelLabel="إلغاء"
         loading={!!actionId && confirm && actionId === confirm.appId}

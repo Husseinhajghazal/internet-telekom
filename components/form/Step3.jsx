@@ -12,7 +12,7 @@ const Step3 = ({ values, errors, touched }) => {
       name: "serviceType",
       value: "newline",
       selected: values.serviceType === "newline",
-      icon: '/animations/router%20blue%20wifi.json',
+      icon: '/animations/route.json',
       title: "خط جديد",
       description: "طلب خط انترنت جديد",
       size: "large",
