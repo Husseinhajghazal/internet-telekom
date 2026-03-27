@@ -18,7 +18,7 @@ const Card = ({
   centerTitle = false,
   className = "",
 }) => {
-  const sizeClass = size === "large" ? "h-60 md:h-64" : "h-40";
+  const sizeClass = size === "large" ? "h-60 md:h-64" : "h-44";
   const gapClass = size === "large" ? "gap-4" : "gap-3";
 
   const colorClasses = {

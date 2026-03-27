@@ -101,15 +101,14 @@ const SuccessStep = ({ submissionInfo }) => {
             <h4 className="text-lg font-semibold text-gray-800">
               هل تحتاج مساعدة؟
             </h4>
-            <p className="text-gray-600">
-              تواصل معنا على واتساب:{" "}
-              <a
-                href="https://wa.me/2126112122"
-                className="font-bold text-blue-600 block md:inline"
-              >
-                02126112122
-              </a>
-            </p>
+                <a
+                  href="https://wa.me/902126112122"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-xl transition shadow-md shadow-green-500/20"
+                >
+                  تواصل معنا عبر واتساب
+                </a>
           </div>
         </div>
 

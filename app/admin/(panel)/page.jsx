@@ -16,33 +16,6 @@ export default function AdminDashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-12 text-right">
         <div className="space-y-8">
-          {/* <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <span
-                className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-white shadow-md"
-                style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
-              >
-                <MdAdminPanelSettings size={24} />
-              </span>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
-                  مرحباً بك
-                </h1>
-                <p className="text-gray-600 leading-relaxed mt-2 text-sm md:text-base max-w-xl">
-                  إدارة طلبات العملاء — عرض، تفاصيل، رفض أو إكمال الطلب.
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/"
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl cursor-pointer font-bold transition hover:opacity-95 text-sm shrink-0 text-white shadow-md"
-              style={{ background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})` }}
-            >
-              <MdHome size={20} />
-              الموقع الرئيسي
-            </Link>
-          </div> */}
-
           <AdminApplicationsClient />
         </div>
       </main>

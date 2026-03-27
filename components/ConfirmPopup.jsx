@@ -4,7 +4,7 @@ import { MdCancel } from "react-icons/md";
 import Button from "./Button";
 
 import {
-  describeContractPreference,describeSelectedPackage,describeSelectedService,describeServiceType
+  describeContractPreference,describeNoContractTechType,describeSelectedInquiry,describeSelectedPackage,describeSelectedService,describeServiceType,
 } from "../utils/general"
 
 const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
@@ -51,6 +51,17 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
               </div>
             </div>
 
+            {confirmValues?.serviceType === "inquiry" && (
+              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
+                <div className="text-sm text-gray-500 font-bold">
+                  نوع الاستشارة
+                </div>
+                <div className="text-gray-800 font-semibold">
+                  {describeSelectedInquiry(confirmValues?.selectedInquiry)}
+                </div>
+              </div>
+            )}
+
             {confirmValues?.serviceType === "newline" && (
               <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
                 <div className="text-sm text-gray-500 font-bold">
@@ -76,6 +87,36 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
             )}
 
             {confirmValues?.serviceType === "newline" &&
+              confirmValues?.contractPreference === "without" && (
+              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
+                <div className="text-sm text-gray-500 font-bold">
+                  التقنية المختارة
+                </div>
+                <div className="text-gray-800 font-semibold">
+                  {describeNoContractTechType(confirmValues?.noContractTechType)}
+                </div>
+              </div>
+            )}
+
+            {confirmValues?.serviceType === "services" && confirmValues?.internetCompany && (
+              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
+                <div className="text-sm text-gray-500 font-bold">شركة الأنترنت</div>
+                <div className="text-gray-800 font-semibold">
+                  {confirmValues.internetCompany}
+                </div>
+              </div>
+            )}
+
+            {confirmValues?.serviceType === "services" && confirmValues?.subscriptionNo && (
+              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
+                <div className="text-sm text-gray-500 font-bold">رقم الاشتراك</div>
+                <div className="text-gray-800 font-semibold">
+                  {confirmValues.subscriptionNo}
+                </div>
+              </div>
+            )}
+
+            {confirmValues?.serviceType === "newline" &&
               confirmValues?.contractPreference === "with" && (
               <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
                 <div className="text-sm text-gray-500 font-bold">
@@ -88,9 +129,9 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
             )}
 
             {!isInquiry && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
+              <div className="rounded-2xl border border-gray-200 p-4 space-y-2 md:col-span-2">
                 <div className="text-sm text-gray-500 font-bold">العنوان</div>
-                <div className="text-gray-800 font-semibold whitespace-pre-wrap">
+                <div dir="ltr" className="text-gray-800 font-semibold whitespace-pre-wrap">
                   {confirmValues?.address || "—"}
                 </div>
               </div>

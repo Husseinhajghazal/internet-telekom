@@ -3,14 +3,33 @@ import moment from 'moment';
 const describeServiceType = (serviceType = "") => {
   if (serviceType === "newline") return "خط جديد";
   if (serviceType === "services") return "خدمات";
-  if (serviceType === "inquiry") return "استعلام";
+  if (serviceType === "inquiry") return "استشارات";
   return serviceType || "—";
+};
+
+const describeSelectedInquiry = (selectedInquiry = "") => {
+  const map = {
+    "pricing": "استفسار عن الأسعار والعروض",
+    "coverage": "استفسار عن تغطية المنطقة",
+    "technical": "استفسار عن مشكلة تقنية",
+    "general": "استفسار عام",
+  };
+  return map[selectedInquiry] || selectedInquiry || "—";
 };
 
 const describeContractPreference = (contractPreference = "") => {
   if (contractPreference === "with") return "مع عقد";
   if (contractPreference === "without") return "بدون عقد";
   return contractPreference || "—";
+};
+
+const describeNoContractTechType = (techType = "") => {
+  const map = {
+    "vdsl": "VDSL",
+    "fiber": "Fiber",
+    "gigafiber": "GigaFiber",
+  };
+  return map[techType] || techType || "—";
 };
 
 const describeSelectedService = (selectedService = "") => {
@@ -20,7 +39,7 @@ const describeSelectedService = (selectedService = "") => {
     "transfer-address": "نقل خط (تغيير العنوان)",
     renew: "تجديد الاشتراك",
     freeze: "تجميد الاشتراك",
-    upgrade: "تحديث الخدمة الحالية",
+    upgrade: "تحويل من عقد لبدون عقد",
   };
   return map[selectedService] || selectedService || "—";
 };
@@ -82,10 +101,18 @@ const getStepFieldOrder = (step, values) => {
   if (step === 4) {
     if (values?.serviceType === "services") return ["selectedService"];
     if (values?.serviceType === "newline") return ["contractPreference"];
+    if (values?.serviceType === "inquiry") return ["selectedInquiry"];
     return ["contractPreference", "selectedService"];
   }
-  if (step === 5) return ["selectedPackage"];
-  if (step === 6) return values?.serviceType === "inquiry" ? [] : ["address"];
+  if (step === 5) {
+    if (values?.contractPreference === "with") return ["selectedPackage"];
+    return [];
+  }
+  if (step === 6) {
+    if (values?.serviceType === "inquiry") return [];
+    if (values?.serviceType === "services") return ["internetCompany", "address"];
+    return ["address"];
+  }
   return [];
 };
 
@@ -93,14 +120,13 @@ const getNextStep = (step, values) => {
   if (step === 1) return 2;
   if (step === 2) return 3;
   if (step === 3) {
-    if (values.serviceType === "services" || values.serviceType === "newline")
-      return 4;
-    if (values.serviceType === "inquiry") return 6;
+    return 4;
   }
   if (step === 4) {
     if (values.serviceType === "services") return 6;
+    if (values.serviceType === "inquiry") return 6;
     if (values.serviceType === "newline") {
-      return values.contractPreference === "without" ? 6 : 5;
+      return 5;
     }
   }
   if (step === 5) return 6;
@@ -116,9 +142,9 @@ const getPreviousStep = (step, values) => {
   if (step === 6) {
     if (values.serviceType === "services") return 4;
     if (values.serviceType === "newline") {
-      return values.contractPreference === "without" ? 4 : 5;
+      return 5;
     }
-    if (values.serviceType === "inquiry") return 3;
+    if (values.serviceType === "inquiry") return 4;
   }
   return step;
 };
@@ -191,6 +217,8 @@ function formatDate(date, type = '2') {
 
 export {
   describeContractPreference,
+  describeNoContractTechType,
+  describeSelectedInquiry,
   describeSelectedPackage,
   describeSelectedService,
   describeServiceType,

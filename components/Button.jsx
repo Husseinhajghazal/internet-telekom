@@ -13,9 +13,9 @@ const Button = ({
     "cursor-pointer font-bold transition-all duration-300 rounded-xl";
 
   const variants = {
-    primary:
+    primary: "bg-linear-to-r from-[#f36802] to-[#ffb245] text-white shadow-lg hover:shadow-xl",
+    secondary:
       "bg-linear-to-r from-[#18a2e3] to-[#5898b7] text-white shadow-lg hover:shadow-xl",
-    secondary: "bg-linear-to-r from-[#f36802] to-[#ffb245] text-white shadow-lg hover:shadow-xl",
     icon: "p-2 text-gray-600 hover:bg-gray-100 rounded-xl",
   };
 

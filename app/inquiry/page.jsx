@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MdPhone, MdOutlineTag } from "react-icons/md";
+import { GrNotes } from "react-icons/gr";
 import Button from "../../components/Button";
 
 const normalizeIndex = (value) =>
@@ -43,6 +44,18 @@ export default function InquiryPage() {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [adminNotePopup, setAdminNotePopup] = useState(null);
+
+  const handleFetchResult = (data) => {
+    if (data.adminNote) {
+      setAdminNotePopup({
+        note: data.adminNote,
+        appIndex: data.appIndex,
+      });
+    } else {
+      router.push(`/internet-basvuru-formu/status/${data.appIndex}`);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +71,18 @@ export default function InquiryPage() {
           setLoading(false);
           return;
         }
-        router.push(`/internet-basvuru-formu/status/${normalized}`);
+        const res = await fetch(
+          `/api/applications/by-index/${encodeURIComponent(normalized)}`,
+        );
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          setError(data.error || "تعذر العثور على الطلب.");
+          setLoading(false);
+          return;
+        }
+
+        handleFetchResult(data);
       } else {
         // Phone search
         const normalized = phone.replace(/\D/g, "");
@@ -80,8 +104,7 @@ export default function InquiryPage() {
           return;
         }
 
-        // Redirect to the status page with the app index
-        router.push(`/internet-basvuru-formu/status/${data.appIndex}`);
+        handleFetchResult(data);
       }
     } catch (err) {
       setError("حدث خطأ، يرجى المحاولة مرة أخرى.");
@@ -116,7 +139,7 @@ export default function InquiryPage() {
             }}
             className={`flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold rounded-xl transition ${
               searchMode === "code"
-                ? "bg-white text-blue-600 shadow-md"
+                ? "bg-[#f36802] text-white shadow-md"
                 : "text-gray-600 hover:text-gray-800"
             }`}
           >
@@ -131,7 +154,7 @@ export default function InquiryPage() {
             }}
             className={`flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold rounded-xl transition ${
               searchMode === "phone"
-                ? "bg-white text-blue-600 shadow-md"
+                ? "bg-[#f36802] text-white shadow-md"
                 : "text-gray-600 hover:text-gray-800"
             }`}
           >
@@ -235,6 +258,52 @@ export default function InquiryPage() {
           </Link>
         </p>
       </div>
+
+      {/* Admin Note Popup Component */}
+      {adminNotePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            onClick={() => router.push(`/internet-basvuru-formu/status/${adminNotePopup.appIndex}`)}
+            aria-hidden
+          />
+          <div className="relative w-full max-w-sm rounded-[2rem] bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 md:p-8 text-center space-y-6">
+              <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <GrNotes size={32} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-extrabold text-gray-900">رسالة مهمة من الفريق</h3>
+                <p className="text-gray-600 font-medium">بخصوص طلبك رقم {adminNotePopup.appIndex}</p>
+              </div>
+              
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-right">
+                <p className="text-gray-800 font-semibold whitespace-pre-wrap leading-relaxed">
+                  {adminNotePopup.note}
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-2">
+                <Button
+                  variant="primary"
+                  className="w-full justify-center !rounded-xl"
+                  onClick={() => router.push(`/internet-basvuru-formu/status/${adminNotePopup.appIndex}`)}
+                >
+                  استمرار إلى تفاصيل الطلب
+                </Button>
+                <a
+                  href="https://wa.me/902126112122"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-xl transition shadow-md shadow-green-500/20"
+                >
+                  تواصل معنا عبر واتساب
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

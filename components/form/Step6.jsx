@@ -329,6 +329,39 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
           </>
         )}
 
+        {values?.serviceType === "services" &&
+              <FormFieldBlock
+                label="شركة الأنترنت"
+                name="internetCompany"
+              >
+                <Field
+                  type="text"
+                  name="internetCompany"
+                  id="internetCompany"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.internetCompany && touched.internetCompany ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="اكتب اسم شركة الأنترنت التي تستخدمها حالياً"
+                />
+              </FormFieldBlock>
+}
+        {values?.serviceType === "services" &&
+              <FormFieldBlock
+                label="رقم أشتراك او فاتورة الأنترنت"
+                name="subscriptionNo"
+              >
+                <Field
+                  type="text"
+                  name="subscriptionNo"
+                  id="subscriptionNo"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.subscriptionNo && touched.subscriptionNo ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="رقم أشتراك او فاتورة الأنترنت"
+                />
+              </FormFieldBlock>
+}
+
         <FormFieldBlock
           label="ملاحظة إضافية (اختياري)"
           labelClassName="md:text-lg"
@@ -480,12 +513,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     }
                   }}
                 />
-                {/* <label
-                  htmlFor="invoice-upload"
-                  className="inline-block px-8 py-3 bg-linear-to-r from-[#18a2e3] to-[#0d8bc9] text-white rounded-lg cursor-pointer hover:from-[#0d8bc9] hover:to-[#18a2e3] transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  اختر الصورة
-                </label> */}
               </div>
             )}
           </div>

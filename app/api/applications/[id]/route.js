@@ -30,6 +30,10 @@ export async function PATCH(request, { params }) {
         address: formData.get("address"),
         note: formData.get("note"),
         step: formData.get("step"),
+        internetCompany: formData.get("internetCompany"),
+        subscriptionNo: formData.get("subscriptionNo"),
+        selectedInquiry: formData.get("selectedInquiry"),
+        noContractTechType: formData.get("noContractTechType"),
       });
 
       const invoiceFile = formData.get("invoiceFile");

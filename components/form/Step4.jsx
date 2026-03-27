@@ -17,10 +17,16 @@ import LottieAnimation from "../LottieAnimation";
 const Step4 = ({ values, errors, touched }) => {
   const showServiceCards = values.serviceType === "services";
   const showContractCards = values.serviceType === "newline";
-  const errorName = showServiceCards ? "selectedService" : "contractPreference";
+  const showInquiryCards = values.serviceType === "inquiry";
+  const errorName = showServiceCards
+    ? "selectedService"
+    : showInquiryCards
+      ? "selectedInquiry"
+      : "contractPreference";
   const showError = Boolean(
     (errors.selectedService && touched.selectedService) ||
-    (errors.contractPreference && touched.contractPreference),
+    (errors.contractPreference && touched.contractPreference) ||
+    (errors.selectedInquiry && touched.selectedInquiry),
   );
 
   const options = [
@@ -93,8 +99,8 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "upgrade",
       selected: values.selectedService === "upgrade",
-      icon: "/animations/Update%20app.json",
-      title: "تحديث الخدمة الحالية",
+      icon: "/animations/no%20transactions.json",
+      title: "تحويل من عقد لبدون عقد",
       description: "",
       size: "small",
       color: "indigo",
@@ -126,16 +132,76 @@ const Step4 = ({ values, errors, touched }) => {
       titleSize: "text-xl",
       hidden: !showContractCards,
     },
+    {
+      name: "selectedInquiry",
+      value: "pricing",
+      selected: values.selectedInquiry === "pricing",
+      icon: "/animations/Consulting.json",
+      title: "الأسعار والعروض",
+      description: "استفسار عن الأسعار والباقات المتاحة",
+      size: "large",
+      color: "orange",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
+    {
+      name: "selectedInquiry",
+      value: "coverage",
+      selected: values.selectedInquiry === "coverage",
+      icon: "/animations/Address.json",
+      title: "تغطية المنطقة",
+      description: "استفسار عن توفر الخدمة في منطقتك",
+      size: "large",
+      color: "green",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
+    {
+      name: "selectedInquiry",
+      value: "technical",
+      selected: values.selectedInquiry === "technical",
+      icon: "/animations/Customer%20Service%20Man%20Waving%20(Mobile%20Phone%20Repair).json",
+      title: "مشكلة تقنية",
+      description: "استفسار عن عطل أو مشكلة فنية",
+      size: "large",
+      color: "blue",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
+    {
+      name: "selectedInquiry",
+      value: "general",
+      selected: values.selectedInquiry === "general",
+      icon: "/animations/Thinking.json",
+      title: "استفسار عام",
+      description: "أي استفسار آخر تريد طرحه",
+      size: "large",
+      color: "purple",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
   ];
 
   return (
     <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
-        title={showServiceCards ? "اختر الخدمة المناسبة لك" : "اختر نوع العرض"}
+        title={
+          showServiceCards
+            ? "اختر الخدمة المناسبة لك"
+            : showInquiryCards
+              ? "عن ماذا تريد الاستفسار؟"
+              : "اختر نوع العرض"
+        }
         subTitle={
           showServiceCards
             ? "اختر من القائمة التالية"
-            : "هل تفضل عروض مع عقد أم بدون عقد؟"
+            : showInquiryCards
+              ? "اختر نوع الاستشارة المناسبة"
+              : "هل تفضل عروض مع عقد أم بدون عقد؟"
         }
       >
         <LottieAnimation

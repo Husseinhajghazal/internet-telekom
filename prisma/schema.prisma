@@ -29,6 +29,11 @@ model Application {
   address             String?
   note                String?
   invoiceFileUrl      String?
+  internetCompany     String?
+  subscriptionNo      String?
+  selectedInquiry     String?
+  noContractTechType  String?
+  adminNote           String?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 }

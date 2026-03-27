@@ -12,6 +12,8 @@ import {
   maskPhone,
   maskAddress,
   formatDate,
+  describeSelectedInquiry,
+  describeNoContractTechType,
 } from "../utils/general";
 
 const ACCENT = "#18a2e3";
@@ -38,12 +40,15 @@ const statusBadgeClass = (status) => {
   }
 };
 
-const Row = ({ label, children, className = "" }) => (
+const Row = ({ label, children, dir = "rtl", className = "" }) => (
   <div
     className={`rounded-2xl border border-gray-200 p-4 text-right space-y-2 ${className}`}
   >
     <div className="text-sm text-gray-500 font-bold">{label}</div>
-    <div className="text-gray-800 font-semibold whitespace-pre-wrap">
+    <div
+      dir={dir}
+      className="text-gray-800 font-semibold whitespace-pre-wrap"
+    >
       {children}
     </div>
   </div>
@@ -126,7 +131,37 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                   {describeSelectedPackage(application.selectedPackage)}
                 </Row>
               )}
-            <Row label="العنوان" className="md:col-span-2">
+            {application.serviceType === "inquiry" && (
+              <Row className="md:col-span-2" label="الاستفسار">
+                {describeSelectedInquiry(application.selectedInquiry)}
+              </Row>
+            )}
+            {
+              application.serviceType === "newline" &&
+              application.contractPreference === "without" &&
+              (
+                <Row label="نوع التقنية">
+                  {application.noContractTechType ? describeNoContractTechType(application.noContractTechType) : "—"}
+                </Row>
+              )
+            }
+                        {
+                          application.serviceType === "services" && (
+                            <>
+                              <Row
+                                label="اسم شركة الأنترنت"
+                              >
+                              {application.internetCompany ? application.internetCompany : "—"}
+                            </Row>
+                            <Row
+                              label="رقم الاشتراك"
+                            >
+                              {application.subscriptionNo ? application.subscriptionNo : "—"}
+                            </Row>
+                            </>
+                          )
+                        }
+            <Row label="العنوان" dir="ltr" className="md:col-span-2">
               {maskAddress(application.address)}
             </Row>
           </div>

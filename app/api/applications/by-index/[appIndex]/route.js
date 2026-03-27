@@ -16,6 +16,11 @@ const applicationSelect = {
   address: true,
   note: true,
   invoiceFileUrl: true,
+  noContractTechType: true,
+  subscriptionNo: true,
+  selectedInquiry: true,
+  internetCompany: true,
+  adminNote: true,
   createdAt: true,
   updatedAt: true,
 };

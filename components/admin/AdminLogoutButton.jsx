@@ -15,12 +15,12 @@ export default function AdminLogoutButton() {
   return (
     <Button
       type="button"
-      variant="secondary"
+      variant="primary"
       size="medium"
-      className="bg-red-500/20 px-3! group hover:bg-red-500"
+      className="px-3!"
       onClick={handleLogout}
     >
-      <IoIosLogOut className="w-6 h-6 stroke-2 text-red-500 group-hover:text-white duration-300" />
+      <IoIosLogOut className="w-6 h-6 stroke-2 text-white" />
     </Button>
   );
 }

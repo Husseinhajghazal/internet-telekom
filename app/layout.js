@@ -3,7 +3,7 @@ import "./globals.css";
 
 const rubik = Rubik({
   variable: "--font-rubik",
-  subsets: ["latin"],
+  subsets: ["arabic"],
 });
 
 export const metadata = {
@@ -40,7 +40,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl">
-      <body className={`${rubik.variable} antialiased`}>{children}</body>
+      <body className={`${rubik.className} antialiased`}>{children}</body>
     </html>
   );
 }

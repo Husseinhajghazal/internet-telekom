@@ -13,7 +13,7 @@ const Step2 = ({ values, errors, touched }) => {
       value: "no",
       selected: values.hasInternet === "no",
       icon: "/animations/No%20Internet%20Connection.json",
-      title: "لا أملك خط انترنت حاليا",
+      title: "لا أملك خط انترنت",
       description: "أريد تسجيل طلب جديد",
       size: "large",
       color: "red",
@@ -22,8 +22,8 @@ const Step2 = ({ values, errors, touched }) => {
       name: "hasInternet",
       value: "yes",
       selected: values.hasInternet === "yes",
-      icon: "/animations/Wifi%20Signal%20-%20Zortex.json",
-      title: "نعم أملك خط انترنت حاليا",
+      icon: "/animations/Wifi%20on.json",
+      title: "نعم أملك خط انترنت",
       description: "اريد تقديم خدمة او طلب استشارة",
       size: "large",
       color: "green",
@@ -44,7 +44,7 @@ const Step2 = ({ values, errors, touched }) => {
         />
       </StepHeader>
 
-      <div className="grid grid-cols-2 gap-3 md:gap-6 md:px-6">
+      <div className="grid md:grid-cols-2 gap-3 md:gap-6 md:px-6">
         {options.map((option) => (
           <Card
             key={`${option.name}-${option.value}`}

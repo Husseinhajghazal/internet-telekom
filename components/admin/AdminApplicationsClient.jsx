@@ -21,9 +21,11 @@ import * as XLSX from "xlsx";
 import AdminConfirmDialog from "./AdminConfirmDialog";
 import ApplicationDetailModal from "./ApplicationDetailModal";
 import {
+  describeSelectedInquiry,
   describeSelectedPackage,
   describeSelectedService,
   describeServiceType,
+  describeNoContractTechType,
   formatDate,
 } from "@/utils/general";
 
@@ -151,6 +153,10 @@ export default function AdminApplicationsClient() {
           "نوع الطلب",
           "الباقة المختارة",
           "الخدمة المختارة",
+          "الاستفسار",
+          "اسم شركة الأنترنت",
+          "نوع التقنية",
+          "رقم الاشتراك",
           "ملاحظة",
         ],
         ...allApplications.map((app) => [
@@ -164,6 +170,10 @@ export default function AdminApplicationsClient() {
           describeServiceType(app.serviceType),
           describeSelectedPackage(app.selectedPackage),
           describeSelectedService(app.selectedService),
+          describeSelectedInquiry(app.selectedInquiry),
+          describeNoContractTechType(app.noContractTechType) || "—",
+          app.internetCompany || "—",
+          app.subscriptionNo || "—",
           app.note || "",
         ]),
       ];
@@ -564,7 +574,7 @@ export default function AdminApplicationsClient() {
                             className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-900 transition hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             <MdDone size={16} />
-                            إكمال
+                            إتمام
                           </button>
                         </div>
                       </td>
@@ -619,9 +629,9 @@ export default function AdminApplicationsClient() {
       <AdminConfirmDialog
         open={!!confirm}
         kind={confirm?.kind === "reject" ? "reject" : "complete"}
-        title={confirm?.kind === "reject" ? "رفض الطلب؟" : "إكمال الطلب؟"}
+        title={confirm?.kind === "reject" ? "رفض الطلب؟" : "إتمام الطلب؟"}
         message={confirm ? `هل أنت متأكد؟ الطلب #${confirm.appIndex}` : ""}
-        confirmLabel={confirm?.kind === "reject" ? "نعم، رفض" : "نعم، إكمال"}
+        confirmLabel={confirm?.kind === "reject" ? "نعم، رفض" : "نعم، إتمام"}
         cancelLabel="إلغاء"
         loading={!!actionId && confirm && actionId === confirm.appId}
         onCancel={() => setConfirm(null)}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   MdCalendarMonth,
   MdCancel,
@@ -13,9 +14,14 @@ import {
   MdUpdate,
   MdWifi,
 } from "react-icons/md";
+import { FaBuildingCircleCheck } from "react-icons/fa6";
+import { AiOutlineFieldNumber } from "react-icons/ai";
+import { PiSpeedometerFill } from "react-icons/pi";
 import Button from "../Button";
 import {
   describeContractPreference,
+  describeNoContractTechType,
+  describeSelectedInquiry,
   describeSelectedPackage,
   describeSelectedService,
   describeServiceType,
@@ -32,7 +38,7 @@ const STATUS_LABELS = {
   COMPLETED: "مكتمل",
 };
 
-const Row = ({ label, icon, children, className = "" }) => (
+const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
   <div
     className={`rounded-2xl border border-gray-100 bg-white/80 p-3 md:p-4 text-right space-y-1 shadow-sm shadow-slate-100/50 ${className}`}
   >
@@ -40,13 +46,17 @@ const Row = ({ label, icon, children, className = "" }) => (
       {icon && <span style={{ color: ACCENT }}>{icon}</span>}
       <span>{label}</span>
     </div>
-    <div className="text-gray-800 font-semibold text-sm whitespace-pre-wrap wrap-break-word">
+    <div
+      dir={dir}
+      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap wrap-break-word">
       {children}
     </div>
   </div>
 );
 
 export default function ApplicationDetailModal({ application, onClose }) {
+  const router = useRouter();
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -158,12 +168,45 @@ export default function ApplicationDetailModal({ application, onClose }) {
                   {describeSelectedPackage(application.selectedPackage)}
                 </Row>
               )}
+            {
+              application.serviceType === "newline" &&
+              application.contractPreference === "without" &&
+              (
+                <Row label="نوع التقنية" icon={<PiSpeedometerFill size={18} />}>
+                  {application.noContractTechType ? describeNoContractTechType(application.noContractTechType) : "—"}
+                </Row>
+              )
+            }
+            {application.serviceType === "inquiry" && (
+              <Row label="الاستفسار" icon={<MdDescription size={18} />}>
+                {describeSelectedInquiry(application.selectedInquiry)}
+              </Row>
+            )}
+            {
+              application.serviceType === "services" && (
+                <>
+                  <Row
+                    label="اسم شركة الأنترنت"
+                    icon={<FaBuildingCircleCheck size={18} />}
+                  >
+                  {application.internetCompany ? application.internetCompany : "—"}
+                </Row>
+                <Row
+                  label="رقم الاشتراك"
+                  icon={<AiOutlineFieldNumber size={18} />}
+                >
+                  {application.subscriptionNo ? application.subscriptionNo : "—"}
+                </Row>
+                </>
+              )
+            }
             <Row
               label="العنوان"
+              dir="ltr"
               className="sm:col-span-2"
               icon={<MdHome size={18} />}
             >
-              {application.address}
+              {application.address ? application.address : "—"}
             </Row>
             {(application.note || "").trim() ? (
               <Row
@@ -196,17 +239,22 @@ export default function ApplicationDetailModal({ application, onClose }) {
           </div>
         </div>
 
-        <div className="p-4 border-t border-gray-100 bg-gray-50/90 flex justify-end">
+        <div className="p-4 border-t border-gray-100 bg-gray-50/90 flex gap-2 justify-center">
           <Button
             variant="primary"
             type="button"
             onClick={onClose}
             className="rounded-xl! min-w-30"
-            style={{
-              background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
-            }}
           >
-            X
+            اغلاق
+          </Button>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => router.push(`/admin/applications/${application.id}/edit`)}
+            className="rounded-xl! min-w-30"
+          >
+            تحرير
           </Button>
         </div>
       </div>

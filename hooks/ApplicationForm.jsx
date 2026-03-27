@@ -36,6 +36,10 @@ const initialValues = {
   note: "",
   invoiceFile: null,
   invoiceFileUrl: "",
+  internetCompany: "",
+  subscriptionNo: "",
+  selectedInquiry: "",
+  noContractTechType: ""
 };
 
 const useApplicationForm = () => {
@@ -103,10 +107,19 @@ const useApplicationForm = () => {
           ? Yup.string().required("يرجى اختيار الخدمة المناسبة")
           : Yup.string(),
 
+      selectedInquiry:
+        step === 4 && values?.serviceType === "inquiry"
+          ? Yup.string().required("يرجى اختيار نوع الاستشارة")
+          : Yup.string(),
+
       selectedPackage:
-        step === 5 && values?.serviceType === "newline"
+        step === 5 && values?.serviceType === "newline" && values?.contractPreference === "with"
           ? Yup.string().required("يرجى اختيار الباقة المناسبة")
           : Yup.string(),
+      
+      internetCompany: step === 6 && values?.serviceType === "services"
+        ? Yup.string().required("يرجى كتابة اسم شركة الأنترنت")
+        : Yup.string(),
     });
 
   const validate = async (values) => {
@@ -139,6 +152,10 @@ const useApplicationForm = () => {
     userAgreementAccepted: false,
     invoiceFile: null,
     invoiceFileUrl: app.invoiceFileUrl ?? "",
+    internetCompany: app.internetCompany ?? "",
+    subscriptionNo: app.subscriptionNo ?? "",
+    selectedInquiry: app.selectedInquiry ?? "",
+    noContractTechType: app.noContractTechType ?? ""
   });
 
   /**
@@ -197,6 +214,8 @@ const useApplicationForm = () => {
       formData.append("address", values.address || "");
       formData.append("note", values.note || "");
       formData.append("step", String(currentStep));
+      formData.append("internetCompany", values.internetCompany || "");
+      formData.append("subscriptionNo", values.subscriptionNo || "");
       if (values.invoiceFile) {
         formData.append("invoiceFile", values.invoiceFile);
       }
@@ -222,8 +241,12 @@ const useApplicationForm = () => {
     if (currentStep === 4) {
       payload.contractPreference = values.contractPreference;
       payload.selectedService = values.selectedService;
+      payload.selectedInquiry = values.selectedInquiry;
     }
-    if (currentStep === 5) payload.selectedPackage = values.selectedPackage;
+    if (currentStep === 5) {
+      payload.selectedPackage = values.selectedPackage;
+      payload.noContractTechType = values.noContractTechType;
+    }
 
     const response = await fetch(`/api/applications/${id}`, {
       method: "PATCH",
