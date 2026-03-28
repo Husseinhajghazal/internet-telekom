@@ -14,7 +14,7 @@ const Step3 = ({ values, errors, touched }) => {
       selected: values.serviceType === "newline",
       icon: '/animations/route.json',
       title: "خط جديد",
-      description: "طلب خط انترنت جديد",
+      description: "طلب خط إنترنت جديد",
       size: "large",
       color: "green",
       hidden: values.hasInternet !== "no",
@@ -24,7 +24,7 @@ const Step3 = ({ values, errors, touched }) => {
       value: "services",
       selected: values.serviceType === "services",
       icon: '/animations/Customer%20Service%20Man%20Waving%20(Mobile%20Phone%20Repair).json',
-      title: "خدمات",
+      title: "خدمات تقنية",
       description: "معرفة الخدمات المتاحة لديك",
       size: "large",
       color: "blue",
@@ -35,8 +35,8 @@ const Step3 = ({ values, errors, touched }) => {
       value: "inquiry",
       selected: values.serviceType === "inquiry",
       icon: "/animations/Consulting.json",
-      title: "استشارات",
-      description: "حول الخدمات والاشتراكات",
+      title: "إستشارات",
+      description: "حول الخدمات والإشتراكات",
       size: "large",
       color: "orange",
     },
@@ -46,7 +46,7 @@ const Step3 = ({ values, errors, touched }) => {
     <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
         title="هل تبحث عن خدمة معينة أو خط جديد؟"
-        subTitle="اختر الخيار الذي يناسبك"
+        subTitle="إختر الخيار الذي يناسبك"
       >
         <LottieAnimation
           path="/animations/Thinking.json"

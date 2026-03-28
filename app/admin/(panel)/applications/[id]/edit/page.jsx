@@ -26,7 +26,7 @@ const CONTRACT_PREF_OPTIONS = [
 
 const SELECTED_SERVICE_OPTIONS = [
   { value: "cancel", label: "إلغاء الاشتراك" },
-  { value: "transfer-name", label: "نقل ملكية (تغيير الاسم)" },
+  { value: "transfer-name", label: "نقل ملكية (تغيير الإسم)" },
   { value: "transfer-address", label: "نقل خط (تغيير العنوان)" },
   { value: "renew", label: "تجديد الاشتراك" },
   { value: "freeze", label: "تجميد الاشتراك" },
@@ -38,6 +38,10 @@ const INQUIRY_OPTIONS = [
   { value: "coverage", label: "استفسار عن تغطية المنطقة" },
   { value: "technical", label: "استفسار عن مشكلة تقنية" },
   { value: "general", label: "استفسار عام" },
+  { value: "transfer-issue", label: "نقل الخط" },
+  { value: "slow-speed", label: "سرعة الخط" },
+  { value: "high-bill", label: "الفاتورة مرتفعة" },
+  { value: "internet-down", label: "الإنترنت متوقف" },
 ];
 
 const TECH_TYPE_OPTIONS = [
@@ -212,7 +216,7 @@ export default function EditApplicationPage() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className={labelClass}>الاسم</label>
+            <label className={labelClass}>الإسم</label>
             <input
               name="name"
               type="text"
@@ -222,7 +226,7 @@ export default function EditApplicationPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>رقم الهاتف</label>
+            <label className={labelClass}>رقم الموبايل</label>
             <input
               name="phone"
               type="text"
@@ -377,7 +381,7 @@ export default function EditApplicationPage() {
           {formData.serviceType === "services" && (
             <>
               <div>
-                <label className={labelClass}>اسم شركة الأنترنت</label>
+                <label className={labelClass}>شركة الإنترنت</label>
                 <input
                   name="internetCompany"
                   type="text"
@@ -387,7 +391,7 @@ export default function EditApplicationPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>رقم الاشتراك</label>
+                <label className={labelClass}>رقم الإشتراك</label>
                 <input
                   name="subscriptionNo"
                   type="text"

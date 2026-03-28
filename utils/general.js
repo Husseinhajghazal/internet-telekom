@@ -13,6 +13,10 @@ const describeSelectedInquiry = (selectedInquiry = "") => {
     "coverage": "استفسار عن تغطية المنطقة",
     "technical": "استفسار عن مشكلة تقنية",
     "general": "استفسار عام",
+    "transfer-issue": "نقل الخط - لا يمكنني النقل لعنواني الجديد",
+    "slow-speed": "سرعة الخط - بطئ شديد في السرعة",
+    "high-bill": "الفاتورة مرتفعة - فاتورة غير منتظمة وعشوائية",
+    "internet-down": "الإنترنت متوقف - خط متوقف ولا يعمل",
   };
   return map[selectedInquiry] || selectedInquiry || "—";
 };
@@ -35,7 +39,7 @@ const describeNoContractTechType = (techType = "") => {
 const describeSelectedService = (selectedService = "") => {
   const map = {
     cancel: "إلغاء الاشتراك",
-    "transfer-name": "نقل ملكية (تغيير الاسم)",
+    "transfer-name": "نقل ملكية (تغيير الإسم)",
     "transfer-address": "نقل خط (تغيير العنوان)",
     renew: "تجديد الاشتراك",
     freeze: "تجميد الاشتراك",

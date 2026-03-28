@@ -120,10 +120,10 @@ export default function ApplicationDetailModal({ application, onClose }) {
 
         <div className="overflow-y-auto p-4 md:p-6 space-y-4 bg-linear-to-b from-slate-50/50 to-white">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Row label="الاسم" icon={<MdPerson size={18} />}>
+            <Row label="الإسم" icon={<MdPerson size={18} />}>
               {application.name}
             </Row>
-            <Row label="رقم الهاتف" icon={<MdPhone size={18} />}>
+            <Row label="رقم الموبايل" icon={<MdPhone size={18} />}>
               <span dir="ltr" className="inline-block">
                 {application.phone}
               </span>
@@ -186,13 +186,13 @@ export default function ApplicationDetailModal({ application, onClose }) {
               application.serviceType === "services" && (
                 <>
                   <Row
-                    label="اسم شركة الأنترنت"
+                    label="شركة الإنترنت"
                     icon={<FaBuildingCircleCheck size={18} />}
                   >
                   {application.internetCompany ? application.internetCompany : "—"}
                 </Row>
                 <Row
-                  label="رقم الاشتراك"
+                  label="رقم الإشتراك"
                   icon={<AiOutlineFieldNumber size={18} />}
                 >
                   {application.subscriptionNo ? application.subscriptionNo : "—"}

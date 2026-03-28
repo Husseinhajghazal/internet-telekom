@@ -70,15 +70,15 @@ const useApplicationForm = () => {
         step === 1
           ? Yup.string()
               .trim()
-              .required("الاسم مطلوب")
-              .min(2, "الاسم يجب أن يكون على الأقل حرفين")
+              .required("الإسم مطلوب")
+              .min(2, "الإسم يجب أن يكون على الأقل حرفين")
           : Yup.string(),
 
       phone:
         step === 1
           ? Yup.string()
-              .required("رقم الهاتف مطلوب")
-              .test("phone-format", "رقم الهاتف غير صحيح", (value = "") => {
+              .required("رقم الموبايل مطلوب")
+              .test("phone-format", "رقم الموبايل غير صحيح", (value = "") => {
                 const digits = value.replace(/\D/g, "");
                 return digits.length === 11;
               })
@@ -118,7 +118,7 @@ const useApplicationForm = () => {
           : Yup.string(),
       
       internetCompany: step === 6 && values?.serviceType === "services"
-        ? Yup.string().required("يرجى كتابة اسم شركة الأنترنت")
+        ? Yup.string().required("يرجى كتابة شركة الإنترنت")
         : Yup.string(),
     });
 
@@ -276,7 +276,7 @@ const useApplicationForm = () => {
     } else {
       if (!resolvedId) {
         setStep1Error(
-          "انتهت الجلسة. ارجع للخطوة الأولى وأعد إدخال الاسم والهاتف.",
+          "انتهت الجلسة. ارجع للخطوة الأولى وأعد إدخال الإسم والموبايل.",
         );
         return;
       }
@@ -327,16 +327,13 @@ const useApplicationForm = () => {
   const handleForward = (values) => {
     formRef.current.validateForm().then((currentErrors) => {
       const fieldOrder = getStepFieldOrder(step, values);
-      const orderedErrors = fieldOrder.filter((key) => currentErrors?.[key]);
-      const remainingErrors = Object.keys(currentErrors || {})
-        .filter((key) => currentErrors?.[key])
-        .filter((key) => !orderedErrors.includes(key));
-      const allErrorsInOrder = [...orderedErrors, ...remainingErrors];
+      // Only consider errors for fields relevant to the current step
+      const stepErrors = fieldOrder.filter((key) => currentErrors?.[key]);
 
-      if (allErrorsInOrder.length === 0) {
-        formRef.current.submitForm();
+      if (stepErrors.length === 0) {
+        handleSubmit(values);
       } else {
-        const touchedFields = allErrorsInOrder.reduce((acc, key) => {
+        const touchedFields = stepErrors.reduce((acc, key) => {
           acc[key] = true;
           return acc;
         }, {});

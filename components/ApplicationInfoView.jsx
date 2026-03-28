@@ -91,8 +91,8 @@ const ApplicationInfoView = ({ application, loading, error }) => {
 
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Row label="الاسم">{maskName(application.name)}</Row>
-            <Row label="رقم الهاتف">
+            <Row label="الإسم">{maskName(application.name)}</Row>
+            <Row label="رقم الموبايل">
               <span dir="ltr" className="inline-block">
                 {maskPhone(application.phone)}
               </span>
@@ -149,12 +149,12 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                           application.serviceType === "services" && (
                             <>
                               <Row
-                                label="اسم شركة الأنترنت"
+                                label="شركة الإنترنت"
                               >
                               {application.internetCompany ? application.internetCompany : "—"}
                             </Row>
                             <Row
-                              label="رقم الاشتراك"
+                              label="رقم الإشتراك"
                             >
                               {application.subscriptionNo ? application.subscriptionNo : "—"}
                             </Row>

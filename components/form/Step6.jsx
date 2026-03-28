@@ -249,7 +249,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
                     errors.addressStreetName && touched.addressStreetName ? "border-red-500" : "border-gray-300"
                   }`}
-                  placeholder="اكتب اسم الشارع"
+                  placeholder="اكتب إسم الشارع"
                   onChange={(e) => {
                     const streetName = e.target.value;
                     setFieldValue("addressStreetCode", "");
@@ -331,7 +331,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
 
         {values?.serviceType === "services" &&
               <FormFieldBlock
-                label="شركة الأنترنت"
+                label="شركة الإنترنت"
                 name="internetCompany"
               >
                 <Field
@@ -341,13 +341,13 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
                     errors.internetCompany && touched.internetCompany ? "border-red-500" : "border-gray-300"
                   }`}
-                  placeholder="اكتب اسم شركة الأنترنت التي تستخدمها حالياً"
+                  placeholder="اكتب شركة الإنترنت التي تستخدمها حالياً"
                 />
               </FormFieldBlock>
 }
         {values?.serviceType === "services" &&
               <FormFieldBlock
-                label="رقم أشتراك او فاتورة الأنترنت"
+                label="رقم أشتراك او فاتورة الإنترنت"
                 name="subscriptionNo"
               >
                 <Field
@@ -357,13 +357,13 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
                     errors.subscriptionNo && touched.subscriptionNo ? "border-red-500" : "border-gray-300"
                   }`}
-                  placeholder="رقم أشتراك او فاتورة الأنترنت"
+                  placeholder="رقم أشتراك او فاتورة الإنترنت"
                 />
               </FormFieldBlock>
 }
 
         <FormFieldBlock
-          label="ملاحظة إضافية (اختياري)"
+          label="ملاحظة إضافية (إختياري)"
           labelClassName="md:text-lg"
           wrapperClassName="space-y-4"
         >
@@ -373,7 +373,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
             id="note"
             rows={3}
             className="w-full outline-0 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right resize-none"
-            placeholder="اكتب هنا اي ملاحظات اخرى تريد اضافتها لنا..."
+            placeholder="أكتب هنا أي ملاحظات ٱخرى تريد إخبارنا بها؟"
           />
         </FormFieldBlock>
 

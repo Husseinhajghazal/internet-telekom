@@ -144,8 +144,8 @@ export default function AdminApplicationsClient() {
       const worksheetData = [
         [
           "رقم الطلب",
-          "الاسم",
-          "رقم الهاتف",
+          "الإسم",
+          "رقم الموبايل",
           "الحالة",
           "تاريخ الإنشاء",
           "العنوان",
@@ -154,9 +154,9 @@ export default function AdminApplicationsClient() {
           "الباقة المختارة",
           "الخدمة المختارة",
           "الاستفسار",
-          "اسم شركة الأنترنت",
+          "شركة الإنترنت",
           "نوع التقنية",
-          "رقم الاشتراك",
+          "رقم الإشتراك",
           "ملاحظة",
         ],
         ...allApplications.map((app) => [
@@ -336,7 +336,7 @@ export default function AdminApplicationsClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
           <div className="lg:col-span-4 relative">
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              بحث (الاسم، رقم الطلب، الهاتف)
+              بحث (الإسم، رقم الطلب، الموبايل)
             </label>
             <div className="relative">
               <MdSearch
@@ -451,13 +451,13 @@ export default function AdminApplicationsClient() {
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdPerson size={18} />
-                      الاسم
+                      الإسم
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdPhone size={18} />
-                      الهاتف
+                      الموبايل
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">

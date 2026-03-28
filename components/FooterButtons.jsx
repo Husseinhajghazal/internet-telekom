@@ -14,7 +14,7 @@ const FooterButtons = ({ step, handleBack, handleForward }) => {
         <button
           type="button"
           onClick={handleForward}
-          className={`cursor-pointer flex-1 py-3 px-6 rounded-lg font-bold transition-all duration-300 bg-linear-to-r from-[#f36802] to-[#ffb245] text-white shadow-lg hover:shadow-xl`}
+          className={`cursor-pointer flex-1 py-3 md:px-6 rounded-lg font-bold transition-all duration-300 bg-linear-to-r from-[#f36802] to-[#ffb245] text-white shadow-lg hover:shadow-xl`}
           >
           {step === 6 ? "إرسال الطلب" : "متابعة"}
         </button>

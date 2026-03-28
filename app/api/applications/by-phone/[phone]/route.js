@@ -33,7 +33,7 @@ export async function GET(request, { params }) {
 
     if (!phoneInput || phoneInput.length < 7) {
       return NextResponse.json(
-        { error: "رقم الهاتف غير صالح." },
+        { error: "رقم الموبايل غير صالح." },
         { status: 400 },
       );
     }

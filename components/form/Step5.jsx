@@ -41,7 +41,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "blue",
-      features: ["اتصال سريع عبر خط الهاتف", "تأسيس مجاني", "بدون التزام"]
+      features: ["انترنت بحسب السرعة لديك"]
     },
     {
       value: "fiber",
@@ -49,7 +49,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "green",
-      features: ["ألياف ضوئية بسرعة عالية", "استقرار ممتاز لعدة أجهزة", "بدون التزام"]
+      features: ["ألياف ضوئية بسرعة عالية"]
     },
     {
       value: "gigafiber",
@@ -57,7 +57,7 @@ const Step5 = ({
       speed: "1000",
       price: 699,
       color: "purple",
-      features: ["أقصى سرعة متاحة", "رفع وتحميل متماثل", "بدون التزام"]
+      features: ["اقصى سرعة بتقنية الجيل السادس"]
     },
   ];
 
@@ -68,7 +68,7 @@ const Step5 = ({
           <PackageSection
             accent="blue"
             title="الباقات العائلية المخفضة"
-            description="باقات مصممة خصيصاً للعائلات مع أسعار مخفضة وخدمات شاملة"
+            description="باقات مصممة خصيصاً للعائلات مع أسعار مخفضة"
             durationLabel={familyContractDuration === "18" ? "18 شهر" : "سنتين"}
             durations={[
               { value: "18", label: "18 شهر" },

@@ -15,7 +15,7 @@ const Step1 = ({
 }) => {
   return (
     <div className="max-w-md mx-auto space-y-6">
-      <FormFieldBlock label="الاسم الكامل" name="name">
+      <FormFieldBlock label="الإسم الكامل" name="name">
         <Field
           type="text"
           name="name"
@@ -23,7 +23,7 @@ const Step1 = ({
           className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
             errors.name && touched.name ? "border-red-500" : "border-gray-300"
           }`}
-          placeholder="أدخل اسمك الكامل"
+          placeholder="أكتب أسمك الكامل هنا"
           onChange={(e) => {
             setFieldValue("name", e.target.value);
             onClearStep1Error?.();
@@ -32,9 +32,9 @@ const Step1 = ({
       </FormFieldBlock>
 
       <FormFieldBlock
-        label="رقم الهاتف"
+        label="رقم الموبايل"
         name="phone"
-        hint="أدخل رقم هاتفك التركي"
+        hint="أدخل رقم الموبايل التركي"
       >
         <Field
           type="tel"
@@ -43,7 +43,7 @@ const Step1 = ({
           className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
             errors.phone && touched.phone ? "border-red-500" : "border-gray-300"
           }`}
-          placeholder="0 (538) 734 58 20"
+          placeholder="أكتب رقم الموبايل هنا"
           onChange={(e) => handlePhoneChange(e, setFieldValue)}
           style={{ direction: "ltr" }}
         />
@@ -58,7 +58,7 @@ const Step1 = ({
               onClick={onOpenUserAgreement}
               className="text-[#18a2e3] font-semibold underline underline-offset-2 hover:text-[#0d8bc9]"
             >
-              اتفاقية المستخدم
+              إتفاقية المستخدم
             </button>
           </span>
           <Field

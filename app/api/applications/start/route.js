@@ -83,7 +83,7 @@ export async function POST(request) {
 
     if (!name || !phone) {
       return NextResponse.json(
-        { error: "الاسم ورقم الهاتف مطلوبان." },
+        { error: "الإسم ورقم الموبايل مطلوبان." },
         { status: 400 },
       );
     }

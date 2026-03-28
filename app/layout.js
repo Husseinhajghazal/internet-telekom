@@ -1,8 +1,8 @@
-import { Rubik } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
 
-const rubik = Rubik({
-  variable: "--font-rubik",
+const cairo = Cairo({
+  variable: "--font-cairo",
   subsets: ["arabic"],
 });
 
@@ -40,7 +40,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl">
-      <body className={`${rubik.className} antialiased`}>{children}</body>
+      <body className={`${cairo.className} antialiased`}>{children}</body>
     </html>
   );
 }

@@ -68,7 +68,7 @@ const PackageSection = ({
           <div className="text-center">
             <h4 className="text-lg md:text-2xl font-semibold text-gray-800 inline-flex items-center gap-2 justify-center">
               <MdRefresh className={iconClass} />
-              عقد اشتراك مدة {durationLabel}
+              عقد إشتراك
             </h4>
             <div
               className={`w-28 h-1 bg-linear-to-r ${dividerClass} mx-auto mt-2 rounded-full`}

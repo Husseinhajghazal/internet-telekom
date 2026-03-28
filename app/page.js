@@ -20,12 +20,13 @@ export default function Home() {
           />
         </div>
 
-        <h1 className="text-lg md:text-3xl lg:text-5xl font-bold text-gray-800 leading-tight animate-fade-in-up">
+        <h1 className="text-lg md:text-2xl lg:text-4xl font-bold text-gray-800 leading-tight animate-fade-in-up">
           أهلاً وسهلاً بك في شركة إنترنت تيليكوم
         </h1>
 
         <p className="text-base md:text-xl text-gray-600 leading-relaxed max-w-lg animate-fade-in-up">
-          أنت على بعد ضغطة زر واحدة للحصول على أفضل خدمات الإنترنت في تركيا
+          استمتع بإنترنت فائق السرعة بكل حرية وبلا قيود <br />
+          خدماتنا تغطي كامل المناطق التركية
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md animate-fade-in-up">

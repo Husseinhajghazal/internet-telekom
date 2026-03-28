@@ -125,7 +125,7 @@ export default function InquiryPage() {
             استعلام عن الطلب
           </h1>
           <p className="text-gray-600 text-sm md:text-base">
-            ابحث عن حالة طلبك باستخدام رقم الطلب أو رقم الهاتف
+            ابحث عن حالة طلبك باستخدام رقم الطلب أو رقم الموبايل
           </p>
         </div>
 
@@ -159,7 +159,7 @@ export default function InquiryPage() {
             }`}
           >
             <MdPhone size={18} />
-            رقم الهاتف
+            رقم الموبايل
           </button>
         </div>
 
@@ -203,7 +203,7 @@ export default function InquiryPage() {
                 htmlFor="phone"
                 className="block text-gray-700 font-medium"
               >
-                رقم الهاتف
+                رقم الموبايل
               </label>
               <input
                 id="phone"

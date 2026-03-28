@@ -2,14 +2,6 @@
 
 import React from "react";
 import { ErrorMessage } from "formik";
-import {
-  MdCancel,
-  MdPerson,
-  MdLocationOn,
-  MdRefresh,
-  MdAcUnit,
-  MdUpgrade,
-} from "react-icons/md";
 import Card from "../Card";
 import StepHeader from "../StepHeader";
 import LottieAnimation from "../LottieAnimation";
@@ -30,6 +22,19 @@ const Step4 = ({ values, errors, touched }) => {
   );
 
   const options = [
+    {
+      name: "selectedService",
+      value: "upgrade",
+      selected: values.selectedService === "upgrade",
+      icon: "/animations/no%20transactions.json",
+      title: "تحويل من عقد لبدون عقد",
+      description: "",
+      size: "small",
+      color: "indigo",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showServiceCards,
+    },
     {
       name: "selectedService",
       value: "cancel",
@@ -96,17 +101,16 @@ const Step4 = ({ values, errors, touched }) => {
       hidden: !showServiceCards,
     },
     {
-      name: "selectedService",
-      value: "upgrade",
-      selected: values.selectedService === "upgrade",
+      name: "contractPreference",
+      value: "without",
+      selected: values.contractPreference === "without",
       icon: "/animations/no%20transactions.json",
-      title: "تحويل من عقد لبدون عقد",
-      description: "",
-      size: "small",
-      color: "indigo",
-      titleSize: "text-lg",
-      centerTitle: true,
-      hidden: !showServiceCards,
+      title: "بدون عقد",
+      description: "خط مسبق الدفع بدون إلتزام",
+      size: "large",
+      color: "blue",
+      titleSize: "text-xl",
+      hidden: !showContractCards,
     },
     {
       name: "contractPreference",
@@ -114,21 +118,9 @@ const Step4 = ({ values, errors, touched }) => {
       selected: values.contractPreference === "with",
       icon: "/animations/Contract%20Sign.json",
       title: "مع عقد",
-      description: "عروض حصرية مع عقد اشتراك",
+      description: "عروض مميزة مع عقد إشتراك",
       size: "large",
       color: "green",
-      titleSize: "text-xl",
-      hidden: !showContractCards,
-    },
-    {
-      name: "contractPreference",
-      value: "without",
-      selected: values.contractPreference === "without",
-      icon: "/animations/no%20transactions.json",
-      title: "بدون عقد",
-      description: "سرعات متنوعة بدون التزام عقد",
-      size: "large",
-      color: "blue",
       titleSize: "text-xl",
       hidden: !showContractCards,
     },
@@ -138,7 +130,7 @@ const Step4 = ({ values, errors, touched }) => {
       selected: values.selectedInquiry === "pricing",
       icon: "/animations/Consulting.json",
       title: "الأسعار والعروض",
-      description: "استفسار عن الأسعار والباقات المتاحة",
+      description: "إستفسار عن العروض والباقات المتوفرة",
       size: "large",
       color: "orange",
       titleSize: "text-lg",
@@ -150,8 +142,8 @@ const Step4 = ({ values, errors, touched }) => {
       value: "coverage",
       selected: values.selectedInquiry === "coverage",
       icon: "/animations/Address.json",
-      title: "تغطية المنطقة",
-      description: "استفسار عن توفر الخدمة في منطقتك",
+      title: "البنية التحتية",
+      description: "إستفسار عن توفر الخدمة في منطقتك",
       size: "large",
       color: "green",
       titleSize: "text-lg",
@@ -164,7 +156,59 @@ const Step4 = ({ values, errors, touched }) => {
       selected: values.selectedInquiry === "technical",
       icon: "/animations/Customer%20Service%20Man%20Waving%20(Mobile%20Phone%20Repair).json",
       title: "مشكلة تقنية",
-      description: "استفسار عن عطل أو مشكلة فنية",
+      description: "مساعدتك في عطل أو مشكلة فنية",
+      size: "large",
+      color: "blue",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
+    {
+      name: "selectedInquiry",
+      value: "transfer-issue",
+      selected: values.selectedInquiry === "transfer-issue",
+      icon: "/animations/Address.json",
+      title: "نقل الخط",
+      description: "لا يمكنني النقل لعنواني الجديد",
+      size: "large",
+      color: "green",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
+    {
+      name: "selectedInquiry",
+      value: "slow-speed",
+      selected: values.selectedInquiry === "slow-speed",
+      icon: "/animations/Network%20Speed%20-%20Animation.json",
+      title: "سرعة الخط",
+      description: "لدي بطئ شديد في السرعة",
+      size: "large",
+      color: "orange",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
+    {
+      name: "selectedInquiry",
+      value: "high-bill",
+      selected: values.selectedInquiry === "high-bill",
+      icon: "/animations/Consulting.json",
+      title: "الفاتورة مرتفعة",
+      description: "فاتورة غير منتظمة وعشوائية",
+      size: "large",
+      color: "red",
+      titleSize: "text-lg",
+      centerTitle: true,
+      hidden: !showInquiryCards,
+    },
+    {
+      name: "selectedInquiry",
+      value: "internet-down",
+      selected: values.selectedInquiry === "internet-down",
+      icon: "/animations/Cross,%20Close,%20Cancel%20Icon%20Animation.json",
+      title: "الإنترنت متوقف",
+      description: "خط متوقف ولا يعمل حالياً",
       size: "large",
       color: "blue",
       titleSize: "text-lg",
@@ -176,8 +220,8 @@ const Step4 = ({ values, errors, touched }) => {
       value: "general",
       selected: values.selectedInquiry === "general",
       icon: "/animations/Thinking.json",
-      title: "استفسار عام",
-      description: "أي استفسار آخر تريد طرحه",
+      title: "إستفسار عام",
+      description: "أي سؤال ٱخر تريد إجابه عنه",
       size: "large",
       color: "purple",
       titleSize: "text-lg",
@@ -193,14 +237,14 @@ const Step4 = ({ values, errors, touched }) => {
           showServiceCards
             ? "اختر الخدمة المناسبة لك"
             : showInquiryCards
-              ? "عن ماذا تريد الاستفسار؟"
+              ? "عن ماذا تريد الإستفسار؟"
               : "اختر نوع العرض"
         }
         subTitle={
           showServiceCards
             ? "اختر من القائمة التالية"
             : showInquiryCards
-              ? "اختر نوع الاستشارة المناسبة"
+              ? "إختر نوع الإستشارة المناسبة لك"
               : "هل تفضل عروض مع عقد أم بدون عقد؟"
         }
       >

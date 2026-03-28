@@ -29,13 +29,13 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2">
-              <div className="text-sm text-gray-500 font-bold">الاسم</div>
+              <div className="text-sm text-gray-500 font-bold">الإسم</div>
               <div className="text-gray-800 font-semibold">
                 {confirmValues?.name || "—"}
               </div>
             </div>
             <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2">
-              <div className="text-sm text-gray-500 font-bold">رقم الهاتف</div>
+              <div className="text-sm text-gray-500 font-bold">رقم الموبايل</div>
               <div
                 style={{ direction: "ltr" }}
                 className="text-gray-800 font-semibold"
@@ -100,7 +100,7 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
 
             {confirmValues?.serviceType === "services" && confirmValues?.internetCompany && (
               <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">شركة الأنترنت</div>
+                <div className="text-sm text-gray-500 font-bold">شركة الإنترنت</div>
                 <div className="text-gray-800 font-semibold">
                   {confirmValues.internetCompany}
                 </div>
@@ -109,7 +109,7 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
 
             {confirmValues?.serviceType === "services" && confirmValues?.subscriptionNo && (
               <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">رقم الاشتراك</div>
+                <div className="text-sm text-gray-500 font-bold">رقم الإشتراك</div>
                 <div className="text-gray-800 font-semibold">
                   {confirmValues.subscriptionNo}
                 </div>
