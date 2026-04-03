@@ -218,20 +218,24 @@ export default function ApplicationDetailModal({ application, onClose }) {
               </Row>
             ) : null}
             <Row
-              label="صورة الفاتورة"
+              label="الصور المرفقة"
               className="sm:col-span-2"
               icon={<MdOutlineReceiptLong size={18} />}
             >
-              {application.invoiceFileUrl ? (
-                <a
-                  href={application.invoiceFileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-bold underline break-all text-sm"
-                  style={{ color: ACCENT }}
-                >
-                  فتح / عرض الصورة
-                </a>
+              {application.invoiceFileUrl && application.invoiceFileUrl.trim() !== "" ? (
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {application.invoiceFileUrl.split(",").filter(Boolean).map((url, idx) => (
+                    <a
+                      key={idx}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="relative block w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:opacity-80 transition hover:shadow-md ring-2 ring-transparent hover:ring-[#18a2e3]"
+                    >
+                      <img src={url} alt={`مرفق ${idx + 1}`} className="w-full h-full object-cover" />
+                    </a>
+                  ))}
+                </div>
               ) : (
                 "—"
               )}

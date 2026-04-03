@@ -1,14 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import Button from "../components/Button";
-import LottieAnimation from "../components/LottieAnimation";
+import Button from "../../components/Button";
+import { FiArrowRight, FiSearch } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { FiArrowRight } from "react-icons/fi";
-import { FaWhatsapp } from "react-icons/fa";
 
-export default function Home() {
+export default function StartPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -16,14 +14,6 @@ export default function Home() {
     setSuccessMessage(message);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 1600);
-  };
-
-  const handleWhatsappClick = (event) => {
-    event.preventDefault();
-    flashSuccess("فتح واتساب...");
-    setTimeout(() => {
-      window.open("https://wa.me/902126112122", "_blank");
-    }, 200);
   };
 
   return (
@@ -43,29 +33,30 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <LottieAnimation
-            path="/animations/Under Construction.json"
-            width={300}
-            height={300}
+          <img
+            src="/full-logo.png"
+            alt="logo"
+            className="w-3/4 md:w-2/4 lg:w-1/4 h-auto object-contain"
           />
         </motion.div>
 
         <motion.h1
-          className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#128C7E] leading-tight"
+          className="text-lg md:text-2xl lg:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#128C7E] leading-tight mt-5"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          يتم صيانة الموقع حالياً
+          أهلاً وسهلاً بك في شركة إنترنت تيليكوم
         </motion.h1>
 
         <motion.p
-          className="text-lg md:text-2xl text-slate-800 tracking-wide leading-relaxed max-w-lg mt-4 mb-8"
+          className="text-base md:text-xl text-slate-800 tracking-wide leading-relaxed max-w-lg mt-4 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35 }}
         >
-          سنعود قريباً شكراً لصبرك معنا
+          استمتع بإنترنت فائق السرعة بكل حرية وبلا قيود <br />
+          خدماتنا تغطي كامل المناطق التركية
         </motion.p>
 
         <motion.div
@@ -74,32 +65,33 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
         >
-          <Link href="/start" className="w-full sm:w-auto">
+          <Link href="/internet-basvuru-formu" className="w-full sm:w-auto">
             <Button
               variant="primary"
               size="large"
               className="font-semibold lg:font-bold rounded-lg w-full md:min-w-50 neumorphic-btn"
-              onClick={() => flashSuccess("تم إنشاء الطلب بنجاح")}
+              onClick={() => flashSuccess("تم بدأ طلب جديد")}
             >
               <span className="flex items-center justify-center gap-2">
-                تقديم طلب
+                تقديم طلب الآن
                 <FiArrowRight className="text-lg" />
               </span>
             </Button>
           </Link>
-          <div className="w-full sm:w-auto">
+
+          <Link href="/inquiry" className="w-full sm:w-auto">
             <Button
-              variant="whatsapp"
+              variant="secondary"
               size="large"
               className="font-semibold lg:font-bold rounded-lg w-full md:min-w-50 neumorphic-btn"
-              onClick={handleWhatsappClick}
+              onClick={() => flashSuccess("استعلام عن الطلب")}
             >
               <span className="flex items-center justify-center gap-2">
-                تواصل معنا
-                <FaWhatsapp className="text-lg" />
+                استعلم عن طلبك
+                <FiSearch className="text-lg" />
               </span>
             </Button>
-          </div>
+          </Link>
         </motion.div>
       </motion.div>
 

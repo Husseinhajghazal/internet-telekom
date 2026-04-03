@@ -47,4 +47,3 @@ const LottieAnimation = ({ path, width = 60, height = 60, className = "" }) => {
 };
 
 export default LottieAnimation;
-

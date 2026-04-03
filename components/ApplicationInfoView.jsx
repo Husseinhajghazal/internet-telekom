@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Button from "./Button";
+import { MdHome, MdAddCircleOutline, MdOutlineDescription } from "react-icons/md";
 import {
   describeContractPreference,
   describeSelectedPackage,
@@ -80,9 +81,10 @@ const ApplicationInfoView = ({ application, loading, error }) => {
     : "—";
 
   return (
-    <div className="min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50 py-10 px-4">
-      <div className="max-w-3xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
+    <div className="flex flex-row min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50">
+      <div className="flex-1 lg:w-[70%] flex flex-col min-h-svh p-6 relative py-10 shrink-0">
+        <div className="max-w-3xl mx-auto space-y-8 w-full z-10 relative">
+          <div className="text-center space-y-2">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             تفاصيل الطلب
           </h1>
@@ -165,19 +167,68 @@ const ApplicationInfoView = ({ application, loading, error }) => {
               {maskAddress(application.address)}
             </Row>
           </div>
+          
+          {application.invoiceFileUrl && application.invoiceFileUrl.trim() !== "" && (
+            <div className="mt-6 border-t border-gray-100 pt-6">
+              <div className="text-sm text-gray-500 font-bold mb-3 text-right">الصور المرفقة</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {application.invoiceFileUrl.split(",").filter(Boolean).map((url, idx) => (
+                  <a
+                    key={idx}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block aspect-square rounded-xl border border-gray-200 overflow-hidden hover:opacity-80 transition hover:shadow-md"
+                  >
+                    <img src={url} alt={`مرفق ${idx + 1}`} className="w-full h-full object-cover" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-center gap-4 flex-wrap">
           <Link href="/internet-basvuru-formu">
-            <Button variant="secondary" size="large">
+            <Button variant="secondary" size="large" className="flex items-center gap-2">
+              <MdAddCircleOutline size={22} />
               طلب جديد
             </Button>
           </Link>
-          <Link href="/">
-            <Button variant="primary" size="large">
+          <Link href="/start">
+            <Button variant="primary" size="large" className="flex items-center gap-2">
+              <MdHome size={22} />
               الصفحة الرئيسية
             </Button>
           </Link>
+        </div>
+      </div>
+      </div>
+
+      {/* Sidebar Image */}
+      <div className="hidden lg:block lg:w-[30%] shrink-0">
+        <div className="fixed top-0 left-0 lg:w-[30%] h-svh bg-blue-50 overflow-hidden">
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/40 to-black/20 z-10 pointer-events-none"></div>
+          
+          {/* Decorative touches */}
+          <div className="absolute bottom-16 left-10 right-10 z-20 text-white flex flex-col gap-5 drop-shadow-xl animate-fade-in-up">
+            <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+              <MdOutlineDescription className="w-8 h-8 text-blue-300" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold mb-3 tracking-wide">تفاصيل الطلب</h3>
+              <p className="text-white/80 text-sm leading-relaxed opacity-95">
+                يمكنك هنا مراجعة جميع التفاصيل والمرفقات الخاصة بطلبك.
+              </p>
+            </div>
+          </div>
+
+          <img
+            src="/contract.jpg"
+            alt="Application Details"
+            className="w-full h-full object-cover animate-step-in-right relative z-0"
+          />
         </div>
       </div>
     </div>

@@ -36,9 +36,21 @@ export async function PATCH(request, { params }) {
         noContractTechType: formData.get("noContractTechType"),
       });
 
-      const invoiceFile = formData.get("invoiceFile");
-      if (invoiceFile && typeof invoiceFile === "object" && invoiceFile.size > 0) {
-        draftPayload.invoiceFileUrl = await saveInvoiceFileLocally(invoiceFile);
+      const newInvoiceFiles = formData.getAll("invoiceFiles");
+      const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
+      let allUrls = existingUrlsStr.split(",").filter(Boolean);
+
+      if (newInvoiceFiles && newInvoiceFiles.length > 0) {
+        const validNewUrls = await Promise.all(
+          newInvoiceFiles
+            .filter((f) => typeof f === "object" && f.size > 0)
+            .map((f) => saveInvoiceFileLocally(f))
+        );
+        allUrls = [...allUrls, ...validNewUrls.filter(Boolean)];
+      }
+
+      if (formData.has("step") && formData.get("step") === "6") {
+        draftPayload.invoiceFileUrl = allUrls.join(",") || null;
       }
     } else {
       draftPayload = normalizeDraftPayload(await request.json());

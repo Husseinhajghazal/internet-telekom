@@ -13,7 +13,8 @@ const palettes = {
       "border-gray-200/80 bg-white/70 hover:border-purple-300/70 hover:shadow-lg hover:shadow-purple-100/60",
     blobTop: "bg-purple-500/18",
     blobBottom: "bg-purple-400/18",
-    selectedDot: "bg-purple-500 border-purple-500 shadow-lg shadow-purple-200/60",
+    selectedDot:
+      "bg-purple-500 border-purple-500 shadow-lg shadow-purple-200/60",
     hoverDot: "border-gray-300 group-hover:border-purple-400/70",
     selectedIconBox: "bg-purple-500 shadow-lg shadow-purple-200/60",
     hoverIconBox: "bg-purple-100/70 group-hover:bg-purple-200/70",
@@ -59,15 +60,16 @@ const PackageSpeedGrid = ({
   const [hoveredCard, setHoveredCard] = useState(null);
 
   const getStaticPriceTl = (speed) => {
-    const price =
-      PRICES_TL?.[kind]?.[String(duration)]?.[String(speed)];
+    const price = PRICES_TL?.[kind]?.[String(duration)]?.[String(speed)];
     return typeof price === "number" ? price : 0;
   };
 
   return (
     <div className="flex md:grid flex-nowrap md:grid-cols-2 lg:grid-cols-4 overflow-x-auto md:overflow-x-visible gap-6 snap-x snap-mandatory pb-2">
       {speeds.map((speed) => {
-        const valueKey = duration ? `${kind}-${duration}-${speed}` : `${kind}-${speed}`;
+        const valueKey = duration
+          ? `${kind}-${duration}-${speed}`
+          : `${kind}-${speed}`;
         const priceTl = getStaticPriceTl(speed);
         const isSelected = selectedPackage === valueKey;
         const displayPrice = priceTl ? priceTl : "—";
@@ -126,7 +128,9 @@ const PackageSpeedGrid = ({
                   <div className="relative p-6 h-full flex flex-col items-center justify-center text-center space-y-3">
                     <div
                       className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${
-                        isSelected ? palette.selectedIconBox : palette.hoverIconBox
+                        isSelected
+                          ? palette.selectedIconBox
+                          : palette.hoverIconBox
                       } transition-all duration-300`}
                     >
                       <MdSpeed
@@ -140,10 +144,22 @@ const PackageSpeedGrid = ({
                       <div className="text-4xl font-extrabold tracking-tight text-gray-900 leading-none">
                         {speed}
                       </div>
-                      <div className="text-sm text-gray-600 font-medium pb-1.5">ميغابت/ثانية</div>
-                      <div className={`inline-flex items-baseline justify-center gap-1.5 rounded-xl border px-3 py-1 shadow-xs ${palette.priceChip}`}>
-                        <span className={`text-base font-extrabold tracking-tight ${palette.priceText}`}>{displayPrice}</span>
-                        <span className={`text-[10px] font-bold ${palette.priceText}`}>TL</span>
+                      <div className="text-sm text-gray-600 font-medium pb-1.5">
+                        ميغابت/ثانية
+                      </div>
+                      <div
+                        className={`inline-flex items-baseline justify-center gap-1.5 rounded-xl border px-3 py-1 shadow-xs ${palette.priceChip}`}
+                      >
+                        <span
+                          className={`text-base font-extrabold tracking-tight ${palette.priceText}`}
+                        >
+                          {displayPrice}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold ${palette.priceText}`}
+                        >
+                          TL
+                        </span>
                       </div>
                     </div>
 
@@ -162,15 +178,17 @@ const PackageSpeedGrid = ({
                 {/* ─── BACK FACE ─── */}
                 <div
                   className={`flip-card-back rounded-3xl border-2 overflow-hidden ${
-                    isSelected
-                      ? "border-white/40 shadow-xl"
-                      : "border-white/20"
+                    isSelected ? "border-white/40 shadow-xl" : "border-white/20"
                   } bg-linear-to-br ${palette.backGradient}`}
                 >
                   {/* Decorative blobs */}
                   <div className="absolute inset-0 pointer-events-none">
-                    <div className={`absolute -top-10 -right-10 w-40 h-40 ${palette.backAccent} rounded-full blur-3xl`} />
-                    <div className={`absolute -bottom-10 -left-10 w-32 h-32 ${palette.backAccent} rounded-full blur-3xl`} />
+                    <div
+                      className={`absolute -top-10 -right-10 w-40 h-40 ${palette.backAccent} rounded-full blur-3xl`}
+                    />
+                    <div
+                      className={`absolute -bottom-10 -left-10 w-32 h-32 ${palette.backAccent} rounded-full blur-3xl`}
+                    />
                   </div>
 
                   {/* Selected checkmark */}
@@ -186,16 +204,25 @@ const PackageSpeedGrid = ({
                     <div className="text-center">
                       <div className="text-3xl font-extrabold tracking-tight">
                         {speed}
-                        <span className="text-sm font-medium opacity-80 mr-1">Mbps</span>
+                        <span className="text-sm font-medium opacity-80 ml-1">
+                          Mbps
+                        </span>
                       </div>
                     </div>
 
                     {/* Features */}
                     <div className="space-y-2.5 my-3">
                       {features.map((feature, i) => (
-                        <div key={i} className="flex items-start gap-2 text-right">
-                          <MdCheck className={`shrink-0 mt-0.5 text-lg ${palette.featureIcon}`} />
-                          <span className="text-sm font-medium leading-snug opacity-95">{feature}</span>
+                        <div
+                          key={i}
+                          className="flex items-start gap-2 text-right"
+                        >
+                          <MdCheck
+                            className={`shrink-0 mt-0.5 text-lg ${palette.featureIcon}`}
+                          />
+                          <span className="text-sm font-medium leading-snug opacity-95">
+                            {feature}
+                          </span>
                         </div>
                       ))}
                     </div>

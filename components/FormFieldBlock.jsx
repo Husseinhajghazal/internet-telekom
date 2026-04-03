@@ -24,7 +24,9 @@ const FormFieldBlock = ({
       {name ? (
         <ErrorMessage name={name} component="div" className={errorClassName} />
       ) : null}
-      {hint ? <p className="text-sm text-gray-500 mt-1 text-right">{hint}</p> : null}
+      {hint ? (
+        <p className="text-sm text-gray-500 mt-1 text-right">{hint}</p>
+      ) : null}
     </div>
   );
 };

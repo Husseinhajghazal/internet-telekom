@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from "moment";
 
 const describeServiceType = (serviceType = "") => {
   if (serviceType === "newline") return "خط جديد";
@@ -9,10 +9,10 @@ const describeServiceType = (serviceType = "") => {
 
 const describeSelectedInquiry = (selectedInquiry = "") => {
   const map = {
-    "pricing": "استفسار عن الأسعار والعروض",
-    "coverage": "استفسار عن تغطية المنطقة",
-    "technical": "استفسار عن مشكلة تقنية",
-    "general": "استفسار عام",
+    pricing: "استفسار عن الأسعار والعروض",
+    coverage: "استفسار عن تغطية المنطقة",
+    technical: "استفسار عن مشكلة تقنية",
+    general: "استفسار عام",
     "transfer-issue": "نقل الخط - لا يمكنني النقل لعنواني الجديد",
     "slow-speed": "سرعة الخط - بطئ شديد في السرعة",
     "high-bill": "الفاتورة مرتفعة - فاتورة غير منتظمة وعشوائية",
@@ -22,16 +22,16 @@ const describeSelectedInquiry = (selectedInquiry = "") => {
 };
 
 const describeContractPreference = (contractPreference = "") => {
-  if (contractPreference === "with") return "مع عقد";
-  if (contractPreference === "without") return "بدون عقد";
+  if (contractPreference === "with") return "مع عقد إشتراك";
+  if (contractPreference === "without") return "بدون عقد إشتراك";
   return contractPreference || "—";
 };
 
 const describeNoContractTechType = (techType = "") => {
   const map = {
-    "vdsl": "VDSL",
-    "fiber": "Fiber",
-    "gigafiber": "GigaFiber",
+    vdsl: "VDSL",
+    fiber: "Fiber",
+    gigafiber: "GigaFiber",
   };
   return map[techType] || techType || "—";
 };
@@ -53,7 +53,7 @@ const describeSelectedPackage = (selectedPackage = "") => {
   const noContractMatch = selectedPackage.match(/^no-contract-(.+)$/);
   if (noContractMatch) {
     const speed = noContractMatch[1];
-    return `بدون عقد • ${speed} ميغابت/ثانية`;
+    return `بدون عقد إشتراك • ${speed} ميغابت/ثانية`;
   }
 
   const match = selectedPackage.match(/^(family|vip)-(\d+)-(.+)$/);
@@ -73,18 +73,29 @@ const describeSelectedPackage = (selectedPackage = "") => {
 
 const formatPhoneNumber = (value = "") => {
   let formatted = value.replace(/\D/g, "");
+
+  // Remove country code (90)
   if (formatted.startsWith("90")) {
     formatted = formatted.substring(2);
   }
+
+  // Remove leading 0
   if (formatted.startsWith("0")) {
     formatted = formatted.substring(1);
   }
-  if (formatted.length > 10) {
-    formatted = formatted.substring(0, 10);
+
+  // 🚀 Force first digit to be 5 (mobile numbers in TR)
+  if (!formatted.startsWith("5")) {
+    formatted = "5" + formatted.substring(1);
   }
-  let display = "0 ";
+
+  // Limit to 10 digits (5XXXXXXXXX)
+  formatted = formatted.substring(0, 10);
+
+  let display = "0";
+
   if (formatted.length > 0) {
-    display += `(${formatted.substring(0, 3)}`;
+    display += ` (${formatted.substring(0, 3)}`;
   }
   if (formatted.length > 3) {
     display += `) ${formatted.substring(3, 6)}`;
@@ -95,6 +106,7 @@ const formatPhoneNumber = (value = "") => {
   if (formatted.length > 8) {
     display += ` ${formatted.substring(8, 10)}`;
   }
+
   return display;
 };
 
@@ -103,6 +115,11 @@ const getStepFieldOrder = (step, values) => {
   if (step === 2) return ["hasInternet"];
   if (step === 3) return ["serviceType"];
   if (step === 4) {
+    if (
+      values?.serviceType === "services" &&
+      values?.selectedService === "upgrade"
+    )
+      return [];
     if (values?.serviceType === "services") return ["selectedService"];
     if (values?.serviceType === "newline") return ["contractPreference"];
     if (values?.serviceType === "inquiry") return ["selectedInquiry"];
@@ -114,7 +131,8 @@ const getStepFieldOrder = (step, values) => {
   }
   if (step === 6) {
     if (values?.serviceType === "inquiry") return [];
-    if (values?.serviceType === "services") return ["internetCompany", "address"];
+    if (values?.serviceType === "services" || values?.serviceType === "upgrade")
+      return ["internetCompany", "address"];
     return ["address"];
   }
   return [];
@@ -124,6 +142,11 @@ const getNextStep = (step, values) => {
   if (step === 1) return 2;
   if (step === 2) return 3;
   if (step === 3) {
+    if (
+      values.serviceType === "services" &&
+      values.selectedService === "upgrade"
+    )
+      return 6;
     return 4;
   }
   if (step === 4) {
@@ -144,6 +167,12 @@ const getPreviousStep = (step, values) => {
   if (step === 4) return 3;
   if (step === 5) return 4;
   if (step === 6) {
+    if (
+      values.serviceType === "services" &&
+      values.selectedService === "upgrade"
+    ) {
+      return 3;
+    }
     if (values.serviceType === "services") return 4;
     if (values.serviceType === "newline") {
       return 5;
@@ -198,25 +227,33 @@ const maskName = (name = "") => {
 
 const maskAddress = (address = "") => {
   if (!address) return "—";
-  // show first 5 chars
-  return maskValue(address.trim(), 5, 0);
+
+  return address
+    .split(",")
+    .map((part) => {
+      const trimmed = part.trim();
+
+      // mask each segment, keep first 4 chars visible
+      return maskValue(trimmed, 4, 0);
+    })
+    .join(", ");
 };
 
-function formatDate(date, type = '2') {
-	const curDate = new Date(date);
-	let dt;
-	if (type == '1') {
-		dt = moment(curDate).format('DD.MM.YYYY');
-	} else if (type == '2') {
-		dt = moment(curDate).format('YYYY-MM-DD HH:mm');
-	} else if (type == '3') {
-		dt = moment(curDate).format('YYYY-MM-DD  HH:mm:ss.000');
-	} else if (type == '4') {
-		dt = moment(curDate).format('YYYY-MM-DD');
-	} else if (type == '5') {
-		dt = moment(curDate).format('HH:mm');
-	}
-	return dt;
+function formatDate(date, type = "2") {
+  const curDate = new Date(date);
+  let dt;
+  if (type == "1") {
+    dt = moment(curDate).format("DD.MM.YYYY");
+  } else if (type == "2") {
+    dt = moment(curDate).format("YYYY-MM-DD HH:mm");
+  } else if (type == "3") {
+    dt = moment(curDate).format("YYYY-MM-DD  HH:mm:ss.000");
+  } else if (type == "4") {
+    dt = moment(curDate).format("YYYY-MM-DD");
+  } else if (type == "5") {
+    dt = moment(curDate).format("HH:mm");
+  }
+  return dt;
 }
 
 export {
@@ -235,5 +272,5 @@ export {
   maskPhone,
   maskName,
   maskAddress,
-  formatDate
+  formatDate,
 };

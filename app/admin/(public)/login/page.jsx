@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken } from "../../../../lib/admin-session";
-import LoginForm from "./LoginForm";
+import LoginForm from "../../../../components/LoginForm";
 
 export default async function AdminLoginPage() {
   const cookieStore = await cookies();

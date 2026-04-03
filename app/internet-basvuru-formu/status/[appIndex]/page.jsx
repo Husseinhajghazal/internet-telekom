@@ -40,9 +40,12 @@ const ApplicationStatusPage = () => {
   }, [appIndex]);
 
   return (
-    <ApplicationInfoView application={application} loading={loading} error={error} />
+    <ApplicationInfoView
+      application={application}
+      loading={loading}
+      error={error}
+    />
   );
 };
 
 export default ApplicationStatusPage;
-

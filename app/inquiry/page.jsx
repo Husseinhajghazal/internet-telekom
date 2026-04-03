@@ -3,12 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MdPhone, MdOutlineTag } from "react-icons/md";
+import { MdPhone, MdOutlineTag, MdHome, MdSearch, MdInfoOutline } from "react-icons/md";
 import { GrNotes } from "react-icons/gr";
 import Button from "../../components/Button";
 
-const normalizeIndex = (value) =>
-  String(value || "").replace(/\D/g, "");
+const normalizeIndex = (value) => String(value || "").replace(/\D/g, "");
 
 const normalizePhone = (value = "") => {
   let formatted = value.replace(/\D/g, "");
@@ -113,13 +112,14 @@ export default function InquiryPage() {
   };
 
   return (
-    <div className="min-h-svh flex flex-col items-center justify-center px-6 py-10 bg-linear-to-br from-blue-50 via-white to-cyan-50 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-10 right-10 w-32 h-32 bg-blue-200 rounded-full blur-xl" />
-        <div className="absolute bottom-10 left-10 w-40 h-40 bg-cyan-200 rounded-full blur-xl" />
-      </div>
+    <div className="flex flex-row min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50">
+      <div className="flex-1 lg:w-[70%] flex flex-col items-center justify-center px-6 py-10 relative overflow-hidden shrink-0">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute top-10 right-10 w-32 h-32 bg-blue-200 rounded-full blur-xl" />
+          <div className="absolute bottom-10 left-10 w-40 h-40 bg-cyan-200 rounded-full blur-xl" />
+        </div>
 
-      <div className="relative z-10 w-full max-w-md space-y-8 text-center">
+        <div className="relative z-10 w-full max-w-md space-y-8 text-center">
         <div className="space-y-2">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             استعلام عن الطلب
@@ -232,18 +232,20 @@ export default function InquiryPage() {
               type="submit"
               variant="primary"
               size="large"
-              className="flex-1 sm:flex-none min-w-35"
+              className="flex-1 sm:flex-none min-w-35 flex items-center justify-center gap-2"
               disabled={loading}
             >
+              <MdSearch size={22} />
               {loading ? "جاري البحث..." : "استعلم"}
             </Button>
             <Button
               type="button"
               variant="secondary"
               size="large"
-              className="flex-1 sm:flex-none min-w-35"
-              onClick={() => router.push("/")}
+              className="flex-1 sm:flex-none min-w-35 flex items-center justify-center gap-2"
+              onClick={() => router.push("/start")}
             >
+              <MdHome size={22} />
               الصفحة الرئيسية
             </Button>
           </div>
@@ -264,7 +266,11 @@ export default function InquiryPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-            onClick={() => router.push(`/internet-basvuru-formu/status/${adminNotePopup.appIndex}`)}
+            onClick={() =>
+              router.push(
+                `/internet-basvuru-formu/status/${adminNotePopup.appIndex}`,
+              )
+            }
             aria-hidden
           />
           <div className="relative w-full max-w-sm rounded-[2rem] bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
@@ -273,10 +279,14 @@ export default function InquiryPage() {
                 <GrNotes size={32} />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-extrabold text-gray-900">رسالة مهمة من الفريق</h3>
-                <p className="text-gray-600 font-medium">بخصوص طلبك رقم {adminNotePopup.appIndex}</p>
+                <h3 className="text-xl font-extrabold text-gray-900">
+                  رسالة مهمة من فريق الخدمة
+                </h3>
+                <p className="text-gray-600 font-medium">
+                  بخصوص طلبك رقم {adminNotePopup.appIndex}
+                </p>
               </div>
-              
+
               <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-right">
                 <p className="text-gray-800 font-semibold whitespace-pre-wrap leading-relaxed">
                   {adminNotePopup.note}
@@ -287,7 +297,11 @@ export default function InquiryPage() {
                 <Button
                   variant="primary"
                   className="w-full justify-center !rounded-xl"
-                  onClick={() => router.push(`/internet-basvuru-formu/status/${adminNotePopup.appIndex}`)}
+                  onClick={() =>
+                    router.push(
+                      `/internet-basvuru-formu/status/${adminNotePopup.appIndex}`,
+                    )
+                  }
                 >
                   استمرار إلى تفاصيل الطلب
                 </Button>
@@ -304,6 +318,34 @@ export default function InquiryPage() {
           </div>
         </div>
       )}
+      </div>
+
+      {/* Sidebar Image */}
+      <div className="hidden lg:block lg:w-[30%] shrink-0">
+        <div className="fixed top-0 left-0 lg:w-[30%] h-svh bg-blue-50 overflow-hidden">
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/40 to-black/20 z-10 pointer-events-none"></div>
+          
+          {/* Decorative touches */}
+          <div className="absolute bottom-16 left-10 right-10 z-20 text-white flex flex-col gap-5 drop-shadow-xl animate-fade-in-up">
+            <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+              <MdInfoOutline className="w-8 h-8 text-blue-300" />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold mb-3 tracking-wide">استعلام عن الطلب</h3>
+              <p className="text-white/80 text-sm leading-relaxed opacity-95">
+                تتبع حالة طلبك بكل سهولة، نحن هنا لضمان تقديم أفضل الخدمات بكل شفافية.
+              </p>
+            </div>
+          </div>
+
+          <img
+            src="/consulting.jpg"
+            alt="Inquiry visual"
+            className="w-full h-full object-cover animate-step-in-right relative z-0"
+          />
+        </div>
+      </div>
     </div>
   );
 }

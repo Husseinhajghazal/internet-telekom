@@ -12,6 +12,7 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "formik": "^2.4.9",
+    "framer-motion": "^12.38.0",
     "lottie-web": "^5.12.2",
     "moment": "^2.30.1",
     "next": "16.1.7",

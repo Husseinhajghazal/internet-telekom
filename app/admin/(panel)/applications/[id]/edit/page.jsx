@@ -20,8 +20,8 @@ const SERVICE_TYPE_OPTIONS = [
 ];
 
 const CONTRACT_PREF_OPTIONS = [
-  { value: "with", label: "مع عقد" },
-  { value: "without", label: "بدون عقد" },
+  { value: "with", label: "مع عقد إشتراك" },
+  { value: "without", label: "بدون عقد إشتراك" },
 ];
 
 const SELECTED_SERVICE_OPTIONS = [
@@ -427,7 +427,7 @@ export default function EditApplicationPage() {
           </div>
 
           <div className="md:col-span-2">
-            <label className={labelClass}>ملاحظة من الفريق (للمستخدم)</label>
+            <label className={labelClass}>ملاحظة من فريق الخدمة (للمشتري)</label>
             <textarea
               name="adminNote"
               rows={3}

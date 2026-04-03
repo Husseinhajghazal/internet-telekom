@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ErrorMessage } from "formik";
 import PackageSection from "../PackageSection";
 import TechTypeGrid from "../TechTypeGrid";
@@ -27,7 +27,8 @@ const Step5 = ({
     const current = values.selectedPackage || "";
 
     setDuration(nextDuration);
-    const pattern = kind === "family" ? /^family-(18|24)-(.+)$/ : /^vip-(12|18)-(.+)$/;
+    const pattern =
+      kind === "family" ? /^family-(18|24)-(.+)$/ : /^vip-(12|18)-(.+)$/;
     const match = current.match(pattern);
     if (match) {
       setFieldValue("selectedPackage", `${kind}-${nextDuration}-${match[2]}`);
@@ -41,7 +42,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "blue",
-      features: ["انترنت بحسب السرعة لديك"]
+      features: ["انترنت بحسب السرعة لديك"],
     },
     {
       value: "fiber",
@@ -49,7 +50,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "green",
-      features: ["ألياف ضوئية بسرعة عالية"]
+      features: ["ألياف ضوئية بسرعة عالية"],
     },
     {
       value: "gigafiber",
@@ -57,14 +58,17 @@ const Step5 = ({
       speed: "1000",
       price: 699,
       color: "purple",
-      features: ["اقصى سرعة بتقنية الجيل السادس"]
+      features: ["اقصى سرعة بتقنية الجيل السادس"],
     },
   ];
+
+  const [showVideo, setShowVideo] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(true);
 
   if (isWithContract) {
     return (
       <div className="max-w-6xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
-        <div className="space-y-16 md:px-6">
+        <div className="md:px-6">
           <PackageSection
             accent="blue"
             title="الباقات العائلية المخفضة"
@@ -99,12 +103,54 @@ const Step5 = ({
             ]}
             selectedDuration={vipContractDuration}
             onDurationChange={(nextDuration) =>
-              updateDuration("vip", vipContractDuration, nextDuration, setVipContractDuration)
+              updateDuration(
+                "vip",
+                vipContractDuration,
+                nextDuration,
+                setVipContractDuration,
+              )
             }
             speeds={vipSpeeds}
             packageKind="vip"
             selectedPackage={values.selectedPackage}
           />
+
+          {showOverlay ? (
+            <div className="bg-white p-6 rounded-3xl shadow-lg max-w-md mx-auto">
+              <h3 className="text-lg font-semibold mb-4 text-center">
+                هل تحتاج إلى شرح عن الباقات؟
+              </h3>
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => {
+                    setShowOverlay(false);
+                    setShowVideo(true);
+                  }}
+                  className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+                >
+                  نعم
+                </button>
+                <button
+                  onClick={() => setShowOverlay(false)}
+                  className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
+                >
+                  لا
+                </button>
+              </div>
+            </div>
+          ) : showVideo ? (
+            <div className="flex justify-center">
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/lyav1Uz9DVI"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          ) : null}
         </div>
 
         {errors.selectedPackage && touched.selectedPackage && (
@@ -125,12 +171,12 @@ const Step5 = ({
         title="اختر نوع الاتصال"
         subTitle="يمكنك اختيار نوع التقنية المفضلة لديك"
       >
-        <LottieAnimation
+        {/* <LottieAnimation
           path="/animations/Network%20Speed%20-%20Animation.json"
           width={150}
           height={150}
           className="inline-block"
-        />
+        /> */}
       </StepHeader>
 
       <div className="md:px-4">

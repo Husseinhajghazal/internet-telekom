@@ -6,11 +6,14 @@ import { MdSpeed, MdCheck } from "react-icons/md";
 
 const palettes = {
   purple: {
-    selectedCard: "border-purple-500/70 bg-linear-to-br from-purple-50/90 to-purple-100/60 shadow-xl shadow-purple-200/60",
-    hoverCard: "border-gray-200/80 bg-white/70 hover:border-purple-300/70 hover:shadow-lg hover:shadow-purple-100/60",
+    selectedCard:
+      "border-purple-500/70 bg-linear-to-br from-purple-50/90 to-purple-100/60 shadow-xl shadow-purple-200/60",
+    hoverCard:
+      "border-gray-200/80 bg-white/70 hover:border-purple-300/70 hover:shadow-lg hover:shadow-purple-100/60",
     blobTop: "bg-purple-500/18",
     blobBottom: "bg-purple-400/18",
-    selectedDot: "bg-purple-500 border-purple-500 shadow-lg shadow-purple-200/60",
+    selectedDot:
+      "bg-purple-500 border-purple-500 shadow-lg shadow-purple-200/60",
     hoverDot: "border-gray-300 group-hover:border-purple-400/70",
     selectedIconBox: "bg-purple-500 shadow-lg shadow-purple-200/60",
     hoverIconBox: "bg-purple-100/70 group-hover:bg-purple-200/70",
@@ -24,8 +27,10 @@ const palettes = {
     featureIcon: "text-purple-200",
   },
   blue: {
-    selectedCard: "border-blue-500/70 bg-linear-to-br from-blue-50/90 to-cyan-50/70 shadow-xl shadow-blue-200/60",
-    hoverCard: "border-gray-200/80 bg-white/70 hover:border-blue-300/70 hover:shadow-lg hover:shadow-blue-100/60",
+    selectedCard:
+      "border-blue-500/70 bg-linear-to-br from-blue-50/90 to-cyan-50/70 shadow-xl shadow-blue-200/60",
+    hoverCard:
+      "border-gray-200/80 bg-white/70 hover:border-blue-300/70 hover:shadow-lg hover:shadow-blue-100/60",
     blobTop: "bg-blue-500/18",
     blobBottom: "bg-blue-400/18",
     selectedDot: "bg-blue-500 border-blue-500 shadow-lg shadow-blue-200/60",
@@ -42,11 +47,14 @@ const palettes = {
     featureIcon: "text-blue-200",
   },
   green: {
-    selectedCard: "border-emerald-500/70 bg-linear-to-br from-emerald-50/90 to-teal-50/70 shadow-xl shadow-emerald-200/60",
-    hoverCard: "border-gray-200/80 bg-white/70 hover:border-emerald-300/70 hover:shadow-lg hover:shadow-emerald-100/60",
+    selectedCard:
+      "border-emerald-500/70 bg-linear-to-br from-emerald-50/90 to-teal-50/70 shadow-xl shadow-emerald-200/60",
+    hoverCard:
+      "border-gray-200/80 bg-white/70 hover:border-emerald-300/70 hover:shadow-lg hover:shadow-emerald-100/60",
     blobTop: "bg-emerald-500/18",
     blobBottom: "bg-emerald-400/18",
-    selectedDot: "bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-200/60",
+    selectedDot:
+      "bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-200/60",
     hoverDot: "border-gray-300 group-hover:border-emerald-400/70",
     selectedIconBox: "bg-emerald-500 shadow-lg shadow-emerald-200/60",
     hoverIconBox: "bg-emerald-100/70 group-hover:bg-teal-100/70",
@@ -58,13 +66,10 @@ const palettes = {
     backGradient: "from-emerald-600 to-teal-500",
     backAccent: "bg-emerald-400/30",
     featureIcon: "text-emerald-200",
-  }
+  },
 };
 
-const TechTypeGrid = ({
-  options,
-  selectedTechType,
-}) => {
+const TechTypeGrid = ({ options, selectedTechType }) => {
   const [hoveredCard, setHoveredCard] = useState(null);
 
   return (
@@ -101,8 +106,12 @@ const TechTypeGrid = ({
                   }`}
                 >
                   <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <div className={`absolute top-0 right-0 w-32 h-32 ${palette.blobTop} rounded-full -translate-y-16 translate-x-16 blur-2xl`} />
-                    <div className={`absolute bottom-0 left-0 w-24 h-24 ${palette.blobBottom} rounded-full translate-y-12 -translate-x-12 blur-2xl`} />
+                    <div
+                      className={`absolute top-0 right-0 w-32 h-32 ${palette.blobTop} rounded-full -translate-y-16 translate-x-16 blur-2xl`}
+                    />
+                    <div
+                      className={`absolute bottom-0 left-0 w-24 h-24 ${palette.blobBottom} rounded-full translate-y-12 -translate-x-12 blur-2xl`}
+                    />
                   </div>
 
                   <div
@@ -120,7 +129,9 @@ const TechTypeGrid = ({
                   <div className="relative p-6 h-full flex flex-col items-center justify-center text-center space-y-3">
                     <div
                       className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${
-                        isSelected ? palette.selectedIconBox : palette.hoverIconBox
+                        isSelected
+                          ? palette.selectedIconBox
+                          : palette.hoverIconBox
                       } transition-all duration-300`}
                     >
                       <MdSpeed
@@ -134,10 +145,22 @@ const TechTypeGrid = ({
                       <div className="text-3xl font-extrabold tracking-tight text-gray-900 leading-none">
                         {opt.title}
                       </div>
-                      <div className="text-sm text-gray-600 font-bold pb-1.5">{opt.speed} ميغابت/ثانية</div>
-                      <div className={`inline-flex items-baseline justify-center gap-1.5 rounded-xl border px-3 py-1 shadow-xs ${palette.priceChip}`}>
-                        <span className={`text-base font-extrabold tracking-tight ${palette.priceText}`}>{opt.price}</span>
-                        <span className={`text-[10px] font-bold ${palette.priceText}`}>TL</span>
+                      <div className="text-sm text-gray-600 font-bold pb-1.5">
+                        {opt.speed} ميغابت/ثانية
+                      </div>
+                      <div
+                        className={`inline-flex items-baseline justify-center gap-1.5 rounded-xl border px-3 py-1 shadow-xs ${palette.priceChip}`}
+                      >
+                        <span
+                          className={`text-base font-extrabold tracking-tight ${palette.priceText}`}
+                        >
+                          {opt.price}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold ${palette.priceText}`}
+                        >
+                          TL
+                        </span>
                       </div>
                     </div>
 
@@ -154,14 +177,16 @@ const TechTypeGrid = ({
                 {/* ─── BACK FACE ─── */}
                 <div
                   className={`flip-card-back rounded-3xl border-2 overflow-hidden ${
-                    isSelected
-                      ? "border-white/40 shadow-xl"
-                      : "border-white/20"
+                    isSelected ? "border-white/40 shadow-xl" : "border-white/20"
                   } bg-linear-to-br ${palette.backGradient}`}
                 >
                   <div className="absolute inset-0 pointer-events-none">
-                    <div className={`absolute -top-10 -right-10 w-40 h-40 ${palette.backAccent} rounded-full blur-3xl`} />
-                    <div className={`absolute -bottom-10 -left-10 w-32 h-32 ${palette.backAccent} rounded-full blur-3xl`} />
+                    <div
+                      className={`absolute -top-10 -right-10 w-40 h-40 ${palette.backAccent} rounded-full blur-3xl`}
+                    />
+                    <div
+                      className={`absolute -bottom-10 -left-10 w-32 h-32 ${palette.backAccent} rounded-full blur-3xl`}
+                    />
                   </div>
 
                   {isSelected && (
@@ -176,15 +201,23 @@ const TechTypeGrid = ({
                         {opt.title}
                       </div>
                       <div className="text-xl font-bold mt-1">
-                        {opt.speed} <span className="text-xs opacity-80">Mbps</span>
+                        {opt.speed}
+                        <span className="text-xs opacity-80 ml-1">Mbps</span>
                       </div>
                     </div>
 
                     <div className="space-y-2.5 my-3">
                       {opt.features.map((feature, i) => (
-                        <div key={i} className="flex items-start gap-2 text-right">
-                          <MdCheck className={`shrink-0 mt-0.5 text-lg ${palette.featureIcon}`} />
-                          <span className="text-sm font-medium leading-snug opacity-95">{feature}</span>
+                        <div
+                          key={i}
+                          className="flex items-start gap-2 text-right"
+                        >
+                          <MdCheck
+                            className={`shrink-0 mt-0.5 text-lg ${palette.featureIcon}`}
+                          />
+                          <span className="text-sm font-medium leading-snug opacity-95">
+                            {feature}
+                          </span>
                         </div>
                       ))}
                     </div>

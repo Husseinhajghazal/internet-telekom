@@ -39,7 +39,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "cancel",
       selected: values.selectedService === "cancel",
-      icon: '/animations/Cross,%20Close,%20Cancel%20Icon%20Animation.json',
+      icon: "/animations/Cross,%20Close,%20Cancel%20Icon%20Animation.json",
       title: "إبطال خط الإنترنت",
       description: "",
       size: "small",
@@ -52,7 +52,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "transfer-name",
       selected: values.selectedService === "transfer-name",
-      icon: '/animations/Photo%20ID%20Scan%20loader.json',
+      icon: "/animations/Photo%20ID%20Scan%20loader.json",
       title: "نقل ملكية خط الإنترنت",
       description: "",
       size: "small",
@@ -65,7 +65,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedService",
       value: "transfer-address",
       selected: values.selectedService === "transfer-address",
-      icon: '/animations/Address.json',
+      icon: "/animations/Address.json",
       title: "نقل خط الإنترنت لعنوان آخر",
       description: "",
       size: "small",
@@ -105,7 +105,7 @@ const Step4 = ({ values, errors, touched }) => {
       value: "without",
       selected: values.contractPreference === "without",
       icon: "/animations/no%20transactions.json",
-      title: "بدون عقد",
+      title: "بدون عقد إشتراك",
       description: "خط مسبق الدفع بدون إلتزام",
       size: "large",
       color: "blue",
@@ -117,7 +117,7 @@ const Step4 = ({ values, errors, touched }) => {
       value: "with",
       selected: values.contractPreference === "with",
       icon: "/animations/Contract%20Sign.json",
-      title: "مع عقد",
+      title: "مع عقد إشتراك",
       description: "عروض مميزة مع عقد إشتراك",
       size: "large",
       color: "green",
@@ -167,11 +167,11 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedInquiry",
       value: "transfer-issue",
       selected: values.selectedInquiry === "transfer-issue",
-      icon: "/animations/Address.json",
+      icon: "/animations/KYC%20Home%20address%20verification.json",
       title: "نقل الخط",
       description: "لا يمكنني النقل لعنواني الجديد",
       size: "large",
-      color: "green",
+      color: "indigo",
       titleSize: "text-lg",
       centerTitle: true,
       hidden: !showInquiryCards,
@@ -184,7 +184,7 @@ const Step4 = ({ values, errors, touched }) => {
       title: "سرعة الخط",
       description: "لدي بطئ شديد في السرعة",
       size: "large",
-      color: "orange",
+      color: "indigo",
       titleSize: "text-lg",
       centerTitle: true,
       hidden: !showInquiryCards,
@@ -193,7 +193,7 @@ const Step4 = ({ values, errors, touched }) => {
       name: "selectedInquiry",
       value: "high-bill",
       selected: values.selectedInquiry === "high-bill",
-      icon: "/animations/Consulting.json",
+      icon: "/animations/Send%20Invoice.json",
       title: "الفاتورة مرتفعة",
       description: "فاتورة غير منتظمة وعشوائية",
       size: "large",
@@ -210,7 +210,7 @@ const Step4 = ({ values, errors, touched }) => {
       title: "الإنترنت متوقف",
       description: "خط متوقف ولا يعمل حالياً",
       size: "large",
-      color: "blue",
+      color: "red",
       titleSize: "text-lg",
       centerTitle: true,
       hidden: !showInquiryCards,
@@ -223,7 +223,7 @@ const Step4 = ({ values, errors, touched }) => {
       title: "إستفسار عام",
       description: "أي سؤال ٱخر تريد إجابه عنه",
       size: "large",
-      color: "purple",
+      color: "green",
       titleSize: "text-lg",
       centerTitle: true,
       hidden: !showInquiryCards,
@@ -248,12 +248,12 @@ const Step4 = ({ values, errors, touched }) => {
               : "هل تفضل عروض مع عقد أم بدون عقد؟"
         }
       >
-        <LottieAnimation
+        {/* <LottieAnimation
           path="/animations/Thinking.json"
           width={150}
           height={150}
           className="inline-block"
-        />
+        /> */}
       </StepHeader>
 
       <div className="grid md:grid-cols-2 gap-3 md:gap-6 md:px-6">

@@ -34,12 +34,12 @@ const initialValues = {
   addressInsideDoorNo: "",
   address: "",
   note: "",
-  invoiceFile: null,
-  invoiceFileUrl: "",
+  invoiceFiles: [],
+  invoiceFileUrls: [],
   internetCompany: "",
   subscriptionNo: "",
   selectedInquiry: "",
-  noContractTechType: ""
+  noContractTechType: "",
 };
 
 const useApplicationForm = () => {
@@ -113,13 +113,18 @@ const useApplicationForm = () => {
           : Yup.string(),
 
       selectedPackage:
-        step === 5 && values?.serviceType === "newline" && values?.contractPreference === "with"
+        step === 5 &&
+        values?.serviceType === "newline" &&
+        values?.contractPreference === "with"
           ? Yup.string().required("يرجى اختيار الباقة المناسبة")
           : Yup.string(),
-      
-      internetCompany: step === 6 && values?.serviceType === "services"
-        ? Yup.string().required("يرجى كتابة شركة الإنترنت")
-        : Yup.string(),
+
+      internetCompany:
+        step === 6 &&
+        (values?.serviceType === "services" ||
+          values?.serviceType === "upgrade")
+          ? Yup.string().required("يرجى كتابة شركة الإنترنت")
+          : Yup.string(),
     });
 
   const validate = async (values) => {
@@ -150,12 +155,14 @@ const useApplicationForm = () => {
     address: app.address ?? "",
     note: app.note ?? "",
     userAgreementAccepted: false,
-    invoiceFile: null,
-    invoiceFileUrl: app.invoiceFileUrl ?? "",
+    invoiceFiles: [],
+    invoiceFileUrls: app.invoiceFileUrl
+      ? app.invoiceFileUrl.split(",").filter(Boolean)
+      : [],
     internetCompany: app.internetCompany ?? "",
     subscriptionNo: app.subscriptionNo ?? "",
     selectedInquiry: app.selectedInquiry ?? "",
-    noContractTechType: app.noContractTechType ?? ""
+    noContractTechType: app.noContractTechType ?? "",
   });
 
   /**
@@ -216,8 +223,16 @@ const useApplicationForm = () => {
       formData.append("step", String(currentStep));
       formData.append("internetCompany", values.internetCompany || "");
       formData.append("subscriptionNo", values.subscriptionNo || "");
-      if (values.invoiceFile) {
-        formData.append("invoiceFile", values.invoiceFile);
+      if (values.invoiceFiles && values.invoiceFiles.length > 0) {
+        values.invoiceFiles.forEach((file) => {
+          formData.append("invoiceFiles", file);
+        });
+      }
+      if (values.invoiceFileUrls) {
+        formData.append(
+          "existingInvoiceFileUrls",
+          values.invoiceFileUrls.join(","),
+        );
       }
 
       const response = await fetch(`/api/applications/${id}`, {
@@ -237,7 +252,12 @@ const useApplicationForm = () => {
       payload.phone = values.phone;
     }
     if (currentStep === 2) payload.hasInternet = values.hasInternet;
-    if (currentStep === 3) payload.serviceType = values.serviceType;
+    if (currentStep === 3) {
+      payload.serviceType = values.serviceType;
+      if (values.selectedService) {
+        payload.selectedService = values.selectedService;
+      }
+    }
     if (currentStep === 4) {
       payload.contractPreference = values.contractPreference;
       payload.selectedService = values.selectedService;

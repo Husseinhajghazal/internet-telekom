@@ -36,12 +36,12 @@ const Step2 = ({ values, errors, touched }) => {
         title="هل لديك خط إنترنت؟"
         subTitle="هذا سيساعدنا على تقديم أفضل خدمة لك"
       >
-        <LottieAnimation
+        {/* <LottieAnimation
           path="/animations/WiFi%20Connecting.json"
           width={150}
           height={150}
           className="inline-block"
-        />
+        /> */}
       </StepHeader>
 
       <div className="grid md:grid-cols-2 gap-3 md:gap-6 md:px-6">
