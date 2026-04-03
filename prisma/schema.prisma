@@ -9,7 +9,10 @@ datasource db {
 
 enum ApplicationStatus {
   NOT_COMPLETED
+  NEW
   UNDER_REVIEW
+  UNDER_OBSERVATION
+  DELAYED
   REJECTED
   COMPLETED
 }
@@ -34,6 +37,18 @@ model Application {
   selectedInquiry     String?
   noContractTechType  String?
   adminNote           String?
+  completedAt         DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  notes               Note[]
+}
+
+model Note {
+  id            String      @id @default(cuid())
+  text          String
+  adminName     String
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }

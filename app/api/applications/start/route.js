@@ -90,6 +90,9 @@ export async function POST(request) {
 
     const matches = await findMatchesByNameAndPhone(name, phone);
 
+    // Statuses that mean the application is still active — user can't create a new one
+    const ACTIVE_STATUSES = ["NEW", "UNDER_REVIEW", "UNDER_OBSERVATION", "DELAYED"];
+
     const notCompleted = matches.find((m) => m.status === "NOT_COMPLETED");
     if (notCompleted) {
       return NextResponse.json({
@@ -98,13 +101,15 @@ export async function POST(request) {
       });
     }
 
-    const underReview = matches.find((m) => m.status === "UNDER_REVIEW");
-    if (underReview) {
+    const activeApp = matches.find((m) => ACTIVE_STATUSES.includes(m.status));
+    if (activeApp) {
       return NextResponse.json({
         action: "redirect",
-        appIndex: underReview.appIndex,
+        appIndex: activeApp.appIndex,
       });
     }
+
+    // REJECTED or COMPLETED — allow creating a new application
 
     let application = null;
     for (let attempt = 0; attempt < 5; attempt += 1) {

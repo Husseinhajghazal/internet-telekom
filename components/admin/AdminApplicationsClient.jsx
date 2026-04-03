@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   MdCalendarMonth,
   MdChevronLeft,
@@ -15,11 +16,18 @@ import {
   MdPhone,
   MdSearch,
   MdVisibility,
+  MdMoreVert,
+  MdOutlineSpeakerNotes,
+  MdSwapHoriz,
+  MdDoneAll,
 } from "react-icons/md";
+import { FaRegEdit } from "react-icons/fa";
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 import * as XLSX from "xlsx";
 import AdminConfirmDialog from "./AdminConfirmDialog";
 import ApplicationDetailModal from "./ApplicationDetailModal";
+import AdminNotesModal from "./AdminNotesModal";
+import AdminStatusModal from "./AdminStatusModal";
 import {
   describeSelectedInquiry,
   describeSelectedPackage,
@@ -28,30 +36,180 @@ import {
   describeNoContractTechType,
   formatDate,
 } from "@/utils/general";
+import { useRouter } from "next/navigation";
 
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
 
 const STATUS_LABELS = {
   NOT_COMPLETED: "غير مكتمل",
+  NEW: "جديد",
   UNDER_REVIEW: "قيد المراجعة",
-  REJECTED: "مرفوض",
+  UNDER_OBSERVATION: "قيد المتابعة",
+  DELAYED: "مؤجل",
+  REJECTED: "ملغى",
   COMPLETED: "مكتمل",
 };
 
 const statusBadgeClass = (status) => {
   switch (status) {
+    case "NEW":
+      return "bg-blue-100 text-blue-800 ring-1 ring-blue-200/60";
     case "COMPLETED":
       return "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200/60";
     case "REJECTED":
       return "bg-red-100 text-red-800 ring-1 ring-red-200/60";
     case "UNDER_REVIEW":
       return "bg-amber-100 text-amber-900 ring-1 ring-amber-200/60";
+    case "UNDER_OBSERVATION":
+      return "bg-purple-100 text-purple-900 ring-1 ring-purple-200/60";
+    case "DELAYED":
+      return "bg-orange-100 text-orange-900 ring-1 ring-orange-200/60";
     case "NOT_COMPLETED":
       return "bg-slate-100 text-slate-700 ring-1 ring-slate-200/60";
     default:
       return "bg-gray-100 text-gray-800";
   }
+};
+
+const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, openStatusModal }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        menuRef.current && !menuRef.current.contains(e.target) &&
+        buttonRef.current && !buttonRef.current.contains(e.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    
+    const handleScroll = (e) => {
+      if (
+        menuRef.current && !menuRef.current.contains(e.target) &&
+        buttonRef.current && !buttonRef.current.contains(e.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      window.addEventListener("scroll", handleScroll, true); 
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [isOpen]);
+
+  const toggleOpen = () => {
+    if (!isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const dropdownHeight = 190; // Approximate rendered height
+      const spaceBelow = window.innerHeight - rect.bottom;
+      
+      let top = rect.bottom + window.scrollY;
+      if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+        top = rect.top + window.scrollY - dropdownHeight - 4; // Open upwards
+      } else {
+        top = top + 4; // Open downwards
+      }
+      
+      setCoords({
+        top,
+        left: rect.right + window.scrollX - 176, // 11rem (w-44) width
+      });
+    }
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        onClick={toggleOpen}
+        className="p-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition text-gray-600 focus:outline-none shadow-sm inline-block"
+      >
+        <MdMoreVert size={22} />
+      </button>
+      {isOpen && typeof document !== "undefined" && createPortal(
+        <div
+          ref={menuRef}
+          style={{ top: coords.top, left: coords.left }}
+          className="absolute w-44 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden text-right"
+        >
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              openDetail(app);
+            }}
+            className="w-full px-4 py-2.5 text-sm text-cyan-700 hover:bg-cyan-50 transition flex items-center gap-2.5 font-bold"
+          >
+            <MdVisibility size={18} />
+            تفاصيل
+          </button>
+
+          <button
+            onClick={() => router.push(`/admin/applications/${app.id}/edit`)}
+            className="w-full px-4 py-2.5 text-sm text-orange-600 hover:bg-orange-50 transition flex items-center gap-2.5 font-bold"
+          >
+            <FaRegEdit size={18} />
+            تحرير
+          </button>
+
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              openStatusModal(app);
+            }}
+            className="w-full px-4 py-2.5 text-sm text-violet-600 hover:bg-violet-50 transition flex items-center gap-2.5 font-bold"
+          >
+            <MdSwapHoriz size={18} />
+            تحديث الحالة
+          </button>
+          
+          <button
+            disabled={!canChangeStatus(app.status) || actionId === app.id}
+            onClick={() => {
+              setIsOpen(false);
+              setConfirm({
+                kind: "reject",
+                appId: app.id,
+                appIndex: app.appIndex,
+              });
+            }}
+            className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <MdClose size={18} />
+            إلغاء
+          </button>
+
+          <button
+            disabled={!canChangeStatus(app.status) || actionId === app.id}
+            onClick={() => {
+              setIsOpen(false);
+              setConfirm({
+                kind: "complete",
+                appId: app.id,
+                appIndex: app.appIndex,
+              });
+            }}
+            className="w-full px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <MdDone size={18} />
+            إكمال
+          </button>
+        </div>,
+        document.body
+      )}
+    </>
+  );
 };
 
 export default function AdminApplicationsClient() {
@@ -60,6 +218,8 @@ export default function AdminApplicationsClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [detailApp, setDetailApp] = useState(null);
+  const [notesApp, setNotesApp] = useState(null);
+  const [statusApp, setStatusApp] = useState(null);
   const [actionId, setActionId] = useState(null);
 
   const [confirm, setConfirm] = useState(null);
@@ -144,10 +304,11 @@ export default function AdminApplicationsClient() {
       const worksheetData = [
         [
           "رقم الطلب",
-          "الإسم",
+          "الإسم واللقب",
           "رقم الموبايل",
           "الحالة",
           "تاريخ الإنشاء",
+          "تاريخ الإكمال",
           "العنوان",
           "هل لديه انترنت؟",
           "نوع الطلب",
@@ -165,6 +326,7 @@ export default function AdminApplicationsClient() {
           app.phone,
           STATUS_LABELS[app.status] || app.status,
           app.createdAt ? formatDate(app.createdAt) : "",
+          app.completedAt ? formatDate(app.completedAt) : "",
           app.address,
           app.hasInternet ? "نعم" : "لا",
           describeServiceType(app.serviceType),
@@ -230,6 +392,40 @@ export default function AdminApplicationsClient() {
   const openDetail = async (app) => {
     setDetailApp(app);
     await refreshDetail(app.id);
+  };
+
+  const handleNoteAdded = (newNote) => {
+    setData((prev) => {
+      if (!prev) return prev;
+      const newApps = prev.applications.map((app) =>
+        app.id === notesApp.id
+          ? { ...app, notes: [newNote, ...(app.notes || [])] }
+          : app
+      );
+      return { ...prev, applications: newApps };
+    });
+    setNotesApp((prev) => ({ ...prev, notes: [newNote, ...(prev.notes || [])] }));
+  };
+
+  const handleStatusUpdate = async (newStatus) => {
+    if (!statusApp) return;
+    setActionId(statusApp.id);
+    try {
+      const res = await fetch(`/api/admin/applications/${statusApp.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAlertMsg(json.error || "فشل التحديث");
+        return;
+      }
+      setStatusApp(null);
+      await load(page);
+    } finally {
+      setActionId(null);
+    }
   };
 
   const applications = data?.applications ?? [];
@@ -366,12 +562,9 @@ export default function AdminApplicationsClient() {
               className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
             >
               <option value="">كل الحالات</option>
-              <option value="NOT_COMPLETED">
-                {STATUS_LABELS.NOT_COMPLETED}
-              </option>
-              <option value="UNDER_REVIEW">{STATUS_LABELS.UNDER_REVIEW}</option>
-              <option value="REJECTED">{STATUS_LABELS.REJECTED}</option>
-              <option value="COMPLETED">{STATUS_LABELS.COMPLETED}</option>
+              {Object.entries(STATUS_LABELS).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
             </select>
           </div>
           <div className="lg:col-span-2">
@@ -451,7 +644,7 @@ export default function AdminApplicationsClient() {
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdPerson size={18} />
-                      الإسم
+                      الإسم واللقب
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
@@ -466,10 +659,22 @@ export default function AdminApplicationsClient() {
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdCalendarMonth size={18} />
-                      التاريخ
+                      التاريخ الإنشاء
                     </span>
                   </th>
-                  <th className="px-3 py-3.5 font-bold whitespace-nowrap min-w-60 text-center">
+                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MdDoneAll size={18} />
+                      تاريخ الإكمال
+                    </span>
+                  </th>
+                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MdOutlineSpeakerNotes size={18} />
+                      ملاحظات
+                    </span>
+                  </th>
+                  <th className="px-3 py-3.5 font-bold whitespace-nowrap min-w-40 text-center">
                     إجراءات
                   </th>
                 </tr>
@@ -477,7 +682,7 @@ export default function AdminApplicationsClient() {
               <tbody>
                 {applications.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-16 text-center">
+                    <td colSpan={9} className="px-4 py-16 text-center">
                       <div className="inline-flex flex-col items-center gap-2 text-gray-500">
                         <MdOutlineAssignment size={48} className="opacity-30" />
                         <span>
@@ -497,7 +702,7 @@ export default function AdminApplicationsClient() {
                       }`}
                     >
                       <td
-                        className="px-3 py-3.5 font-mono font-bold tabular-nums"
+                        className="px-3 py-3.5 text-center font-mono font-bold tabular-nums"
                         dir="ltr"
                         style={{ color: ACCENT }}
                       >
@@ -527,56 +732,36 @@ export default function AdminApplicationsClient() {
                           ? formatDate(app.createdAt)
                           : "—"}
                       </td>
-                      <td className="px-3 py-2.5">
-                        <div className="flex flex-wrap items-center justify-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => openDetail(app)}
-                            className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:opacity-95"
-                            style={{
-                              background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
-                            }}
-                          >
-                            <MdVisibility size={16} />
-                            تفاصيل
-                          </button>
-                          <button
-                            type="button"
-                            disabled={
-                              !canChangeStatus(app.status) ||
-                              actionId === app.id
-                            }
-                            onClick={() =>
-                              setConfirm({
-                                kind: "reject",
-                                appId: app.id,
-                                appIndex: app.appIndex,
-                              })
-                            }
-                            className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-800 transition hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                          >
-                            <MdClose size={16} />
-                            رفض
-                          </button>
-                          <button
-                            type="button"
-                            disabled={
-                              !canChangeStatus(app.status) ||
-                              actionId === app.id
-                            }
-                            onClick={() =>
-                              setConfirm({
-                                kind: "complete",
-                                appId: app.id,
-                                appIndex: app.appIndex,
-                              })
-                            }
-                            className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-900 transition hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                          >
-                            <MdDone size={16} />
-                            إتمام
-                          </button>
-                        </div>
+                      <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                        {app.completedAt
+                          ? formatDate(app.completedAt)
+                          : "—"}
+                      </td>
+                      <td className="px-3 py-3.5 max-w-48">
+                        <button
+                          onClick={() => setNotesApp(app)}
+                          className="text-right w-full text-xs hover:bg-slate-100 p-2 rounded-xl transition group"
+                        >
+                          {app.notes && app.notes.length > 0 ? (
+                            <span className="text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis block max-w-36">
+                              {app.notes[0].text}
+                            </span>
+                          ) : (
+                            <span className="text-cyan-600 font-bold group-hover:text-cyan-800">
+                              + إضافة ملاحظة
+                            </span>
+                          )}
+                        </button>
+                      </td>
+                      <td className="px-3 py-2.5 text-center">
+                        <ActionMenu
+                          app={app}
+                          openDetail={openDetail}
+                          setConfirm={setConfirm}
+                          canChangeStatus={canChangeStatus}
+                          actionId={actionId}
+                          openStatusModal={setStatusApp}
+                        />
                       </td>
                     </tr>
                   ))
@@ -626,13 +811,30 @@ export default function AdminApplicationsClient() {
         />
       )}
 
+      {notesApp && (
+        <AdminNotesModal
+          application={notesApp}
+          onClose={() => setNotesApp(null)}
+          onNoteAdded={handleNoteAdded}
+        />
+      )}
+
+      {statusApp && (
+        <AdminStatusModal
+          application={statusApp}
+          onClose={() => setStatusApp(null)}
+          onUpdateStatus={handleStatusUpdate}
+          loading={!!actionId && actionId === statusApp.id}
+        />
+      )}
+
       <AdminConfirmDialog
         open={!!confirm}
         kind={confirm?.kind === "reject" ? "reject" : "complete"}
-        title={confirm?.kind === "reject" ? "رفض الطلب؟" : "إتمام الطلب؟"}
+        title={confirm?.kind === "reject" ? "إلغاء الطلب؟" : "إكمال الطلب؟"}
         message={confirm ? `هل أنت متأكد؟ الطلب #${confirm.appIndex}` : ""}
-        confirmLabel={confirm?.kind === "reject" ? "نعم، رفض" : "نعم، إتمام"}
-        cancelLabel="إلغاء"
+        confirmLabel={confirm?.kind === "reject" ? "نعم، إلغاء" : "نعم، إكمال"}
+        cancelLabel="رجوع"
         loading={!!actionId && confirm && actionId === confirm.appId}
         onCancel={() => setConfirm(null)}
         onConfirm={() => {

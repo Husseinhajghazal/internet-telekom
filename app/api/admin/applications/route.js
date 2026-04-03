@@ -6,7 +6,10 @@ const PAGE_SIZE = 20;
 
 const VALID_STATUSES = [
   "NOT_COMPLETED",
+  "NEW",
   "UNDER_REVIEW",
+  "UNDER_OBSERVATION",
+  "DELAYED",
   "REJECTED",
   "COMPLETED",
 ];
@@ -83,15 +86,23 @@ export async function GET(request) {
       prisma.application.count({ where }),
       prisma.application.findMany({
         where,
+        include: {
+          notes: {
+            orderBy: { createdAt: "desc" },
+          },
+        },
       }),
     ]);
 
     // Custom status priority ordering
     const statusPriority = {
-      UNDER_REVIEW: 0,
-      NOT_COMPLETED: 1,
-      REJECTED: 2,
-      COMPLETED: 3,
+      NEW: 0,
+      UNDER_REVIEW: 1,
+      UNDER_OBSERVATION: 2,
+      DELAYED: 3,
+      NOT_COMPLETED: 4,
+      REJECTED: 5,
+      COMPLETED: 6,
     };
 
     // Sort by status priority first, then by creation date (newest first)

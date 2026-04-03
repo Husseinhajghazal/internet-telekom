@@ -6,7 +6,10 @@ import { FaWhatsapp } from "react-icons/fa";
 
 const STATUS_LABELS = {
   NOT_COMPLETED: "غير مكتمل",
+  NEW: "جديد",
   UNDER_REVIEW: "قيد المراجعة",
+  UNDER_OBSERVATION: "قيد المتابعة",
+  DELAYED: "مؤجل",
   REJECTED: "مرفوض",
   COMPLETED: "مكتمل",
 };

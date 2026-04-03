@@ -24,19 +24,28 @@ const ACCENT = "#18a2e3";
 
 const STATUS_LABELS = {
   NOT_COMPLETED: "غير مكتمل",
+  NEW: "جديد",
   UNDER_REVIEW: "قيد المراجعة",
+  UNDER_OBSERVATION: "قيد المتابعة",
+  DELAYED: "مؤجل",
   REJECTED: "مرفوض",
   COMPLETED: "مكتمل",
 };
 
 const statusBadgeClass = (status) => {
   switch (status) {
+    case "NEW":
+      return "bg-blue-100 text-blue-800 ring-1 ring-blue-200/60";
     case "COMPLETED":
       return "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200/60";
     case "REJECTED":
       return "bg-red-100 text-red-800 ring-1 ring-red-200/60";
     case "UNDER_REVIEW":
       return "bg-amber-100 text-amber-900 ring-1 ring-amber-200/60";
+    case "UNDER_OBSERVATION":
+      return "bg-purple-100 text-purple-900 ring-1 ring-purple-200/60";
+    case "DELAYED":
+      return "bg-orange-100 text-orange-900 ring-1 ring-orange-200/60";
     case "NOT_COMPLETED":
       return "bg-slate-100 text-slate-700 ring-1 ring-slate-200/60";
     default:

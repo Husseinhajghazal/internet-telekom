@@ -2,13 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MdSave, MdArrowForward, MdOutlineRefresh } from "react-icons/md";
+import { MdSave, MdArrowBack, MdOutlineRefresh } from "react-icons/md";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 
 const STATUS_OPTIONS = [
   { value: "NOT_COMPLETED", label: "غير مكتمل" },
+  { value: "NEW", label: "جديد" },
   { value: "UNDER_REVIEW", label: "قيد المراجعة" },
+  { value: "UNDER_OBSERVATION", label: "قيد المتابعة" },
+  { value: "DELAYED", label: "مؤجل" },
   { value: "REJECTED", label: "مرفوض" },
   { value: "COMPLETED", label: "مكتمل" },
 ];
@@ -199,7 +202,7 @@ export default function EditApplicationPage() {
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition"
           >
             العودة للقائمة
-            <MdArrowForward size={20} />
+            <MdArrowBack size={20} />
           </button>
         </div>
 

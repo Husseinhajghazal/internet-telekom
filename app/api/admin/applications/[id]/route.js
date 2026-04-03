@@ -2,7 +2,15 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../../lib/prisma";
 import { isAdminAuthenticated } from "../../../../../lib/admin-api";
 
-const ALLOWED_STATUSES = ["REJECTED", "COMPLETED"];
+const ALLOWED_STATUSES = [
+  "NOT_COMPLETED",
+  "NEW",
+  "UNDER_REVIEW",
+  "UNDER_OBSERVATION",
+  "DELAYED",
+  "REJECTED",
+  "COMPLETED",
+];
 
 export async function PATCH(request, { params }) {
   if (!(await isAdminAuthenticated())) {
@@ -20,14 +28,21 @@ export async function PATCH(request, { params }) {
     const status = body?.status;
     if (!ALLOWED_STATUSES.includes(status)) {
       return NextResponse.json(
-        { error: "حالة غير صالحة. استخدم REJECTED أو COMPLETED." },
+        { error: "حالة غير صالحة." },
         { status: 400 },
       );
     }
 
+    const data = { status };
+    if (status === "COMPLETED") {
+      data.completedAt = new Date();
+    } else {
+      data.completedAt = null;
+    }
+
     const updated = await prisma.application.update({
       where: { id },
-      data: { status },
+      data,
     });
 
     return NextResponse.json(updated);
@@ -53,6 +68,11 @@ export async function GET(request, { params }) {
 
     const application = await prisma.application.findUnique({
       where: { id },
+      include: {
+        notes: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
     });
 
     if (!application) {
