@@ -6,35 +6,7 @@ import { useRouter } from "next/navigation";
 import { MdPhone, MdOutlineTag, MdHome, MdSearch, MdInfoOutline } from "react-icons/md";
 import { GrNotes } from "react-icons/gr";
 import Button from "../../components/Button";
-
-const normalizeIndex = (value) => String(value || "").replace(/\D/g, "");
-
-const normalizePhone = (value = "") => {
-  let formatted = value.replace(/\D/g, "");
-  if (formatted.startsWith("90")) {
-    formatted = formatted.substring(2);
-  }
-  if (formatted.startsWith("0")) {
-    formatted = formatted.substring(1);
-  }
-  if (formatted.length > 10) {
-    formatted = formatted.substring(0, 10);
-  }
-  let display = "0 ";
-  if (formatted.length > 0) {
-    display += `(${formatted.substring(0, 3)}`;
-  }
-  if (formatted.length > 3) {
-    display += `) ${formatted.substring(3, 6)}`;
-  }
-  if (formatted.length > 6) {
-    display += ` ${formatted.substring(6, 8)}`;
-  }
-  if (formatted.length > 8) {
-    display += ` ${formatted.substring(8, 10)}`;
-  }
-  return display;
-};
+import { formatPhoneNumber, normalizeIndex } from "@/utils/general";
 
 export default function InquiryPage() {
   const router = useRouter();
@@ -212,7 +184,7 @@ export default function InquiryPage() {
                 autoComplete="tel"
                 value={phone}
                 onChange={(e) => {
-                  setPhone(normalizePhone(e.target.value));
+                  setPhone(formatPhoneNumber(e.target.value));
                   setError(null);
                 }}
                 placeholder="0 (5XX) XXX XX XX"

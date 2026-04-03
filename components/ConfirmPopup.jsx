@@ -1,7 +1,28 @@
 import React from "react";
 
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdPerson, MdPhone, MdDescription, MdSpeed, MdHome, MdOutlineReceiptLong } from "react-icons/md";
+import { PiSpeedometerFill } from "react-icons/pi";
+import { FaBuildingCircleCheck } from "react-icons/fa6";
+import { AiOutlineFieldNumber } from "react-icons/ai";
 import Button from "./Button";
+
+const ACCENT = "#18a2e3";
+
+const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
+  <div
+    className={`rounded-2xl border border-gray-100 bg-white/80 p-3 md:p-4 text-right space-y-1 shadow-sm shadow-slate-100/50 ${className}`}
+  >
+    <div className="flex items-center justify-end gap-2 text-xs text-gray-500 font-bold">
+      {icon && <span style={{ color: ACCENT }}>{icon}</span>}
+      <span>{label}</span>
+    </div>
+    <div
+      dir={dir}
+      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap break-words">
+      {children}
+    </div>
+  </div>
+);
 
 import {
   describeContractPreference,describeNoContractTechType,describeSelectedInquiry,describeSelectedPackage,describeSelectedService,describeServiceType,
@@ -28,135 +49,74 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2">
-              <div className="text-sm text-gray-500 font-bold">الإسم</div>
-              <div className="text-gray-800 font-semibold">
-                {confirmValues?.name || "—"}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2">
-              <div className="text-sm text-gray-500 font-bold">رقم الموبايل</div>
-              <div
-                style={{ direction: "ltr" }}
-                className="text-gray-800 font-semibold"
-              >
-                {confirmValues?.phone || "—"}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-              <div className="text-sm text-gray-500 font-bold">نوع الطلب</div>
-              <div className="text-gray-800 font-semibold">
-                {describeServiceType(confirmValues?.serviceType)}
-              </div>
-            </div>
+            <Row label="الإسم" icon={<MdPerson size={18} />}>
+              {confirmValues?.name || "—"}
+            </Row>
+            <Row label="رقم الموبايل" dir="ltr" icon={<MdPhone size={18} />}>
+              {confirmValues?.phone || "—"}
+            </Row>
+            <Row label="نوع الطلب" className="md:col-span-2" icon={<MdDescription size={18} />}>
+              {describeServiceType(confirmValues?.serviceType)}
+            </Row>
 
             {confirmValues?.serviceType === "inquiry" && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">
-                  نوع الاستشارة
-                </div>
-                <div className="text-gray-800 font-semibold">
-                  {describeSelectedInquiry(confirmValues?.selectedInquiry)}
-                </div>
-              </div>
+              <Row label="نوع الاستشارة" className="md:col-span-2" icon={<MdDescription size={18} />}>
+                {describeSelectedInquiry(confirmValues?.selectedInquiry)}
+              </Row>
             )}
 
             {confirmValues?.serviceType === "newline" && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">
-                  نوع العرض
-                </div>
-                <div className="text-gray-800 font-semibold">
-                  {describeContractPreference(
-                    confirmValues?.contractPreference,
-                  )}
-                </div>
-              </div>
+              <Row label="نوع العرض" className="md:col-span-2" icon={<MdDescription size={18} />}>
+                {describeContractPreference(confirmValues?.contractPreference)}
+              </Row>
             )}
 
             {confirmValues?.serviceType === "services" && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">
-                  الخدمة المختارة
-                </div>
-                <div className="text-gray-800 font-semibold">
-                  {describeSelectedService(confirmValues?.selectedService)}
-                </div>
-              </div>
+              <Row label="الخدمة المختارة" className="md:col-span-2" icon={<MdDescription size={18} />}>
+                {describeSelectedService(confirmValues?.selectedService)}
+              </Row>
             )}
 
-            {confirmValues?.serviceType === "newline" &&
-              confirmValues?.contractPreference === "without" && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">
-                  التقنية المختارة
-                </div>
-                <div className="text-gray-800 font-semibold">
-                  {describeNoContractTechType(confirmValues?.noContractTechType)}
-                </div>
-              </div>
+            {confirmValues?.serviceType === "newline" && confirmValues?.contractPreference === "without" && (
+              <Row label="التقنية المختارة" className="md:col-span-2" icon={<PiSpeedometerFill size={18} />}>
+                {describeNoContractTechType(confirmValues?.noContractTechType)}
+              </Row>
             )}
 
             {confirmValues?.serviceType === "services" && confirmValues?.internetCompany && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">شركة الإنترنت</div>
-                <div className="text-gray-800 font-semibold">
-                  {confirmValues.internetCompany}
-                </div>
-              </div>
+              <Row label="شركة الإنترنت" className="md:col-span-2" icon={<FaBuildingCircleCheck size={18} />}>
+                {confirmValues.internetCompany}
+              </Row>
             )}
 
             {confirmValues?.serviceType === "services" && confirmValues?.subscriptionNo && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">رقم الإشتراك</div>
-                <div className="text-gray-800 font-semibold">
-                  {confirmValues.subscriptionNo}
-                </div>
-              </div>
+              <Row label="رقم الإشتراك" className="md:col-span-2" icon={<AiOutlineFieldNumber size={18} />}>
+                {confirmValues.subscriptionNo}
+              </Row>
             )}
 
-            {confirmValues?.serviceType === "newline" &&
-              confirmValues?.contractPreference === "with" && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">
-                  الباقة المختارة
-                </div>
-                <div className="text-gray-800 font-semibold">
-                  {describeSelectedPackage(confirmValues?.selectedPackage)}
-                </div>
-              </div>
+            {confirmValues?.serviceType === "newline" && confirmValues?.contractPreference === "with" && (
+              <Row label="الباقة المختارة" className="md:col-span-2" icon={<MdSpeed size={18} />}>
+                {describeSelectedPackage(confirmValues?.selectedPackage)}
+              </Row>
             )}
 
             {!isInquiry && (
-              <div className="rounded-2xl border border-gray-200 p-4 space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">العنوان</div>
-                <div dir="ltr" className="text-gray-800 font-semibold whitespace-pre-wrap">
-                  {confirmValues?.address || "—"}
-                </div>
-              </div>
+              <Row label="العنوان" dir="ltr" className="md:col-span-2" icon={<MdHome size={18} />}>
+                {confirmValues?.address || "—"}
+              </Row>
             )}
 
             {(confirmValues?.note || "").trim() && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">ملاحظة</div>
-                <div className="text-gray-800 font-semibold whitespace-pre-wrap">
-                  {confirmValues?.note}
-                </div>
-              </div>
+              <Row label="ملاحظة" className="md:col-span-2" icon={<MdDescription size={18} />}>
+                {confirmValues?.note}
+              </Row>
             )}
 
             {!isInquiry && (
-              <div className="rounded-2xl border border-gray-200 p-4 text-right space-y-2 md:col-span-2">
-                <div className="text-sm text-gray-500 font-bold">
-                  صورة الفاتورة
-                </div>
-                <div className="text-gray-800 font-semibold break-all">
-                  {confirmValues?.invoiceFile?.name ||
-                    confirmValues?.invoiceFileUrl ||
-                    "—"}
-                </div>
-              </div>
+              <Row label="صورة الفاتورة" className="md:col-span-2 break-all" icon={<MdOutlineReceiptLong size={18} />}>
+                {confirmValues?.invoiceFile?.name || confirmValues?.invoiceFileUrl || "—"}
+              </Row>
             )}
           </div>
 

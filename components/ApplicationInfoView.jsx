@@ -3,7 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import Button from "./Button";
-import { MdHome, MdAddCircleOutline, MdOutlineDescription } from "react-icons/md";
+import { MdHome, MdAddCircleOutline, MdOutlineDescription, MdPerson, MdPhone, MdSpeed, MdCalendarMonth, MdOutlineReceiptLong, MdWifi } from "react-icons/md";
+import { PiSpeedometerFill } from "react-icons/pi";
+import { FaBuildingCircleCheck } from "react-icons/fa6";
+import { AiOutlineFieldNumber } from "react-icons/ai";
 import {
   describeContractPreference,
   describeSelectedPackage,
@@ -41,15 +44,17 @@ const statusBadgeClass = (status) => {
   }
 };
 
-const Row = ({ label, children, dir = "rtl", className = "" }) => (
+const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
   <div
-    className={`rounded-2xl border border-gray-200 p-4 text-right space-y-2 ${className}`}
+    className={`rounded-2xl border border-gray-100 bg-white/80 p-3 md:p-4 text-right space-y-1 shadow-sm shadow-slate-100/50 ${className}`}
   >
-    <div className="text-sm text-gray-500 font-bold">{label}</div>
+    <div className="flex items-center justify-end gap-2 text-xs text-gray-500 font-bold">
+      {icon && <span style={{ color: ACCENT }}>{icon}</span>}
+      <span>{label}</span>
+    </div>
     <div
       dir={dir}
-      className="text-gray-800 font-semibold whitespace-pre-wrap"
-    >
+      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap break-words">
       {children}
     </div>
   </div>
@@ -85,124 +90,126 @@ const ApplicationInfoView = ({ application, loading, error }) => {
       <div className="flex-1 lg:w-[70%] flex flex-col min-h-svh p-6 relative py-10 shrink-0">
         <div className="max-w-3xl mx-auto space-y-8 w-full z-10 relative">
           <div className="text-center space-y-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-            تفاصيل الطلب
-          </h1>
-          <p className="text-gray-600">رقم الطلب: {application.appIndex}</p>
-        </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+              تفاصيل الطلب
+            </h1>
+            <p className="text-gray-600">رقم الطلب: {application.appIndex}</p>
+          </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Row label="الإسم">{maskName(application.name)}</Row>
-            <Row label="رقم الموبايل">
-              <span dir="ltr" className="inline-block">
-                {maskPhone(application.phone)}
-              </span>
-            </Row>
-            <Row label="حالة الطلب">
-              <span
-                className={`px-3 py-1 rounded-full text-sm ${statusBadgeClass(application.status)}`}
-              >
-                {statusLabel}
-              </span>
-            </Row>
-            <Row label="تاريخ الإنشاء">{createdAtLabel}</Row>
-            <Row label="هل لديك إنترنت؟">
-              {application.hasInternet === "yes"
-                ? "نعم"
-                : application.hasInternet === "no"
-                  ? "لا"
-                  : "—"}
-            </Row>
-            <Row label="نوع الطلب">
-              {describeServiceType(application.serviceType)}
-            </Row>
-            {application.serviceType === "newline" && (
-              <Row label="نوع العرض">
-                {describeContractPreference(application.contractPreference)}
+          <div className="py-6 md:py-8 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Row label="الإسم" icon={<MdPerson size={18} />}>
+                {maskName(application.name)}
               </Row>
-            )}
-            {application.serviceType === "services" && (
-              <Row label="الخدمة المختارة">
-                {describeSelectedService(application.selectedService)}
+              <Row label="رقم الموبايل" icon={<MdPhone size={18} />}>
+                <span dir="ltr" className="inline-block">
+                  {maskPhone(application.phone)}
+                </span>
               </Row>
-            )}
-            {application.serviceType === "newline" &&
-              application.contractPreference === "with" && (
-                <Row label="الباقة المختارة">
-                  {describeSelectedPackage(application.selectedPackage)}
+              <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-bold ${statusBadgeClass(application.status)}`}
+                >
+                  {statusLabel}
+                </span>
+              </Row>
+              <Row label="تاريخ الإنشاء" icon={<MdCalendarMonth size={18} />}>
+                {createdAtLabel}
+              </Row>
+              <Row label="هل لديك إنترنت؟" icon={<MdWifi size={18} />}>
+                {application.hasInternet === "yes"
+                  ? "نعم"
+                  : application.hasInternet === "no"
+                    ? "لا"
+                    : "—"}
+              </Row>
+              <Row label="نوع الطلب" icon={<MdOutlineDescription size={18} />}>
+                {describeServiceType(application.serviceType)}
+              </Row>
+              {application.serviceType === "newline" && (
+                <Row label="نوع العرض" icon={<MdOutlineDescription size={18} />}>
+                  {describeContractPreference(application.contractPreference)}
                 </Row>
               )}
-            {application.serviceType === "inquiry" && (
-              <Row className="md:col-span-2" label="الاستفسار">
-                {describeSelectedInquiry(application.selectedInquiry)}
-              </Row>
-            )}
-            {
-              application.serviceType === "newline" &&
-              application.contractPreference === "without" &&
-              (
-                <Row label="نوع التقنية">
-                  {application.noContractTechType ? describeNoContractTechType(application.noContractTechType) : "—"}
+              {application.serviceType === "services" && (
+                <Row label="الخدمة المختارة" icon={<MdOutlineDescription size={18} />}>
+                  {describeSelectedService(application.selectedService)}
                 </Row>
-              )
-            }
-                        {
-                          application.serviceType === "services" && (
-                            <>
-                              <Row
-                                label="شركة الإنترنت"
-                              >
-                              {application.internetCompany ? application.internetCompany : "—"}
-                            </Row>
-                            <Row
-                              label="رقم الإشتراك"
-                            >
-                              {application.subscriptionNo ? application.subscriptionNo : "—"}
-                            </Row>
-                            </>
-                          )
-                        }
-            <Row label="العنوان" dir="ltr" className="md:col-span-2">
-              {maskAddress(application.address)}
-            </Row>
-          </div>
-          
-          {application.invoiceFileUrl && application.invoiceFileUrl.trim() !== "" && (
-            <div className="mt-6 border-t border-gray-100 pt-6">
-              <div className="text-sm text-gray-500 font-bold mb-3 text-right">الصور المرفقة</div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {application.invoiceFileUrl.split(",").filter(Boolean).map((url, idx) => (
-                  <a
-                    key={idx}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block aspect-square rounded-xl border border-gray-200 overflow-hidden hover:opacity-80 transition hover:shadow-md"
-                  >
-                    <img src={url} alt={`مرفق ${idx + 1}`} className="w-full h-full object-cover" />
-                  </a>
-                ))}
-              </div>
+              )}
+              {application.serviceType === "newline" &&
+                application.contractPreference === "with" && (
+                  <Row label="الباقة المختارة" icon={<MdSpeed size={18} />}>
+                    {describeSelectedPackage(application.selectedPackage)}
+                  </Row>
+                )}
+              {application.serviceType === "inquiry" && (
+                <Row className="sm:col-span-2" label="الاستفسار" icon={<MdOutlineDescription size={18} />}>
+                  {describeSelectedInquiry(application.selectedInquiry)}
+                </Row>
+              )}
+              {
+                application.serviceType === "newline" &&
+                application.contractPreference === "without" &&
+                (
+                  <Row label="نوع التقنية" icon={<PiSpeedometerFill size={18} />}>
+                    {application.noContractTechType ? describeNoContractTechType(application.noContractTechType) : "—"}
+                  </Row>
+                )
+              }
+              {
+                application.serviceType === "services" && (
+                  <>
+                    <Row label="شركة الإنترنت" icon={<FaBuildingCircleCheck size={18} />}>
+                      {application.internetCompany ? application.internetCompany : "—"}
+                    </Row>
+                    <Row label="رقم الإشتراك" icon={<AiOutlineFieldNumber size={18} />}>
+                      {application.subscriptionNo ? application.subscriptionNo : "—"}
+                    </Row>
+                  </>
+                )
+              }
+              <Row label="العنوان" dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
+                {maskAddress(application.address)}
+              </Row>
+              {application.invoiceFileUrl && application.invoiceFileUrl.trim() !== "" && (
+                <Row
+                  label="الصور المرفقة"
+                  className="sm:col-span-2"
+                  icon={<MdOutlineReceiptLong size={18} />}
+                >
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {application.invoiceFileUrl.split(",").filter(Boolean).map((url, idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative block w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:opacity-80 transition hover:shadow-md ring-2 ring-transparent hover:ring-[#18a2e3]"
+                      >
+                        <img src={url} alt={`مرفق ${idx + 1}`} className="w-full h-full object-cover" />
+                      </a>
+                    ))}
+                  </div>
+                </Row>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="flex justify-center gap-4 flex-wrap">
-          <Link href="/internet-basvuru-formu">
-            <Button variant="secondary" size="large" className="flex items-center gap-2">
-              <MdAddCircleOutline size={22} />
-              طلب جديد
-            </Button>
-          </Link>
-          <Link href="/start">
-            <Button variant="primary" size="large" className="flex items-center gap-2">
-              <MdHome size={22} />
-              الصفحة الرئيسية
-            </Button>
-          </Link>
+          <div className="flex justify-center gap-4 flex-col md:flex-row">
+            <Link href="/internet-basvuru-formu">
+              <Button variant="secondary" size="large" className="flex w-full items-center justify-center gap-2">
+                <MdAddCircleOutline size={22} />
+                طلب جديد
+              </Button>
+            </Link>
+            <Link href="/start">
+              <Button variant="primary" size="large" className="flex w-full items-center justify-center gap-2">
+                <MdHome size={22} />
+                الصفحة الرئيسية
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
       </div>
 
       {/* Sidebar Image */}

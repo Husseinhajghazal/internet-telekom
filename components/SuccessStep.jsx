@@ -142,7 +142,7 @@ const SuccessStep = ({ submissionInfo }) => {
               <MdCheckCircle className="w-8 h-8 text-green-400" />
             </div>
             <div>
-              <h3 className="text-3xl font-bold mb-3 tracking-wide">جارٍ التنفيذ بنجاح</h3>
+              <h3 className="text-3xl font-bold mb-3 tracking-wide">جارٍ المراجعة</h3>
               <p className="text-white/80 text-sm leading-relaxed opacity-95">
                 نسعد بخدمتك.. طلبك في أيدٍ أمينة وسيتم التواصل معك لإنهاء باقي الإجراءات.
               </p>

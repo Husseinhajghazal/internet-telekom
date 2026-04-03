@@ -256,6 +256,8 @@ function formatDate(date, type = "2") {
   return dt;
 }
 
+const normalizeIndex = (value) => String(value || "").replace(/\D/g, "");
+
 export {
   describeContractPreference,
   describeNoContractTechType,
@@ -272,5 +274,5 @@ export {
   maskPhone,
   maskName,
   maskAddress,
-  formatDate,
+  formatDate,normalizeIndex
 };
