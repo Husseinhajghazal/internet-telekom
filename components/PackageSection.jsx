@@ -53,7 +53,7 @@ const PackageSection = ({
               />
             ) : (
               <LottieAnimation
-              path="/animations/Businessman flies up with rocket.json"
+              path="/animations/Businessman%20flies%20up%20with%20rocket.json"
               width={250}
               height={150}
               className="inline-block"

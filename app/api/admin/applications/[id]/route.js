@@ -25,27 +25,36 @@ export async function PATCH(request, { params }) {
     }
 
     const body = await request.json();
-    const status = body?.status;
-    if (!ALLOWED_STATUSES.includes(status)) {
-      return NextResponse.json(
-        { error: "حالة غير صالحة." },
-        { status: 400 },
-      );
+    const data = {};
+
+    if (body.status !== undefined) {
+      if (!ALLOWED_STATUSES.includes(body.status)) {
+        return NextResponse.json(
+          { error: "حالة غير صالحة." },
+          { status: 400 },
+        );
+      }
+      data.status = body.status;
+      if (body.status === "COMPLETED") {
+        data.completedAt = new Date();
+        data.delayedUntil = null;
+      } else if (body.status === "DELAYED") {
+        data.completedAt = null;
+        if (body.delayedUntil) {
+          data.delayedUntil = new Date(body.delayedUntil);
+        }
+      } else {
+        data.completedAt = null;
+        data.delayedUntil = null;
+      }
     }
 
-    const data = { status };
-    if (status === "COMPLETED") {
-      data.completedAt = new Date();
-      data.delayedUntil = null;
-    } else if (status === "DELAYED") {
-      data.completedAt = null;
-      // Accept delayedUntil date from the request body
-      if (body.delayedUntil) {
-        data.delayedUntil = new Date(body.delayedUntil);
-      }
-    } else {
-      data.completedAt = null;
-      data.delayedUntil = null;
+    if (body.adminNote !== undefined) {
+      data.adminNote = body.adminNote;
+    }
+
+    if (Object.keys(data).length === 0) {
+      return NextResponse.json({ error: "لا يوجد بيانات لتحديثها" }, { status: 400 });
     }
 
     const updated = await prisma.application.update({

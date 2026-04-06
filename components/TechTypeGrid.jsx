@@ -14,6 +14,8 @@ const palettes = {
     iconBg: "bg-purple-100 text-purple-600",
     check: "text-purple-500",
     priceText: "text-purple-700",
+    backGradient: "bg-gradient-to-br from-purple-600 to-fuchsia-600",
+    backCheck: "text-white",
   },
   blue: {
     activeRing: "ring-blue-500/50",
@@ -24,6 +26,8 @@ const palettes = {
     iconBg: "bg-blue-100 text-blue-600",
     check: "text-blue-500",
     priceText: "text-blue-700",
+    backGradient: "bg-gradient-to-br from-blue-600 to-cyan-600",
+    backCheck: "text-white",
   },
   green: {
     activeRing: "ring-emerald-500/50",
@@ -34,6 +38,8 @@ const palettes = {
     iconBg: "bg-emerald-100 text-emerald-600",
     check: "text-emerald-500",
     priceText: "text-emerald-700",
+    backGradient: "bg-gradient-to-br from-emerald-600 to-teal-600",
+    backCheck: "text-white",
   },
 };
 
@@ -115,7 +121,7 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                   <div className="text-xl font-extrabold text-gray-900 mb-4">{opt.title}</div>
                   <div className="flex items-baseline justify-end gap-2 mb-1">
                     <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Mbps</span>
-                    <span className={`text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
+                    <span className={`text-6xl font-black tracking-tighter p-2 bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
                       {opt.speed}
                     </span>
                   </div>
@@ -133,37 +139,35 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
 
                 <div className="px-6 pb-8 pt-5 relative z-10 flex-1 flex flex-col justify-center items-center opacity-70 mt-4">
                   <span className={`text-sm font-bold uppercase tracking-widest animate-pulse transition-colors ${isSelected ? palette.priceText : "text-gray-500"}`}>
-                    اضغط على الباقة لرؤية التفاصيل
+                    اضغط هنا لرؤية تفاصيل أكثر
                   </span>
                 </div>
               </div>
 
               {/* === BACK FACE === */}
               <div
-                className={`col-start-1 row-start-1 relative flex flex-col h-full rounded-3xl border-2 bg-white/95 backdrop-blur-2xl [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-hidden shadow-xl
+                className={`col-start-1 row-start-1 relative flex flex-col h-full rounded-3xl border-2 ${palette.backGradient} [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-hidden shadow-xl
                 ${
                   isSelected
-                    ? `${palette.activeBorder} ${palette.activeRing} ring-4 ${palette.activeBg}`
-                    : "border-gray-200"
+                    ? `border-white ring-4 ${palette.activeRing}`
+                    : "border-transparent"
                 }`}
               >
                 {/* Background Shadow Icon Reversed */}
-                <div className="absolute -left-12 -bottom-6 pointer-events-none transform rotate-12 z-0 opacity-[0.02]">
-                  <SpeedIcon className="w-56 h-56 text-gray-900" />
+                <div className="absolute -left-12 -bottom-6 pointer-events-none transform rotate-12 z-0 opacity-10">
+                  <SpeedIcon className="w-56 h-56 text-white" />
                 </div>
 
                 {/* Compact Header */}
-                <div className="px-5 pt-5 pb-3 relative z-10 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <div className="px-5 pt-5 pb-3 relative z-10 border-b border-white/20 flex justify-between items-center bg-black/10">
                   <div className="flex flex-col items-start justify-center gap-0.5">
-                    <span className="text-base font-extrabold text-gray-600 uppercase tracking-wider">{opt.title} <span className="text-base text-purple-400">({opt.speed} Mbps)</span></span>
-                    <span className={`text-xl font-black tracking-tight ${isSelected ? palette.priceText : "text-gray-800"}`}>
-                      {opt.price} <span className="text-[10px] text-gray-500 font-bold tracking-normal uppercase">TL / شهرياً</span>
+                    <span className="text-base font-extrabold text-white/90 uppercase tracking-wider">{opt.title} <span className="text-base text-white/70">({opt.speed} Mbps)</span></span>
+                    <span className={`text-xl font-black tracking-tight text-white`}>
+                      {opt.price} <span className="text-[10px] text-white/70 font-bold tracking-normal uppercase">TL / شهرياً</span>
                     </span>
                   </div>
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-500 ${
-                      isSelected ? palette.badgeBg + " text-white shadow-md shadow-" + opt.color + "-500/30" : palette.iconBg
-                    }`}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-500 bg-white/20 text-white`}
                   >
                     <SpeedIcon className="text-xl" />
                   </div>
@@ -171,13 +175,13 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
 
                 {/* Features List */}
                 <div className="px-5 pb-6 pt-4 relative z-10 flex-1 flex flex-col justify-start">
-                  <ul className="space-y-4 text-sm font-semibold text-gray-700 leading-relaxed">
+                  <ul className="space-y-4 text-sm font-semibold text-white leading-relaxed">
                     {opt.features.map((feature, i) => (
                       <li key={i} className="flex items-start justify-end gap-3 group/item">
-                        <span className={`transition-colors duration-300 ${isSelected ? 'text-gray-800' : 'text-gray-600'}`}>
+                        <span className={`transition-colors duration-300 text-white/90`}>
                           {feature}
                         </span>
-                        <MdCheckCircle className={`shrink-0 text-lg mt-0.5 transition-colors duration-300 ${isSelected ? palette.check : 'text-gray-300'}`} />
+                        <MdCheckCircle className={`shrink-0 text-lg mt-0.5 transition-colors duration-300 ${palette.backCheck}`} />
                       </li>
                     ))}
                   </ul>

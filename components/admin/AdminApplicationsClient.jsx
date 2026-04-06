@@ -33,6 +33,7 @@ import AdminConfirmDialog from "./AdminConfirmDialog";
 import ApplicationDetailModal from "./ApplicationDetailModal";
 import AdminNotesModal from "./AdminNotesModal";
 import AdminStatusModal from "./AdminStatusModal";
+import AdminCustomerNoteModal from "./AdminCustomerNoteModal";
 import {
   formatDate,
   describeStatus,
@@ -44,7 +45,7 @@ import { useRouter } from "next/navigation";
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
 
-const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, openStatusModal }) => {
+const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, openStatusModal, openCustomerNoteModal }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const menuRef = useRef(null);
@@ -147,6 +148,17 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
           </button>
           
           <button
+            onClick={() => {
+              setIsOpen(false);
+              openCustomerNoteModal(app);
+            }}
+            className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
+          >
+            <MdOutlineSpeakerNotes size={18} />
+            ملاحظة للمشترك
+          </button>
+          
+          <button
             disabled={!canChangeStatus(app.status) || actionId === app.id}
             onClick={() => {
               setIsOpen(false);
@@ -212,6 +224,7 @@ export default function AdminApplicationsClient() {
   const [detailApp, setDetailApp] = useState(null);
   const [notesApp, setNotesApp] = useState(null);
   const [statusApp, setStatusApp] = useState(null);
+  const [customerNoteApp, setCustomerNoteApp] = useState(null);
   const [actionId, setActionId] = useState(null);
 
   const [confirm, setConfirm] = useState(null);
@@ -431,6 +444,27 @@ export default function AdminApplicationsClient() {
         return;
       }
       setStatusApp(null);
+      await load(page);
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const handleCustomerNoteUpdate = async (newAdminNote) => {
+    if (!customerNoteApp) return;
+    setActionId(customerNoteApp.id);
+    try {
+      const res = await fetch(`/api/admin/applications/${customerNoteApp.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminNote: newAdminNote }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAlertMsg(json.error || "فشل تحديث ملاحظة المشترك");
+        return;
+      }
+      setCustomerNoteApp(null);
       await load(page);
     } finally {
       setActionId(null);
@@ -856,6 +890,7 @@ export default function AdminApplicationsClient() {
                           canChangeStatus={canChangeStatus}
                           actionId={actionId}
                           openStatusModal={setStatusApp}
+                          openCustomerNoteModal={setCustomerNoteApp}
                         />
                       </td>
                     </tr>
@@ -920,6 +955,15 @@ export default function AdminApplicationsClient() {
           onClose={() => setStatusApp(null)}
           onUpdateStatus={handleStatusUpdate}
           loading={!!actionId && actionId === statusApp.id}
+        />
+      )}
+
+      {customerNoteApp && (
+        <AdminCustomerNoteModal
+          application={customerNoteApp}
+          onClose={() => setCustomerNoteApp(null)}
+          onUpdateAdminNote={handleCustomerNoteUpdate}
+          loading={!!actionId && actionId === customerNoteApp.id}
         />
       )}
 

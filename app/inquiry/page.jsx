@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MdPhone, MdOutlineTag, MdHome, MdSearch, MdInfoOutline, MdClose, MdChevronLeft } from "react-icons/md";
-import { GrNotes } from "react-icons/gr";
+import { FaInfo } from "react-icons/fa";
 import Button from "../../components/Button";
 import { formatPhoneNumber, normalizeIndex, describeStatus, describeServiceType, statusBadgeClass, formatDate } from "@/utils/general";
 
@@ -317,7 +317,7 @@ export default function InquiryPage() {
           <div className="relative w-full max-w-sm rounded-[2rem] bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 md:p-8 text-center space-y-6">
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                <GrNotes size={32} />
+                <FaInfo size={32} />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-extrabold text-gray-900">

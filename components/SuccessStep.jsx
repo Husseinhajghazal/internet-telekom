@@ -94,7 +94,7 @@ const SuccessStep = ({ submissionInfo }) => {
           <div className="bg-linear-to-r from-blue-50 to-cyan-50 rounded-xl p-6">
             <div className="text-center space-y-2">
               <h4 className="text-lg font-semibold text-gray-800">
-                هل تحتاج مساعدة؟
+                هل تحتاج مساعدة إضافية؟
               </h4>
                   <a
                     href="https://wa.me/902126112122"
@@ -110,12 +110,10 @@ const SuccessStep = ({ submissionInfo }) => {
 
           {/* Action Buttons */}
           <div className="flex gap-4 justify-center">
-            <Button variant="primary" size="large" onClick={() => window.location.reload()} className="flex items-center gap-2">
-              <MdAddCircleOutline size={22} />
+            <Button variant="primary" size="large" onClick={() => window.location.reload()}>
               طلب جديد
             </Button>
-            <Button variant="secondary" size="large" onClick={() => window.location.href = '/start'} className="flex items-center gap-2">
-              <MdHome size={22} />
+            <Button variant="secondary" size="large" onClick={() => window.location.href = '/start'}>
               الصفحة الرئيسية
             </Button>
           </div>

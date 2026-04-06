@@ -133,7 +133,7 @@ const Step5 = ({
           <div className="flex flex-col items-center justify-center w-full mt-6 gap-3">
             <h4 className="text-gray-700 font-bold md:text-center text-sm md:text-base px-4">
               <FaYoutube className="inline-block ml-2 text-red-500" />
-              شرح مهم عن تفاصيل الخدمات التي نقدمها في شركة إنترنت تيليكوم
+              شاهد الفيديو أدناه لمزيد من التفاصيل
             </h4>
             <iframe
               className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"
@@ -182,7 +182,7 @@ const Step5 = ({
         <div className="flex flex-col items-center justify-center w-full mt-6 gap-3">
           <h4 className="text-gray-700 font-bold md:text-center text-sm md:text-base px-4">
             <FaYoutube className="inline-block ml-2 text-red-500" />
-            شرح مهم عن تفاصيل الخدمات التي نقدمها في شركة إنترنت تيليكوم
+            شاهد الفيديو أدناه لمزيد من التفاصيل
           </h4>
           <iframe
             className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"

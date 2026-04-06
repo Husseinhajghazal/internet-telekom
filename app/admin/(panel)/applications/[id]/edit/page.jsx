@@ -7,6 +7,7 @@ import { TbFileInvoiceFilled } from "react-icons/tb";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 import { STATUS_LABELS } from "@/utils/data";
+import { formatPhoneNumber } from "@/utils/general";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "newline", label: "خط جديد" },
@@ -160,9 +161,15 @@ export default function EditApplicationPage() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let finalValue = type === "checkbox" ? checked : value;
+
+    if (name === "phone" || name === "phone2") {
+      finalValue = formatPhoneNumber(finalValue);
+    }
+
     setFormData((prev) => ({ 
       ...prev, 
-      [name]: type === "checkbox" ? checked : value 
+      [name]: finalValue 
     }));
   };
 

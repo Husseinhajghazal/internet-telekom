@@ -56,14 +56,14 @@ export default function Home() {
           transition={{ duration: 0.6 }}
         >
           <LottieAnimation
-            path="/animations/App maintenance mode.json"
+            path="/animations/App%20maintenance%20mode.json"
             width={250}
             height={250}
           />
         </motion.div>
 
         <motion.h1
-          className="text-lg md:text-2xl lg:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#128C7E] leading-tight"
+          className="pb-2 text-lg md:text-2xl lg:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#128C7E] leading-tight"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
