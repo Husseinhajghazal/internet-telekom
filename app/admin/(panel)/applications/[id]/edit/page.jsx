@@ -93,6 +93,7 @@ export default function EditApplicationPage() {
     birthDate: "",
     addressCode: "",
     originalAddress: true,
+    originalAddressText: "",
     invoiceFileUrls: [],
     invoiceFiles: [],
   });
@@ -127,6 +128,7 @@ export default function EditApplicationPage() {
           birthDate: data.birthDate || "",
           addressCode: data.addressCode || "",
           originalAddress: data.originalAddress ?? true,
+          originalAddressText: data.originalAddressText || "",
           invoiceFileUrls: data.invoiceFileUrl ? data.invoiceFileUrl.split(",").filter(Boolean) : [],
           invoiceFiles: [],
         });
@@ -184,6 +186,7 @@ export default function EditApplicationPage() {
         internetCompany: parseEmptyToNull(formData.internetCompany),
         subscriptionNo: parseEmptyToNull(formData.subscriptionNo),
         adminNote: parseEmptyToNull(formData.adminNote),
+        originalAddressText: parseEmptyToNull(formData.originalAddressText),
         delayedUntil: formData.status === "DELAYED" && formData.delayedUntil
           ? formData.delayedUntil
           : null,
@@ -272,7 +275,7 @@ export default function EditApplicationPage() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className={labelClass}>الإسم</label>
+            <label className={labelClass}>الإسم واللقب</label>
             <input
               name="name"
               type="text"
@@ -293,7 +296,7 @@ export default function EditApplicationPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>رقم تواصل بديل (إختياري)</label>
+            <label className={labelClass}>رقم موبايل ٱخر (إختياري)</label>
             <input
               name="phone2"
               type="text"
@@ -315,7 +318,7 @@ export default function EditApplicationPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>المواليد</label>
+            <label className={labelClass}>المواليد بالكامل</label>
             <input
               name="birthDate"
               type="date"
@@ -503,7 +506,7 @@ export default function EditApplicationPage() {
 
           <div className="md:col-span-2 space-y-4">
             <div>
-              <label className={labelClass}>العنوان (كود العنوان / العنوان بالتفصيل)</label>
+              <label className={labelClass}>العنوان</label>
               <textarea
                 name="address"
                 rows={2}
@@ -516,7 +519,7 @@ export default function EditApplicationPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>كود العنوان (UAVT)</label>
+                <label className={labelClass}>كود العنوان (BBK)</label>
                 <input
                   name="addressCode"
                   type="text"
@@ -526,7 +529,7 @@ export default function EditApplicationPage() {
                   className={inputClass}
                 />
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mt-8">
                 <input
                   name="originalAddress"
                   id="originalAddress"
@@ -536,10 +539,23 @@ export default function EditApplicationPage() {
                   className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
                 />
                 <label htmlFor="originalAddress" className="text-sm font-semibold text-gray-700 cursor-pointer">
-                  هذا هو العنوان الأصلي الأساسي
+                  العنوان الأساسي
                 </label>
               </div>
             </div>
+
+            {!formData.originalAddress && (
+              <div>
+                <label className={labelClass}>العنوان الأساسي</label>
+                <input
+                  name="originalAddressText"
+                  type="text"
+                  value={formData.originalAddressText}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+            )}
           </div>
 
           <div className="md:col-span-2">
@@ -554,14 +570,14 @@ export default function EditApplicationPage() {
           </div>
 
           <div className="md:col-span-2">
-            <label className={labelClass}>ملاحظة من فريق الخدمة (للمشتري)</label>
+            <label className={labelClass}>ملاحظة من فريق الخدمة للمشترك</label>
             <textarea
               name="adminNote"
               rows={3}
               value={formData.adminNote}
               onChange={handleChange}
               className={`${inputClass} !bg-cyan-50/50 !border-cyan-200`}
-              placeholder="اكتب رسالة للمستخدم هنا للرد على استفساره..."
+              placeholder="اكتب رسالة تنبيه للمشترك هنا..."
             />
           </div>
 

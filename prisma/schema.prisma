@@ -35,6 +35,7 @@ model Application {
   addressCode         String?
   address             String?
   originalAddress     Boolean           @default(true)
+  originalAddressText String?
   note                String?
   invoiceFileUrl      String?
   internetCompany     String?

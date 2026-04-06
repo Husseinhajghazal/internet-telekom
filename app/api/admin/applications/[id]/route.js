@@ -149,6 +149,7 @@ export async function PUT(request, { params }) {
       birthDate: body.birthDate,
       addressCode: body.addressCode,
       originalAddress: body.originalAddress === "true" || body.originalAddress === true,
+      originalAddressText: body.originalAddressText,
       hasInternet: body.hasInternet,
       serviceType: body.serviceType,
       contractPreference: body.contractPreference,

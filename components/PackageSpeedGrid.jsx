@@ -60,13 +60,13 @@ const PackageSpeedGrid = ({
     if (speed >= 500) return MdElectricBolt;
     if (speed >= 200) return FaFireAlt;
     if (speed >= 100) return MdFlashOn;
-    if (speed >= 50) return MdSpeed;
-    if (speed >= 24) return BsFillAirplaneFill;
+    if (speed >= 50) return BsFillAirplaneFill;
+    if (speed >= 24) return MdSpeed;
     return MdWifi;
   };
 
   return (
-    <div className="flex lg:grid flex-nowrap lg:grid-cols-2 xl:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-6 lg:px-2 w-full scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="flex lg:grid flex-nowrap lg:grid-cols-2 xl:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-3 lg:px-2 w-full scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {speeds.map((speed) => {
         const valueKey = duration
           ? `${kind}-${duration}-${speed}`
@@ -80,7 +80,7 @@ const PackageSpeedGrid = ({
         return (
           <label
             key={valueKey}
-            className="group relative cursor-pointer shrink-0 w-[85vw] sm:w-[320px] lg:w-auto snap-center"
+            className="group relative cursor-pointer shrink-0 w-[75vw] sm:w-[320px] lg:w-auto snap-center"
           >
             <Field
               type="radio"
@@ -132,14 +132,14 @@ const PackageSpeedGrid = ({
               {/* Hero Numbers (Speed) */}
               <div className="px-6 py-4 relative z-10 text-right">
                 <div className="flex items-baseline justify-end gap-2 mb-1">
-                  <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">ميغابت/ثانية</span>
+                  <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Mbps</span>
                   <span className={`text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
                     {speed}
                   </span>
                 </div>
                 
                 <div className="flex items-end justify-end mt-5 gap-1.5">
-                  <span className="text-sm text-gray-500 font-bold mb-1.5">شهر / TL</span>
+                  <span className="text-sm text-gray-500 font-bold mb-1.5">شهرياً / TL</span>
                   <span className={`text-4xl font-extrabold tracking-tight ${isSelected ? palette.priceText : "text-gray-900"}`}>
                     {displayPrice}
                   </span>

@@ -38,27 +38,25 @@ const palettes = {
 };
 
 const TechTypeGrid = ({ options, selectedTechType }) => {
-  const getSpeedIcon = (speedStr) => {
-    const speed = parseInt(speedStr, 10) || 0;
-    if (speed >= 1000) return MdRocketLaunch;
-    if (speed >= 500) return MdElectricBolt;
-    if (speed >= 100) return MdFlashOn;
-    if (speed >= 50) return MdSpeed;
+  const getValueIcon = (value) => {
+    if (value === "vdsl") return MdElectricBolt;
+    if (value === "fiber") return MdFlashOn;
+    if (value === "gigafiber") return MdRocketLaunch;
     return MdWifi;
   };
 
   return (
-    <div className="flex lg:grid flex-nowrap lg:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-6 md:px-0 w-full md:max-w-5xl mx-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="flex lg:grid flex-nowrap lg:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-3 md:px-0 w-full md:max-w-5xl mx-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {options.map((opt) => {
         const valueKey = opt.value;
         const isSelected = selectedTechType === valueKey;
         const palette = palettes[opt.color] || palettes.blue;
-        const SpeedIcon = getSpeedIcon(opt.speed);
+        const SpeedIcon = getValueIcon(opt.value);
 
         return (
           <label
             key={valueKey}
-            className="group relative cursor-pointer shrink-0 w-[85vw] sm:w-[320px] lg:w-auto snap-center"
+            className="group relative cursor-pointer shrink-0 w-[75vw] sm:w-[320px] lg:w-auto snap-center"
           >
             <Field
               type="radio"
@@ -111,14 +109,14 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
               <div className="px-6 py-4 relative z-10 text-right">
                 <div className="text-xl font-extrabold text-gray-900 mb-4">{opt.title}</div>
                 <div className="flex items-baseline justify-end gap-2 mb-1">
-                  <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">ميغابت/ثانية</span>
+                  <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Mbps</span>
                   <span className={`text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
                     {opt.speed}
                   </span>
                 </div>
                 
                 <div className="flex items-end justify-end mt-5 gap-1.5">
-                  <span className="text-sm text-gray-500 font-bold mb-1.5">شهر / TL</span>
+                  <span className="text-sm text-gray-500 font-bold mb-1.5">شهرياً / TL</span>
                   <span className={`text-4xl font-extrabold tracking-tight ${isSelected ? palette.priceText : "text-gray-900"}`}>
                     {opt.price}
                   </span>

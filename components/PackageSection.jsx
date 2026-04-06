@@ -9,7 +9,6 @@ const PackageSection = ({
   accent = "blue",
   title,
   description,
-  durationLabel,
   durations,
   selectedDuration,
   onDurationChange,
@@ -17,21 +16,21 @@ const PackageSection = ({
   packageKind,
   selectedPackage,
 }) => {
-  const isPurple = accent === "purple";
-  const ringClass = isPurple
-    ? "from-purple-400 to-purple-600"
+  const isGreen = accent === "green";
+  const ringClass = isGreen
+    ? "from-green-400 to-green-600"
     : "from-blue-400 to-blue-600";
-  const titleClass = isPurple ? "text-purple-600" : "text-blue-600";
-  const iconClass = isPurple ? "text-purple-500" : "text-blue-500";
-  const dividerClass = isPurple
-    ? "from-purple-400 to-purple-600"
+  const titleClass = isGreen ? "text-green-600" : "text-blue-600";
+  const iconClass = isGreen ? "text-green-500" : "text-blue-500";
+  const dividerClass = isGreen
+    ? "from-green-400 to-green-600"
     : "from-blue-400 to-blue-600";
-  const switcherBorderClass = isPurple ? "border-purple-200/70" : "border-blue-200/70";
-  const selectedButtonClass = isPurple
-    ? "bg-linear-to-r from-purple-500 to-purple-400 text-white shadow-purple-200/70"
+  const switcherBorderClass = isGreen ? "border-green-200/70" : "border-blue-200/70";
+  const selectedButtonClass = isGreen
+    ? "bg-linear-to-r from-green-500 to-green-400 text-white shadow-green-200/70"
     : "bg-linear-to-r from-blue-500 to-cyan-400 text-white shadow-blue-200/70";
-  const idleButtonClass = isPurple
-    ? "text-purple-800 hover:bg-purple-50/70"
+  const idleButtonClass = isGreen
+    ? "text-green-800 hover:bg-green-50/70"
     : "text-blue-800 hover:bg-blue-50/70";
 
   return (
@@ -46,17 +45,19 @@ const PackageSection = ({
           {
             packageKind === 'family' ? (
               <LottieAnimation
-                path="/animations/Discount%20Coupon.json"
-                width={120}
-                height={120}
+                path="/animations/Troubleshooting.json"
+                width={250}
+                height={150}
                 className="inline-block"
+                loop={true}
               />
             ) : (
               <LottieAnimation
-              path="/animations/Network%20Speed%20-%20Animation.json"
-              width={120}
-              height={120}
+              path="/animations/Businessman flies up with rocket.json"
+              width={250}
+              height={150}
               className="inline-block"
+              loop={true}
             />
             )
           }
@@ -92,7 +93,7 @@ const PackageSection = ({
                     className={`cursor-pointer px-4 py-2.5 md:px-6 md:py-3 rounded-xl text-sm md:text-lg font-bold transition-all duration-200 ${
                       isSelected ? selectedButtonClass : idleButtonClass
                     } ${isSelected ? "hover:opacity-95" : "border border-transparent"} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                      isPurple ? "focus-visible:ring-purple-500/40 focus-visible:ring-offset-white" : "focus-visible:ring-blue-500/40 focus-visible:ring-offset-white"
+                      isGreen ? "focus-visible:ring-green-500/40 focus-visible:ring-offset-white" : "focus-visible:ring-blue-500/40 focus-visible:ring-offset-white"
                     }`}
                   >
                     {durationOption.label}

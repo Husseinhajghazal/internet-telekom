@@ -4,10 +4,29 @@ import React from "react";
 import { ErrorMessage } from "formik";
 import Card from "../Card";
 import StepHeader from "../StepHeader";
-import LottieAnimation from "../LottieAnimation";
 
 const Step3 = ({ values, errors, touched, setFieldValue }) => {
   const options = [
+    {
+      name: "selectedService",
+      value: "upgrade",
+      selected:
+        values.serviceType === "services" &&
+        values.selectedService === "upgrade",
+      icon: "/animations/no%20transactions.json",
+      title: "تحويل من عقد لبدون عقد",
+      description: "",
+      size: "small",
+      color: "indigo",
+      titleSize: "text-lg",
+      centerTitle: true,
+      className: "md:col-span-2",
+      hidden: values.hasInternet === "no",
+      onClick: () => {
+        setFieldValue("serviceType", "services");
+        setFieldValue("selectedService", "upgrade");
+      },
+    },
     {
       name: "serviceType",
       value: "newline",
@@ -52,26 +71,6 @@ const Step3 = ({ values, errors, touched, setFieldValue }) => {
       onClick: () => {
         setFieldValue("serviceType", "inquiry");
         setFieldValue("selectedService", "");
-      },
-    },
-    {
-      name: "selectedService",
-      value: "upgrade",
-      selected:
-        values.serviceType === "services" &&
-        values.selectedService === "upgrade",
-      icon: "/animations/no%20transactions.json",
-      title: "تحويل من عقد لبدون عقد",
-      description: "",
-      size: "small",
-      color: "indigo",
-      titleSize: "text-lg",
-      centerTitle: true,
-      className: "md:col-span-2",
-      hidden: values.hasInternet === "no",
-      onClick: () => {
-        setFieldValue("serviceType", "services");
-        setFieldValue("selectedService", "upgrade");
       },
     },
   ];

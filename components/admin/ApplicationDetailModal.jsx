@@ -206,12 +206,17 @@ export default function ApplicationDetailModal({ application, onClose }) {
             >
               {application.subscriptionNo ? application.subscriptionNo : "—"}
             </Row>
-            <Row label="كود العنوان (UAVT)" icon={<MdOutlinePinDrop size={18} />}>
+            <Row label="كود العنوان (BBK)" icon={<MdOutlinePinDrop size={18} />}>
               {application.addressCode ? application.addressCode : "—"}
             </Row>
             <Row label="نوع العنوان" icon={<MdHome size={18} />}>
               {application.originalAddress ? "الأساسي" : "مجاور"}
             </Row>
+            {!application.originalAddress && application.originalAddressText && (
+              <Row label="العنوان الأساسي" icon={<MdHome size={18} />}>
+                {application.originalAddressText}
+              </Row>
+            )}
             <Row
               label="العنوان"
               dir="ltr"

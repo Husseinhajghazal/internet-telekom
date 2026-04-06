@@ -1,13 +1,13 @@
 import {
-  MdPerson,
   MdWifi,
   MdOutlineRouter,
   MdOutlineContactSupport,
   MdDesignServices,
-  MdSpeed,
   MdCheckCircleOutline
 } from "react-icons/md"
 import { FaFileContract } from "react-icons/fa6";
+import { LuCircleUserRound } from "react-icons/lu";
+import { TfiWorld } from "react-icons/tfi";
 
 
 const USER_AGREEMENT_TEXT = `هذا نص الإشعار تم إعداده من قبل شركة إنترنت تيليكوم لخدمات الاتصالات ش.م. (“إنترنت تيليكوم”) بصفتها المسؤول عن معالجة البيانات، وذلك وفقًا للمادة 10 من قانون حماية البيانات الشخصية رقم 6698، ووفقًا للائحة الخاصة بالإجراءات والأسس الواجب اتباعها في تنفيذ واجب الإخطار.
@@ -71,7 +71,7 @@ const SIDEBAR_CONTENT = {
     image: "/user-info.jpg",
     title: "المعلومات الشخصية",
     description: "يرجى إدخال معلوماتك الشخصية بدقة لنتمكن من التواصل معك وتقديم أفضل خدمة تلبي تطلعاتك.",
-    Icon: MdPerson,
+    Icon: LuCircleUserRound,
   },
   step2: {
     image: "/internet.jpg",
@@ -109,13 +109,13 @@ const SIDEBAR_CONTENT = {
     image: "/internet-speed.jpg",
     title: "سرعة لا تضاهى",
     description: "استمتع بتجربة إنترنت فائقة السرعة واستقرار عالي، نحن هنا لنلبي جميع احتياجاتك.",
-    Icon: MdSpeed,
+    Icon: TfiWorld,
   },
   step5_without: {
     image: "/no-contract.jpg",
     title: "بدون عقد إشتراك",
     description: "حرية ألغاء الأشتراك في أي لحظة، اختر البنية التحتية المتوفرة لديك واستمتع بمرونة غير محدودة.",
-    Icon: MdSpeed,
+    Icon: TfiWorld,
   },
   step6: {
     image: "/map.jpg",

@@ -108,7 +108,7 @@ const ApplyPage = () => {
                     <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-[40%]">
                       <SideIconComponent
                         key={`bg-${sideTitle}`}
-                        className="w-[90vh] h-[90vh] text-orange-500/20 transition-all duration-700 ease-in-out"
+                        className="w-[90vh] h-[90vh] text-orange-500/5 transition-all duration-700 ease-in-out"
                       />
                     </div>
                   </div>
