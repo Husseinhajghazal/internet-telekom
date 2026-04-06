@@ -87,6 +87,11 @@ const Step5 = ({
             packageKind="family"
             selectedPackage={values.selectedPackage}
           />
+          
+          <div className="bg-blue-50/50 backdrop-blur-sm border-r-4 border-blue-400 p-5 rounded-l-2xl text-justify text-blue-900/80 leading-relaxed text-sm md:text-base mx-4 md:mx-0 shadow-sm mt-2 mb-6">
+            الشركة الرائدة التي استطاعت منذ تأسيسها عام 2012 أن تثبت كفاءتها كواحدة من أسرع مزودي خدمات الإنترنت نمواً في تركيا. تتميز الشركة بتقديم حلول اقتصادية وذكية تناسب ميزانيات الجميع، مع التركيز العالي على خدمات الألياف الضوئية (Fiber) والإنترنت اللاسلكي عالي السرعة. تقدم الشركة باقات مرنة ومتنوعة تلبي احتياجات الاستخدام المنزلي والتجاري، وتعتمد في نجاحها على بنية تحتية قوية تضمن استقرار الإشارة وسهولة الإجراءات الفنية. ومن خلال شراكتنا معهم، نضمن لكم الوصول إلى أفضل عروض مع ميزة الدعم الفني المتكامل باللغة العربية، لتجربة اشتراك تجمع بين التوفير والجودة في كافة الولايات التركية.
+          </div>
+
           <div className="flex justify-center w-full mt-4">
             <iframe
               className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"
@@ -120,6 +125,11 @@ const Step5 = ({
             packageKind="vip"
             selectedPackage={values.selectedPackage}
           />
+          
+          <div className="bg-purple-50/50 backdrop-blur-sm border-r-4 border-purple-400 p-5 rounded-l-2xl text-justify text-purple-900/80 leading-relaxed text-sm md:text-base mx-4 md:mx-0 shadow-sm mt-2 mb-6">
+            الشركة الأم والمشغل الوطني الأول والأكبر في تركيا، والذي يمتلك إرثاً عريقاً يمتد لأكثر من 180 عاماً. تتميز الشركة بامتلاكها لأضخم بنية تحتية للألياف الضوئية (Fiber) تغطي كافة الولايات والقرى التركية، مما يضمن لكم استقراراً فائقاً في الاتصال وتغطية لا تضاهى. تقدم حلولاً متكاملة تشمل الإنترنت المنزلي عالي السرعة، خدمات الهاتف المحمول، والقنوات التلفزيونية الرقمية، مع الالتزام بتطوير التكنولوجيا الرقمية لتناسب احتياجات العصر. ومن خلالنا، نسهل لكم الوصول إلى هذه الخدمات العالمية بمرونة تامة ودعم فني متخصص، لنضمن بقاءكم على اتصال دائم بأعلى معايير الجودة والكفاءة.
+          </div>
+
           <div className="flex justify-center w-full mt-4">
             <iframe
               className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"
@@ -145,7 +155,7 @@ const Step5 = ({
 
   /* ── Without contract: tech type selection ── */
   return (
-    <div className="max-w-4xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
+    <div className="max-w-5xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
         title="اختر نوع الخدمة"
         subTitle="يمكنك اختيار نوع البنية التحتية المتوفرة لديك"
@@ -156,6 +166,10 @@ const Step5 = ({
           options={techOptions}
           selectedTechType={values.noContractTechType}
         />
+        
+        <div className="bg-emerald-50/50 backdrop-blur-sm border-r-4 border-emerald-400 p-5 rounded-l-2xl text-justify text-emerald-900/80 leading-relaxed text-sm md:text-base mx-6 md:mx-0 shadow-sm mt-6 mb-6">
+          نحن نضع بين أيديكم أقوى حلول الإنترنت المنزلي في تركيا بسرعات فائقة تصل إلى 1000 ميجابت عبر تقنية الألياف الضوئية (Fiber)، لتستمتعوا بتجربة فريدة للألعاب والبث المباشر بدقة 4K دون انقطاع. نمنحكم الحرية الكاملة في اختيار باقاتكم بدون عقود التزام سنوية أو غرامات فسخ عقد، مع ضمان إنترنت مفتوح بالكامل بدون حصة استخدام أو تناقص في السرعة طوال الشهر. كما نتميز بالشفافية المطلقة في الفواتير مع خيار تثبيت السعر لمدة عام، ونتكفل بكافة إجراءات انتقالكم من شركاتكم الحالية إلينا بكل سلاسة، مدعومين بفريقنا الفني الذي يخدمكم باللغة العربية على مدار الساعة لضمان تجربة تواصل رقمية لا تشوبها شائبة.
+        </div>
       </div>
 
       <p className="text-center text-sm text-gray-400 font-medium">
