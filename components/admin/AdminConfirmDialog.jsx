@@ -7,7 +7,7 @@ import Button from "../Button";
 const ACCENT = "#18a2e3";
 
 /**
- * @param {'reject' | 'complete' | 'alert'} kind
+ * @param {'reject' | 'complete' | 'alert' | 'delete'} kind
  */
 export default function AdminConfirmDialog({
   open,
@@ -34,6 +34,7 @@ export default function AdminConfirmDialog({
   const isReject = kind === "reject";
   const isComplete = kind === "complete";
   const isAlert = kind === "alert";
+  const isDelete = kind === "delete";
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -50,7 +51,7 @@ export default function AdminConfirmDialog({
       >
         <div
           className={`px-6 pt-6 pb-4 text-center ${
-            isReject
+            isReject || isDelete
               ? "bg-linear-to-br from-red-50 to-white"
               : isComplete
                 ? "bg-linear-to-br from-emerald-50 to-white"
@@ -58,9 +59,9 @@ export default function AdminConfirmDialog({
           }`}
         >
           <div className="flex justify-center mb-3">
-            {isReject && (
+            {(isReject || isDelete) && (
               <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 text-red-600 shadow-inner">
-                <MdCancel size={32} />
+                {isDelete ? <MdWarning size={32} /> : <MdCancel size={32} />}
               </span>
             )}
             {isComplete && (
@@ -107,10 +108,10 @@ export default function AdminConfirmDialog({
             variant="primary"
             size="large"
             className={`min-w-[140px] ${isAlert ? "" : "flex-1 sm:flex-none min-w-[120px]"} ${
-              isReject ? "!bg-linear-to-r !from-red-500 !to-red-600 hover:opacity-95" : ""
+              (isReject || isDelete) ? "!bg-linear-to-r !from-red-500 !to-red-600 hover:opacity-95" : ""
             } ${isComplete ? "!bg-linear-to-r !from-emerald-600 !to-emerald-700 hover:opacity-95" : ""}`}
             style={
-              !isReject && !isComplete
+              !isReject && !isComplete && !isDelete
                 ? { background: `linear-gradient(to right, ${ACCENT}, #0d8bc9)` }
                 : undefined
             }

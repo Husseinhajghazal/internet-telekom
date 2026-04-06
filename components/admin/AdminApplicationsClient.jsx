@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   MdCalendarMonth,
@@ -20,7 +20,12 @@ import {
   MdOutlineSpeakerNotes,
   MdSwapHoriz,
   MdDoneAll,
+  MdOutlineTaskAlt,
+  MdOutlineTimer,
+  MdAdd,
+  MdDelete,
 } from "react-icons/md";
+import { TiEdit } from "react-icons/ti";
 import { FaRegEdit } from "react-icons/fa";
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 import * as XLSX from "xlsx";
@@ -29,48 +34,15 @@ import ApplicationDetailModal from "./ApplicationDetailModal";
 import AdminNotesModal from "./AdminNotesModal";
 import AdminStatusModal from "./AdminStatusModal";
 import {
-  describeSelectedInquiry,
-  describeSelectedPackage,
-  describeSelectedService,
-  describeServiceType,
-  describeNoContractTechType,
   formatDate,
+  describeStatus,
+  statusBadgeClass
 } from "@/utils/general";
+import { STATUS_LABELS } from "@/utils/data";
 import { useRouter } from "next/navigation";
 
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
-
-const STATUS_LABELS = {
-  NOT_COMPLETED: "غير مكتمل",
-  NEW: "جديد",
-  UNDER_REVIEW: "قيد المراجعة",
-  UNDER_OBSERVATION: "قيد المتابعة",
-  DELAYED: "مؤجل",
-  REJECTED: "ملغى",
-  COMPLETED: "مكتمل",
-};
-
-const statusBadgeClass = (status) => {
-  switch (status) {
-    case "NEW":
-      return "bg-blue-100 text-blue-800 ring-1 ring-blue-200/60";
-    case "COMPLETED":
-      return "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200/60";
-    case "REJECTED":
-      return "bg-red-100 text-red-800 ring-1 ring-red-200/60";
-    case "UNDER_REVIEW":
-      return "bg-amber-100 text-amber-900 ring-1 ring-amber-200/60";
-    case "UNDER_OBSERVATION":
-      return "bg-purple-100 text-purple-900 ring-1 ring-purple-200/60";
-    case "DELAYED":
-      return "bg-orange-100 text-orange-900 ring-1 ring-orange-200/60";
-    case "NOT_COMPLETED":
-      return "bg-slate-100 text-slate-700 ring-1 ring-slate-200/60";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
 
 const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, openStatusModal }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -205,6 +177,24 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
             <MdDone size={18} />
             إكمال
           </button>
+          
+          <div className="my-1 border-t border-gray-100" />
+          
+          <button
+            disabled={actionId === app.id}
+            onClick={() => {
+              setIsOpen(false);
+              setConfirm({
+                kind: "delete",
+                appId: app.id,
+                appIndex: app.appIndex,
+              });
+            }}
+            className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <MdDelete size={18} />
+            حذف نهائي
+          </button>
         </div>,
         document.body
       )}
@@ -213,9 +203,11 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
 };
 
 export default function AdminApplicationsClient() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [creatingApp, setCreatingApp] = useState(false);
   const [error, setError] = useState(null);
   const [detailApp, setDetailApp] = useState(null);
   const [notesApp, setNotesApp] = useState(null);
@@ -229,6 +221,7 @@ export default function AdminApplicationsClient() {
   const [searchInput, setSearchInput] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [dateField, setDateField] = useState("createdAt");
   const [dateFrom, setDateFrom] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
@@ -249,11 +242,12 @@ export default function AdminApplicationsClient() {
       const params = new URLSearchParams({ page: String(p) });
       if (debouncedQ) params.set("q", debouncedQ);
       if (statusFilter) params.set("status", statusFilter);
+      if (dateField && dateField !== "createdAt") params.set("dateField", dateField);
       if (dateFrom) params.set("dateFrom", dateFrom);
       if (dateTo) params.set("dateTo", dateTo);
       return params.toString();
     },
-    [debouncedQ, statusFilter, dateFrom, dateTo],
+    [debouncedQ, statusFilter, dateField, dateFrom, dateTo],
   );
 
   const load = useCallback(
@@ -281,6 +275,10 @@ export default function AdminApplicationsClient() {
     load(page);
   }, [page, load]);
 
+  const handleCreateBlankApp = () => {
+    router.push(`/admin/applications/new/edit`);
+  };
+
   const exportToExcel = useCallback(async () => {
     setExportLoading(true);
     try {
@@ -305,38 +303,27 @@ export default function AdminApplicationsClient() {
         [
           "رقم الطلب",
           "الإسم واللقب",
-          "رقم الموبايل",
-          "الحالة",
-          "تاريخ الإنشاء",
-          "تاريخ الإكمال",
-          "العنوان",
-          "هل لديه انترنت؟",
-          "نوع الطلب",
-          "الباقة المختارة",
-          "الخدمة المختارة",
-          "الاستفسار",
-          "شركة الإنترنت",
-          "نوع التقنية",
+          "رقم الوطني",
+          "المواليد",
+          "كود العنوان",
+          "الشركة",
           "رقم الإشتراك",
-          "ملاحظة",
+          "الباقة",
+          "تاريخ الأنشاء",
+          "تاريخ الإكتمال",
         ],
         ...allApplications.map((app) => [
           app.appIndex,
           app.name,
           app.phone,
-          STATUS_LABELS[app.status] || app.status,
+          app.nationalId,
+          app.birthDate,
+          app.addressCode,
+          app.company,
+          app.subscriptionNo,
+          app.package,
           app.createdAt ? formatDate(app.createdAt) : "",
           app.completedAt ? formatDate(app.completedAt) : "",
-          app.address,
-          app.hasInternet ? "نعم" : "لا",
-          describeServiceType(app.serviceType),
-          describeSelectedPackage(app.selectedPackage),
-          describeSelectedService(app.selectedService),
-          describeSelectedInquiry(app.selectedInquiry),
-          describeNoContractTechType(app.noContractTechType) || "—",
-          app.internetCompany || "—",
-          app.subscriptionNo || "—",
-          app.note || "",
         ]),
       ];
 
@@ -363,6 +350,24 @@ export default function AdminApplicationsClient() {
       if (res.ok) setDetailApp(json);
     } catch {
       /* ignore */
+    }
+  };
+
+  const deleteStatus = async (id) => {
+    setActionId(id);
+    try {
+      const res = await fetch(`/api/admin/applications/${id}`, {
+        method: "DELETE",
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAlertMsg(json.error || "فشل الحذف");
+        return;
+      }
+      setConfirm(null);
+      await load(page);
+    } finally {
+      setActionId(null);
     }
   };
 
@@ -407,14 +412,18 @@ export default function AdminApplicationsClient() {
     setNotesApp((prev) => ({ ...prev, notes: [newNote, ...(prev.notes || [])] }));
   };
 
-  const handleStatusUpdate = async (newStatus) => {
+  const handleStatusUpdate = async (newStatus, delayedUntil) => {
     if (!statusApp) return;
     setActionId(statusApp.id);
     try {
+      const body = { status: newStatus };
+      if (newStatus === "DELAYED" && delayedUntil) {
+        body.delayedUntil = delayedUntil;
+      }
       const res = await fetch(`/api/admin/applications/${statusApp.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(body),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -432,6 +441,25 @@ export default function AdminApplicationsClient() {
   const totalPages = data?.totalPages ?? 1;
   const total = data?.total ?? 0;
 
+  // Detect duplicates within the current page
+  const { dupNames, dupPhones } = useMemo(() => {
+    const nameCount = {};
+    const phoneCount = {};
+    for (const app of applications) {
+      const n = (app.name || "").trim().toLowerCase();
+      const p = (app.phone || "").replace(/\D/g, "");
+      if (n) nameCount[n] = (nameCount[n] || 0) + 1;
+      if (p) phoneCount[p] = (phoneCount[p] || 0) + 1;
+    }
+    return {
+      dupNames: new Set(Object.keys(nameCount).filter((k) => nameCount[k] > 1)),
+      dupPhones: new Set(Object.keys(phoneCount).filter((k) => phoneCount[k] > 1)),
+    };
+  }, [applications]);
+
+  const isDupName = (name) => dupNames.has((name || "").trim().toLowerCase());
+  const isDupPhone = (phone) => dupPhones.has((phone || "").replace(/\D/g, ""));
+
   const canChangeStatus = (status) =>
     status !== "REJECTED" && status !== "COMPLETED";
 
@@ -439,6 +467,7 @@ export default function AdminApplicationsClient() {
     setSearchInput("");
     setDebouncedQ("");
     setStatusFilter("");
+    setDateField("createdAt");
     setDateFrom("");
     setDateTo("");
     setPage(1);
@@ -492,8 +521,24 @@ export default function AdminApplicationsClient() {
           <div className="flex gap-3">
             <button
               type="button"
+              onClick={handleCreateBlankApp}
+              disabled={creatingApp || loading}
+              className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
+              style={{
+                background: `linear-gradient(to left, #ffb245, #f36802)`,
+              }}
+            >
+              {creatingApp ? (
+                <MdOutlineRefresh size={20} className="animate-spin" />
+              ) : (
+                <MdAdd size={20} />
+              )}
+              إنشاء طلب جديد
+            </button>
+            <button
+              type="button"
               onClick={() => load(page)}
-              disabled={loading}
+              disabled={loading || creatingApp}
               className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
               style={{
                 background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
@@ -501,7 +546,7 @@ export default function AdminApplicationsClient() {
             >
               <MdOutlineRefresh
                 size={20}
-                className={loading ? "animate-spin" : ""}
+                className={loading && !creatingApp ? "animate-spin" : ""}
               />
               تحديث القائمة
             </button>
@@ -530,7 +575,7 @@ export default function AdminApplicationsClient() {
           <span>بحث وتصفية</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
-          <div className="lg:col-span-4 relative">
+          <div className="lg:col-span-3 relative">
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               بحث (الإسم، رقم الطلب، الموبايل)
             </label>
@@ -549,7 +594,7 @@ export default function AdminApplicationsClient() {
               />
             </div>
           </div>
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-2">
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               حالة الطلب
             </label>
@@ -559,12 +604,29 @@ export default function AdminApplicationsClient() {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
             >
               <option value="">كل الحالات</option>
               {Object.entries(STATUS_LABELS).map(([key, label]) => (
                 <option key={key} value={key}>{label}</option>
               ))}
+            </select>
+          </div>
+          <div className="lg:col-span-2">
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              تصفية حسب
+            </label>
+            <select
+              value={dateField}
+              onChange={(e) => {
+                setDateField(e.target.value);
+                setPage(1);
+              }}
+              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+            >
+              <option value="createdAt">تاريخ الإنشاء</option>
+              <option value="completedAt">تاريخ الإكتمال</option>
+              <option value="delayedUntil">تاريخ التأجيل</option>
             </select>
           </div>
           <div className="lg:col-span-2">
@@ -650,22 +712,31 @@ export default function AdminApplicationsClient() {
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdPhone size={18} />
-                      الموبايل
+                      رقم الموبايل
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
-                    الحالة
+                    <span className="inline-flex items-center gap-1.5">
+                      <MdOutlineTaskAlt size={18} />
+                      الحالة
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdCalendarMonth size={18} />
-                      التاريخ الإنشاء
+                      تاريخ الإنشاء
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdDoneAll size={18} />
-                      تاريخ الإكمال
+                      تاريخ الإكتمال
+                    </span>
+                  </th>
+                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MdOutlineTimer size={18} />
+                      تاريخ التأجيل
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
@@ -675,7 +746,10 @@ export default function AdminApplicationsClient() {
                     </span>
                   </th>
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap min-w-40 text-center">
-                    إجراءات
+                    <span className="inline-flex items-center gap-1.5">
+                      <TiEdit size={18} />
+                      إجراءات
+                    </span>
                   </th>
                 </tr>
               </thead>
@@ -712,19 +786,35 @@ export default function AdminApplicationsClient() {
                         className="px-3 py-3.5 text-gray-800 max-w-40 truncate font-medium"
                         title={app.name}
                       >
-                        {app.name}
+                        <span className="inline-flex items-center gap-1.5">
+                          {app.name}
+                          {isDupName(app.name) && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-600 ring-1 ring-orange-200/60 whitespace-nowrap shrink-0">
+                              مكرر
+                            </span>
+                          )}
+                        </span>
                       </td>
                       <td
-                        className="px-3 py-3.5 whitespace-nowrap text-gray-700"
+                        className="px-3 py-3.5 whitespace-nowrap text-blue-700 underline"
                         dir="ltr"
                       >
-                        {app.phone}
+                        <span className="inline-flex items-center gap-1.5">
+                          <a href={`whatsapp://send?phone=9${app.phone.replace(/\D/g, '')}`} target="_blank">
+                            {app.phone}
+                          </a>
+                          {isDupPhone(app.phone) && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-600 ring-1 ring-orange-200/60 whitespace-nowrap shrink-0 no-underline">
+                              مكرر
+                            </span>
+                          )}
+                        </span>
                       </td>
                       <td className="px-3 py-3.5">
                         <span
                           className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(app.status)}`}
                         >
-                          {STATUS_LABELS[app.status] || app.status}
+                          {describeStatus(app.status)}
                         </span>
                       </td>
                       <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
@@ -735,6 +825,11 @@ export default function AdminApplicationsClient() {
                       <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                         {app.completedAt
                           ? formatDate(app.completedAt)
+                          : "—"}
+                      </td>
+                      <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                        {app.delayedUntil
+                          ? formatDate(app.delayedUntil)
                           : "—"}
                       </td>
                       <td className="px-3 py-3.5 max-w-48">
@@ -830,19 +925,41 @@ export default function AdminApplicationsClient() {
 
       <AdminConfirmDialog
         open={!!confirm}
-        kind={confirm?.kind === "reject" ? "reject" : "complete"}
-        title={confirm?.kind === "reject" ? "إلغاء الطلب؟" : "إكمال الطلب؟"}
-        message={confirm ? `هل أنت متأكد؟ الطلب #${confirm.appIndex}` : ""}
-        confirmLabel={confirm?.kind === "reject" ? "نعم، إلغاء" : "نعم، إكمال"}
+        kind={confirm?.kind}
+        title={
+          confirm?.kind === "reject"
+            ? "إلغاء الطلب؟"
+            : confirm?.kind === "delete"
+              ? "حذف الطلب نهائياً؟"
+              : "إكمال الطلب؟"
+        }
+        message={
+          confirm?.kind === "delete"
+            ? `هل أنت متأكد من مسح الطلب #${confirm.appIndex}؟ سيختفي من القائمة.`
+            : confirm
+              ? `هل أنت متأكد؟ الطلب #${confirm.appIndex}`
+              : ""
+        }
+        confirmLabel={
+          confirm?.kind === "reject"
+            ? "نعم، إلغاء"
+            : confirm?.kind === "delete"
+              ? "نعم، حذف"
+              : "نعم، إكمال"
+        }
         cancelLabel="رجوع"
         loading={!!actionId && confirm && actionId === confirm.appId}
         onCancel={() => setConfirm(null)}
         onConfirm={() => {
           if (!confirm) return;
-          updateStatus(
-            confirm.appId,
-            confirm.kind === "reject" ? "REJECTED" : "COMPLETED",
-          );
+          if (confirm.kind === "delete") {
+            deleteStatus(confirm.appId);
+          } else {
+            updateStatus(
+              confirm.appId,
+              confirm.kind === "reject" ? "REJECTED" : "COMPLETED",
+            );
+          }
         }}
       />
 

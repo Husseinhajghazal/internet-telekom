@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MdPhone, MdOutlineTag, MdHome, MdSearch, MdInfoOutline } from "react-icons/md";
+import { MdPhone, MdOutlineTag, MdHome, MdSearch, MdInfoOutline, MdClose, MdChevronLeft } from "react-icons/md";
 import { GrNotes } from "react-icons/gr";
 import Button from "../../components/Button";
-import { formatPhoneNumber, normalizeIndex } from "@/utils/general";
+import { formatPhoneNumber, normalizeIndex, describeStatus, describeServiceType, statusBadgeClass, formatDate } from "@/utils/general";
 
 export default function InquiryPage() {
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function InquiryPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [adminNotePopup, setAdminNotePopup] = useState(null);
+  const [multiApps, setMultiApps] = useState(null);
 
   const handleFetchResult = (data) => {
     if (data.adminNote) {
@@ -63,7 +64,6 @@ export default function InquiryPage() {
           return;
         }
 
-        // Fetch the newest application for this phone
         const res = await fetch(
           `/api/applications/by-phone/${encodeURIComponent(normalized)}`,
         );
@@ -71,6 +71,13 @@ export default function InquiryPage() {
 
         if (!res.ok) {
           setError(data.error || "تعذر العثور على الطلب.");
+          setLoading(false);
+          return;
+        }
+
+        // Multiple applications → show picker popup
+        if (data.multiple) {
+          setMultiApps(data.applications);
           setLoading(false);
           return;
         }
@@ -83,14 +90,14 @@ export default function InquiryPage() {
     }
   };
 
+  const handlePickApp = (app) => {
+    setMultiApps(null);
+    handleFetchResult(app);
+  };
+
   return (
     <div className="flex flex-row min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50">
       <div className="flex-1 lg:w-[70%] flex flex-col items-center justify-center px-6 py-10 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 right-10 w-32 h-32 bg-blue-200 rounded-full blur-xl" />
-          <div className="absolute bottom-10 left-10 w-40 h-40 bg-cyan-200 rounded-full blur-xl" />
-        </div>
-
         <div className="relative z-10 w-full max-w-md space-y-8 text-center">
         <div className="space-y-2">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -233,6 +240,68 @@ export default function InquiryPage() {
         </p>
       </div>
 
+      {/* Multiple Applications Picker Popup */}
+      {multiApps && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            onClick={() => setMultiApps(null)}
+            aria-hidden
+          />
+          <div className="relative w-full max-w-md rounded-[2rem] bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Close button */}
+            <button
+              onClick={() => setMultiApps(null)}
+              className="absolute top-4 left-4 z-10 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
+            >
+              <MdClose size={20} className="text-gray-600" />
+            </button>
+
+            <div className="p-6 md:p-8 text-center space-y-5">
+              <div className="w-16 h-16 bg-orange-100 text-[#f36802] rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <MdSearch size={32} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-extrabold text-gray-900">
+                  تم العثور على أكثر من طلب
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  يرجى اختيار الطلب الذي تريد عرض تفاصيله
+                </p>
+              </div>
+
+              <div className="max-h-72 overflow-y-auto space-y-3 px-1 scrollbar-thin">
+                {multiApps.map((app) => (
+                  <button
+                    key={app.id}
+                    onClick={() => handlePickApp(app)}
+                    className="w-full text-right bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-2xl p-4 transition-all duration-150 group cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <MdChevronLeft size={22} className="text-gray-400 group-hover:text-blue-500 transition shrink-0" />
+                      <div className="flex-1 min-w-0 space-y-1.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${statusBadgeClass(app.status)}`}>
+                            {describeStatus(app.status)}
+                          </span>
+                          <span className="text-sm font-extrabold text-gray-900">
+                            طلب رقم #{app.appIndex}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-xs text-gray-500">
+                          <span>{formatDate(app.createdAt, "1")}</span>
+                          <span className="font-medium text-gray-700">{describeServiceType(app.serviceType)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Admin Note Popup Component */}
       {adminNotePopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -312,7 +381,7 @@ export default function InquiryPage() {
           </div>
 
           <img
-            src="/consulting.jpg"
+            src="/call_center.jpg"
             alt="Inquiry visual"
             className="w-full h-full object-cover animate-step-in-right relative z-0"
           />

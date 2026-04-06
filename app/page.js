@@ -27,7 +27,19 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center text-center h-svh gap-6 px-4 md:px-10 relative overflow-hidden overflow-x-hidden">
+    <div className="flex flex-col items-center justify-center text-center h-svh gap-3 md:gap-6 px-4 md:px-10 relative overflow-hidden overflow-x-hidden">
+      <motion.div
+        className="flex items-center justify-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <img
+          src="/full-logo.png"
+          alt="logo"
+          className="w-2/4 md:w-1/4 lg:w-2/12 h-auto object-contain"
+        />
+      </motion.div>
       <motion.div
         className="relative z-10 flex flex-col items-center"
         initial="hidden"
@@ -44,19 +56,19 @@ export default function Home() {
           transition={{ duration: 0.6 }}
         >
           <LottieAnimation
-            path="/animations/Under Construction.json"
-            width={300}
-            height={300}
+            path="/animations/App maintenance mode.json"
+            width={250}
+            height={250}
           />
         </motion.div>
 
         <motion.h1
-          className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#128C7E] leading-tight"
+          className="text-lg md:text-2xl lg:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#128C7E] leading-tight"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          يتم صيانة الموقع حالياً
+          أهلاً وسهلاً بك في شركة إنترنت تيليكوم
         </motion.h1>
 
         <motion.p
@@ -65,6 +77,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35 }}
         >
+          يتم صيانة الموقع حالياً <br />
           سنعود قريباً شكراً لصبرك معنا
         </motion.p>
 
@@ -79,7 +92,7 @@ export default function Home() {
               variant="primary"
               size="large"
               className="font-semibold lg:font-bold rounded-lg w-full md:min-w-50 neumorphic-btn"
-              onClick={() => flashSuccess("تم إنشاء الطلب بنجاح")}
+              onClick={() => flashSuccess("تم بدأ طلب جديد")}
             >
               <span className="flex items-center justify-center gap-2">
                 تقديم طلب

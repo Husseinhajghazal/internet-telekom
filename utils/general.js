@@ -1,4 +1,5 @@
 import moment from "moment";
+import { STATUS_LABELS } from "./data";
 
 const describeServiceType = (serviceType = "") => {
   if (serviceType === "newline") return "خط جديد";
@@ -39,7 +40,7 @@ const describeNoContractTechType = (techType = "") => {
 const describeSelectedService = (selectedService = "") => {
   const map = {
     cancel: "إلغاء الاشتراك",
-    "transfer-name": "نقل ملكية (تغيير الإسم)",
+    "transfer-name": "نقل ملكية",
     "transfer-address": "نقل خط (تغيير العنوان)",
     renew: "تجديد الاشتراك",
     freeze: "تجميد الاشتراك",
@@ -68,7 +69,7 @@ const describeSelectedPackage = (selectedPackage = "") => {
         : duration === "24"
           ? "سنتين"
           : `${duration} شهر`;
-  return `${kindLabel} • ${speed} ميغابت/ثانية • ${durationLabel}`;
+  return `${kindLabel} • ميغابت/ثانية ${speed} • ${durationLabel}`;
 };
 
 const formatPhoneNumber = (value = "") => {
@@ -111,7 +112,7 @@ const formatPhoneNumber = (value = "") => {
 };
 
 const getStepFieldOrder = (step, values) => {
-  if (step === 1) return ["name", "phone"];
+  if (step === 1) return ["name", "phone", "userAgreementAccepted"];
   if (step === 2) return ["hasInternet"];
   if (step === 3) return ["serviceType"];
   if (step === 4) {
@@ -215,14 +216,12 @@ const maskValue = (
 const maskPhone = (value = "") => {
   const digits = String(value).replace(/\D/g, "");
   if (!digits) return "—";
-  // show first 4 digits, hide rest
-  return maskValue(digits, 4, 0);
+  return maskValue(digits);
 };
 
 const maskName = (name = "") => {
   if (!name) return "—";
-  // show first 2 characters
-  return maskValue(name.trim(), 2, 0);
+  return maskValue(name.trim());
 };
 
 const maskAddress = (address = "") => {
@@ -232,9 +231,7 @@ const maskAddress = (address = "") => {
     .split(",")
     .map((part) => {
       const trimmed = part.trim();
-
-      // mask each segment, keep first 4 chars visible
-      return maskValue(trimmed, 4, 0);
+      return maskValue(trimmed);
     })
     .join(", ");
 };
@@ -258,6 +255,31 @@ function formatDate(date, type = "2") {
 
 const normalizeIndex = (value) => String(value || "").replace(/\D/g, "");
 
+function describeStatus(status) {
+  return STATUS_LABELS[status] || status || "—";
+}
+
+const statusBadgeClass = (status) => {
+  switch (status) {
+    case "NEW":
+      return "bg-blue-100 text-blue-800 ring-1 ring-blue-200/60";
+    case "COMPLETED":
+      return "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200/60";
+    case "REJECTED":
+      return "bg-red-100 text-red-800 ring-1 ring-red-200/60";
+    case "UNDER_REVIEW":
+      return "bg-amber-100 text-amber-900 ring-1 ring-amber-200/60";
+    case "UNDER_OBSERVATION":
+      return "bg-purple-100 text-purple-900 ring-1 ring-purple-200/60";
+    case "DELAYED":
+      return "bg-orange-100 text-orange-900 ring-1 ring-orange-200/60";
+    case "NOT_COMPLETED":
+      return "bg-slate-100 text-slate-700 ring-1 ring-slate-200/60";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
 export {
   describeContractPreference,
   describeNoContractTechType,
@@ -274,5 +296,8 @@ export {
   maskPhone,
   maskName,
   maskAddress,
-  formatDate,normalizeIndex
+  formatDate,
+  normalizeIndex,
+  describeStatus,
+  statusBadgeClass
 };

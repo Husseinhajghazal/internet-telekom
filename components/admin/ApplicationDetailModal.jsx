@@ -13,8 +13,9 @@ import {
   MdSpeed,
   MdUpdate,
   MdWifi,
+  MdOutlinePinDrop,
 } from "react-icons/md";
-import { FaBuildingCircleCheck } from "react-icons/fa6";
+import { FaBuildingCircleCheck, FaIdCard } from "react-icons/fa6";
 import { AiOutlineFieldNumber } from "react-icons/ai";
 import { PiSpeedometerFill } from "react-icons/pi";
 import Button from "../Button";
@@ -26,20 +27,12 @@ import {
   describeSelectedService,
   describeServiceType,
   formatDate,
+  describeStatus,
+  statusBadgeClass
 } from "../../utils/general";
 
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
-
-const STATUS_LABELS = {
-  NOT_COMPLETED: "غير مكتمل",
-  NEW: "جديد",
-  UNDER_REVIEW: "قيد المراجعة",
-  UNDER_OBSERVATION: "قيد المتابعة",
-  DELAYED: "مؤجل",
-  REJECTED: "مرفوض",
-  COMPLETED: "مكتمل",
-};
 
 const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
   <div
@@ -70,12 +63,11 @@ export default function ApplicationDetailModal({ application, onClose }) {
 
   if (!application) return null;
 
-  const statusLabel = STATUS_LABELS[application.status] || application.status;
   const createdAtLabel = application.createdAt
     ? formatDate(application.createdAt)
     : "—";
-  const updatedAtLabel = application.updatedAt
-    ? formatDate(application.updatedAt)
+  const completedAtLabel = application.completedAt
+    ? formatDate(application.completedAt)
     : "—";
 
   return (
@@ -126,24 +118,41 @@ export default function ApplicationDetailModal({ application, onClose }) {
             <Row label="الإسم" icon={<MdPerson size={18} />}>
               {application.name}
             </Row>
+            <Row label="الرقم الوطني (TC)" icon={<FaIdCard size={18} />}>
+              {application.nationalNumber ? application.nationalNumber : "—"}
+            </Row>
+            <Row label="المواليد" icon={<MdCalendarMonth size={18} />}>
+              {application.birthDate ? application.birthDate : "—"}
+            </Row>
             <Row label="رقم الموبايل" icon={<MdPhone size={18} />}>
               <span dir="ltr" className="inline-block">
                 {application.phone}
               </span>
             </Row>
-            <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
-              <span
-                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold bg-white border"
-                style={{ color: ACCENT, borderColor: `${ACCENT}40` }}
-              >
-                {statusLabel}
+            <Row label="رقم الموبايل 2" icon={<MdPhone size={18} />}>
+              <span dir="ltr" className="inline-block">
+                {application.phone2 ? application.phone2 : "—"}
               </span>
             </Row>
+            <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${statusBadgeClass(application.status)}`}
+              >
+                {describeStatus(application.status)}
+              </span>
+            </Row>
+            {application.status === "DELAYED" && application.delayedUntil && (
+              <Row label="تاريخ التأجيل" icon={<MdCalendarMonth size={18} />}>
+                <span className="inline-flex items-center gap-1.5 text-orange-700 font-bold">
+                  {formatDate(application.delayedUntil, "1")}
+                </span>
+              </Row>
+            )}
             <Row label="تاريخ الإنشاء" icon={<MdCalendarMonth size={18} />}>
               {createdAtLabel}
             </Row>
-            <Row label="آخر تحديث" icon={<MdUpdate size={18} />}>
-              {updatedAtLabel}
+            <Row label="تاريخ الإكتمال" icon={<MdUpdate size={18} />}>
+              {completedAtLabel}
             </Row>
             <Row label="هل لديك إنترنت؟" icon={<MdWifi size={18} />}>
               {application.hasInternet === "yes"
@@ -185,24 +194,24 @@ export default function ApplicationDetailModal({ application, onClose }) {
                 {describeSelectedInquiry(application.selectedInquiry)}
               </Row>
             )}
-            {
-              application.serviceType === "services" && (
-                <>
-                  <Row
-                    label="شركة الإنترنت"
-                    icon={<FaBuildingCircleCheck size={18} />}
-                  >
-                  {application.internetCompany ? application.internetCompany : "—"}
-                </Row>
-                <Row
-                  label="رقم الإشتراك"
-                  icon={<AiOutlineFieldNumber size={18} />}
-                >
-                  {application.subscriptionNo ? application.subscriptionNo : "—"}
-                </Row>
-                </>
-              )
-            }
+            <Row
+              label="شركة الإنترنت"
+              icon={<FaBuildingCircleCheck size={18} />}
+            >
+              {application.internetCompany ? application.internetCompany : "—"}
+            </Row>
+            <Row
+              label="رقم الإشتراك"
+              icon={<MdOutlineReceiptLong size={18} />}
+            >
+              {application.subscriptionNo ? application.subscriptionNo : "—"}
+            </Row>
+            <Row label="كود العنوان (UAVT)" icon={<MdOutlinePinDrop size={18} />}>
+              {application.addressCode ? application.addressCode : "—"}
+            </Row>
+            <Row label="نوع العنوان" icon={<MdHome size={18} />}>
+              {application.originalAddress ? "الأساسي" : "مجاور"}
+            </Row>
             <Row
               label="العنوان"
               dir="ltr"

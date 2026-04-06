@@ -1,50 +1,31 @@
 "use client";
 
+import { STATUS_LABELS } from "@/utils/data";
 import React, { useState } from "react";
-import { MdClose } from "react-icons/md";
-
-const STATUS_LABELS = {
-  NEW: "جديد",
-  UNDER_REVIEW: "قيد المراجعة",
-  UNDER_OBSERVATION: "قيد المتابعة",
-  DELAYED: "مؤجل",
-  COMPLETED: "مكتمل",
-  REJECTED: "مرفوض",
-  NOT_COMPLETED: "غير مكتمل",
-};
-
-const statusBadgeClass = (status) => {
-  switch (status) {
-    case "NEW":
-      return "bg-blue-100/80 text-blue-800 ring-1 ring-blue-200";
-    case "COMPLETED":
-      return "bg-emerald-100/80 text-emerald-900 ring-1 ring-emerald-200/60";
-    case "REJECTED":
-      return "bg-red-100/80 text-red-800 ring-1 ring-red-200/60";
-    case "UNDER_REVIEW":
-      return "bg-amber-100/80 text-amber-900 ring-1 ring-amber-200/60";
-    case "UNDER_OBSERVATION":
-      return "bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/60";
-    case "DELAYED":
-      return "bg-orange-100/80 text-orange-900 ring-1 ring-orange-200/60";
-    case "NOT_COMPLETED":
-      return "bg-slate-100/80 text-slate-700 ring-1 ring-slate-200/60";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
+import { MdClose, MdCalendarMonth } from "react-icons/md";
 
 export default function AdminStatusModal({ application, onClose, onUpdateStatus, loading }) {
   const [selectedStatus, setSelectedStatus] = useState(application.status || "NEW");
+  const [delayDate, setDelayDate] = useState(
+    application.delayedUntil
+      ? new Date(application.delayedUntil).toISOString().slice(0, 10)
+      : ""
+  );
 
-  const handeSave = (e) => {
+  const handleSave = (e) => {
     e.preventDefault();
-    if (selectedStatus === application.status) {
+    if (selectedStatus === application.status && selectedStatus !== "DELAYED") {
       onClose();
       return;
     }
-    onUpdateStatus(selectedStatus);
+    if (selectedStatus === "DELAYED") {
+      onUpdateStatus(selectedStatus, delayDate || null);
+    } else {
+      onUpdateStatus(selectedStatus, null);
+    }
   };
+
+  const isDelayed = selectedStatus === "DELAYED";
 
   return (
     <div
@@ -68,7 +49,7 @@ export default function AdminStatusModal({ application, onClose, onUpdateStatus,
           </button>
         </div>
 
-        <form onSubmit={handeSave} className="p-6 space-y-6">
+        <form onSubmit={handleSave} className="p-6 space-y-5">
           <div>
             <p className="text-sm font-semibold text-gray-600 mb-3">
               الرجاء تحديد الحالة الجديدة لطلب رقم <span dir="ltr">#{application.appIndex}</span>
@@ -84,6 +65,27 @@ export default function AdminStatusModal({ application, onClose, onUpdateStatus,
             </select>
           </div>
 
+          {/* Delay Date Picker — shown only when DELAYED is selected */}
+          {isDelayed && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+              <label className="flex items-center gap-2 text-sm font-semibold text-orange-700 mb-2">
+                <MdCalendarMonth size={18} />
+                تاريخ التأجيل
+              </label>
+              <input
+                type="date"
+                value={delayDate}
+                onChange={(e) => setDelayDate(e.target.value)}
+                className="w-full rounded-2xl border border-orange-200 bg-orange-50/50 py-3 px-4 text-sm text-gray-900 font-bold outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/20"
+              />
+              {!delayDate && (
+                <p className="text-xs text-orange-500 mt-1.5 font-medium">
+                  يرجى تحديد تاريخ التأجيل
+                </p>
+              )}
+            </div>
+          )}
+
           <div className="flex gap-3 justify-end pt-2 border-t border-gray-100">
             <button
               type="button"
@@ -95,7 +97,7 @@ export default function AdminStatusModal({ application, onClose, onUpdateStatus,
             </button>
             <button
               type="submit"
-              disabled={loading || selectedStatus === application.status}
+              disabled={loading || (selectedStatus === application.status && !isDelayed) || (isDelayed && !delayDate)}
               className="rounded-xl px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
               style={{ background: "#18a2e3" }}
             >

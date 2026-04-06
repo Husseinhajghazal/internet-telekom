@@ -36,8 +36,16 @@ export async function PATCH(request, { params }) {
     const data = { status };
     if (status === "COMPLETED") {
       data.completedAt = new Date();
+      data.delayedUntil = null;
+    } else if (status === "DELAYED") {
+      data.completedAt = null;
+      // Accept delayedUntil date from the request body
+      if (body.delayedUntil) {
+        data.delayedUntil = new Date(body.delayedUntil);
+      }
     } else {
       data.completedAt = null;
+      data.delayedUntil = null;
     }
 
     const updated = await prisma.application.update({
@@ -97,13 +105,50 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "معرف الطلب مطلوب" }, { status: 400 });
     }
 
-    const body = await request.json();
+    const contentType = request.headers.get("content-type") || "";
+    let body = {};
+    let invoiceFileUrl = undefined;
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      // Extract basic fields
+      for (const [key, value] of formData.entries()) {
+        if (key !== "invoiceFiles" && key !== "existingInvoiceFileUrls") {
+          body[key] = value;
+        }
+      }
+
+      const newInvoiceFiles = formData.getAll("invoiceFiles");
+      const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
+      let allUrls = existingUrlsStr.split(",").filter(Boolean);
+
+      if (newInvoiceFiles && newInvoiceFiles.length > 0) {
+        // we need to dynamically import or require saveInvoiceFileLocally
+        const { saveInvoiceFileLocally } = require("../../../../../lib/application");
+        const validNewUrls = await Promise.all(
+          newInvoiceFiles
+            .filter((f) => typeof f === "object" && f.size > 0)
+            .map((f) => saveInvoiceFileLocally(f))
+        );
+        allUrls = [...allUrls, ...validNewUrls.filter(Boolean)];
+      }
+
+      invoiceFileUrl = allUrls.join(",") || null;
+      // if all urls were deleted, this turns into null (which is correct)
+    } else {
+      body = await request.json();
+    }
     
     // Select only editable fields to prevent overwriting generated things
     const data = {
       status: body.status,
       name: body.name,
       phone: body.phone,
+      phone2: body.phone2,
+      nationalNumber: body.nationalNumber,
+      birthDate: body.birthDate,
+      addressCode: body.addressCode,
+      originalAddress: body.originalAddress === "true" || body.originalAddress === true,
       hasInternet: body.hasInternet,
       serviceType: body.serviceType,
       contractPreference: body.contractPreference,
@@ -116,7 +161,14 @@ export async function PUT(request, { params }) {
       address: body.address,
       note: body.note,
       adminNote: body.adminNote,
+      delayedUntil: body.status === "DELAYED" && body.delayedUntil
+        ? new Date(body.delayedUntil)
+        : null,
     };
+
+    if (invoiceFileUrl !== undefined && contentType.includes("multipart/form-data")) {
+      data.invoiceFileUrl = invoiceFileUrl;
+    }
 
     // Remove undefined values
     Object.keys(data).forEach(k => data[k] === undefined && delete data[k]);
@@ -130,5 +182,29 @@ export async function PUT(request, { params }) {
   } catch (error) {
     console.error("PUT error:", error);
     return NextResponse.json({ error: "فشل تحديث الطلب" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request, { params }) {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+  }
+
+  try {
+    const resolvedParams = await params;
+    const id = resolvedParams?.id;
+    if (!id) {
+      return NextResponse.json({ error: "معرف الطلب مطلوب" }, { status: 400 });
+    }
+
+    const updated = await prisma.application.update({
+      where: { id },
+      data: { isDeleted: true },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("DELETE error:", error);
+    return NextResponse.json({ error: "فشل حذف الطلب" }, { status: 500 });
   }
 }

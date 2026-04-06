@@ -1,20 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MdSave, MdArrowBack, MdOutlineRefresh } from "react-icons/md";
+import { MdSave, MdArrowBack, MdOutlineRefresh, MdClose } from "react-icons/md";
+import { TbFileInvoiceFilled } from "react-icons/tb";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
-
-const STATUS_OPTIONS = [
-  { value: "NOT_COMPLETED", label: "غير مكتمل" },
-  { value: "NEW", label: "جديد" },
-  { value: "UNDER_REVIEW", label: "قيد المراجعة" },
-  { value: "UNDER_OBSERVATION", label: "قيد المتابعة" },
-  { value: "DELAYED", label: "مؤجل" },
-  { value: "REJECTED", label: "مرفوض" },
-  { value: "COMPLETED", label: "مكتمل" },
-];
+import { STATUS_LABELS } from "@/utils/data";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "newline", label: "خط جديد" },
@@ -29,7 +21,7 @@ const CONTRACT_PREF_OPTIONS = [
 
 const SELECTED_SERVICE_OPTIONS = [
   { value: "cancel", label: "إلغاء الاشتراك" },
-  { value: "transfer-name", label: "نقل ملكية (تغيير الإسم)" },
+  { value: "transfer-name", label: "نقل ملكية" },
   { value: "transfer-address", label: "نقل خط (تغيير العنوان)" },
   { value: "renew", label: "تجديد الاشتراك" },
   { value: "freeze", label: "تجميد الاشتراك" },
@@ -95,6 +87,14 @@ export default function EditApplicationPage() {
     address: "",
     note: "",
     adminNote: "",
+    delayedUntil: "",
+    phone2: "",
+    nationalNumber: "",
+    birthDate: "",
+    addressCode: "",
+    originalAddress: true,
+    invoiceFileUrls: [],
+    invoiceFiles: [],
   });
 
   useEffect(() => {
@@ -119,6 +119,16 @@ export default function EditApplicationPage() {
           address: data.address || "",
           note: data.note || "",
           adminNote: data.adminNote || "",
+          delayedUntil: data.delayedUntil
+            ? new Date(data.delayedUntil).toISOString().slice(0, 10)
+            : "",
+          phone2: data.phone2 || "",
+          nationalNumber: data.nationalNumber || "",
+          birthDate: data.birthDate || "",
+          addressCode: data.addressCode || "",
+          originalAddress: data.originalAddress ?? true,
+          invoiceFileUrls: data.invoiceFileUrl ? data.invoiceFileUrl.split(",").filter(Boolean) : [],
+          invoiceFiles: [],
         });
       } catch (err) {
         setError(err.message);
@@ -126,12 +136,32 @@ export default function EditApplicationPage() {
         setLoading(false);
       }
     };
-    if (id) fetchApp();
+
+    if (id === "new") {
+      setLoading(false);
+    } else if (id) {
+      fetchApp();
+    }
   }, [id]);
 
+  // Memoize blob URLs to prevent memory leaks from URL.createObjectURL
+  const blobUrls = useMemo(() => {
+    return formData.invoiceFiles.map((file) => URL.createObjectURL(file));
+  }, [formData.invoiceFiles]);
+
+  // Revoke blob URLs on cleanup / when files change
+  useEffect(() => {
+    return () => {
+      blobUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [blobUrls]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({ 
+      ...prev, 
+      [name]: type === "checkbox" ? checked : value 
+    }));
   };
 
   const parseEmptyToNull = (val) => (val === "" ? null : val);
@@ -142,20 +172,43 @@ export default function EditApplicationPage() {
     setError(null);
 
     try {
-      const res = await fetch(`/api/admin/applications/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          contractPreference: parseEmptyToNull(formData.contractPreference),
-          selectedService: parseEmptyToNull(formData.selectedService),
-          selectedPackage: parseEmptyToNull(formData.selectedPackage),
-          noContractTechType: parseEmptyToNull(formData.noContractTechType),
-          selectedInquiry: parseEmptyToNull(formData.selectedInquiry),
-          internetCompany: parseEmptyToNull(formData.internetCompany),
-          subscriptionNo: parseEmptyToNull(formData.subscriptionNo),
-          adminNote: parseEmptyToNull(formData.adminNote),
-        }),
+      const payload = new FormData();
+      
+      const payloadData = {
+        ...formData,
+        contractPreference: parseEmptyToNull(formData.contractPreference),
+        selectedService: parseEmptyToNull(formData.selectedService),
+        selectedPackage: parseEmptyToNull(formData.selectedPackage),
+        noContractTechType: parseEmptyToNull(formData.noContractTechType),
+        selectedInquiry: parseEmptyToNull(formData.selectedInquiry),
+        internetCompany: parseEmptyToNull(formData.internetCompany),
+        subscriptionNo: parseEmptyToNull(formData.subscriptionNo),
+        adminNote: parseEmptyToNull(formData.adminNote),
+        delayedUntil: formData.status === "DELAYED" && formData.delayedUntil
+          ? formData.delayedUntil
+          : null,
+      };
+
+      // Append all scalar fields to FormData
+      Object.entries(payloadData).forEach(([key, value]) => {
+        if (key !== "invoiceFiles" && key !== "invoiceFileUrls" && value !== null && value !== undefined) {
+          payload.append(key, value);
+        }
+      });
+
+      // Append saved urls and new files
+      payload.append("existingInvoiceFileUrls", formData.invoiceFileUrls.join(","));
+      formData.invoiceFiles.forEach((file) => {
+        payload.append("invoiceFiles", file);
+      });
+
+      const url = id === "new" ? "/api/admin/applications" : `/api/admin/applications/${id}`;
+      const method = id === "new" ? "POST" : "PUT";
+
+      const res = await fetch(url, {
+        method,
+        // The fetch API will automatically set the correct Content-Type with the boundary if we omit the header when body is FormData
+        body: payload,
       });
 
       const json = await res.json();
@@ -240,6 +293,38 @@ export default function EditApplicationPage() {
             />
           </div>
           <div>
+            <label className={labelClass}>رقم تواصل بديل (إختياري)</label>
+            <input
+              name="phone2"
+              type="text"
+              dir="ltr"
+              value={formData.phone2}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>الرقم الوطني (TC / الكملك)</label>
+            <input
+              name="nationalNumber"
+              type="text"
+              dir="ltr"
+              value={formData.nationalNumber}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>المواليد</label>
+            <input
+              name="birthDate"
+              type="date"
+              value={formData.birthDate}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+          <div>
             <label className={labelClass}>حالة الطلب</label>
             <select
               name="status"
@@ -247,13 +332,27 @@ export default function EditApplicationPage() {
               onChange={handleChange}
               className={inputClass}
             >
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
+              {Object.entries(STATUS_LABELS).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
                 </option>
               ))}
             </select>
           </div>
+
+          {formData.status === "DELAYED" && (
+            <div>
+              <label className={labelClass}>تاريخ التأجيل</label>
+              <input
+                name="delayedUntil"
+                type="date"
+                value={formData.delayedUntil}
+                onChange={handleChange}
+                className={`${inputClass} !border-orange-200 !bg-orange-50/50 focus:!border-orange-400 focus:!ring-orange-500/20`}
+              />
+            </div>
+          )}
+
           <div>
             <label className={labelClass}>هل لديك إنترنت؟</label>
             <select
@@ -381,41 +480,66 @@ export default function EditApplicationPage() {
             </div>
           )}
 
-          {formData.serviceType === "services" && (
-            <>
-              <div>
-                <label className={labelClass}>شركة الإنترنت</label>
-                <input
-                  name="internetCompany"
-                  type="text"
-                  value={formData.internetCompany}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>رقم الإشتراك</label>
-                <input
-                  name="subscriptionNo"
-                  type="text"
-                  value={formData.subscriptionNo}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </div>
-            </>
-          )}
-
-          <div className="md:col-span-2">
-            <label className={labelClass}>العنوان</label>
-            <textarea
-              name="address"
-              rows={2}
-              value={formData.address}
+          <div>
+            <label className={labelClass}>شركة الإنترنت</label>
+            <input
+              name="internetCompany"
+              type="text"
+              value={formData.internetCompany}
               onChange={handleChange}
               className={inputClass}
-              dir="ltr"
             />
+          </div>
+          <div>
+            <label className={labelClass}>رقم الإشتراك</label>
+            <input
+              name="subscriptionNo"
+              type="text"
+              value={formData.subscriptionNo}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="md:col-span-2 space-y-4">
+            <div>
+              <label className={labelClass}>العنوان (كود العنوان / العنوان بالتفصيل)</label>
+              <textarea
+                name="address"
+                rows={2}
+                value={formData.address}
+                onChange={handleChange}
+                className={inputClass}
+                dir="ltr"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>كود العنوان (UAVT)</label>
+                <input
+                  name="addressCode"
+                  type="text"
+                  dir="ltr"
+                  value={formData.addressCode}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  name="originalAddress"
+                  id="originalAddress"
+                  type="checkbox"
+                  checked={formData.originalAddress}
+                  onChange={handleChange}
+                  className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                />
+                <label htmlFor="originalAddress" className="text-sm font-semibold text-gray-700 cursor-pointer">
+                  هذا هو العنوان الأصلي الأساسي
+                </label>
+              </div>
+            </div>
           </div>
 
           <div className="md:col-span-2">
@@ -439,6 +563,83 @@ export default function EditApplicationPage() {
               className={`${inputClass} !bg-cyan-50/50 !border-cyan-200`}
               placeholder="اكتب رسالة للمستخدم هنا للرد على استفساره..."
             />
+          </div>
+
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <label className={labelClass + " !mb-0"}>الصور المرفقة</label>
+              {(formData.invoiceFiles.length + formData.invoiceFileUrls.length) < 5 && (
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("admin-invoice-upload").click()}
+                  className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition"
+                >
+                  <TbFileInvoiceFilled size={18} />
+                  إضافة صورة
+                </button>
+              )}
+            </div>
+            
+            <input
+              type="file"
+              id="admin-invoice-upload"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                let newFiles = Array.from(e.target.files);
+                const currentTotal = formData.invoiceFiles.length + formData.invoiceFileUrls.length;
+                const allowed = 5 - currentTotal;
+                if (allowed <= 0) return;
+                if (newFiles.length > allowed) newFiles = newFiles.slice(0, allowed);
+                setFormData(prev => ({ ...prev, invoiceFiles: [...prev.invoiceFiles, ...newFiles] }));
+                e.target.value = "";
+              }}
+            />
+
+            {(formData.invoiceFiles.length > 0 || formData.invoiceFileUrls.length > 0) && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                {formData.invoiceFileUrls.map((url, idx) => (
+                  <div key={`saved-${idx}`} className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-50 flex flex-col justify-between">
+                    <img src={url} alt={`Saved ${idx}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newUrls = [...formData.invoiceFileUrls];
+                          newUrls.splice(idx, 1);
+                          setFormData(prev => ({ ...prev, invoiceFileUrls: newUrls }));
+                        }}
+                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                        title="حذف"
+                      >
+                        <MdClose size={20} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                
+                {formData.invoiceFiles.map((file, idx) => (
+                  <div key={`new-${idx}`} className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between">
+                    <img src={blobUrls[idx]} alt={`New ${idx}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newFiles = [...formData.invoiceFiles];
+                          newFiles.splice(idx, 1);
+                          setFormData(prev => ({ ...prev, invoiceFiles: newFiles }));
+                        }}
+                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                        title="حذف"
+                      >
+                        <MdClose size={20} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

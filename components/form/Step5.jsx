@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { ErrorMessage } from "formik";
 import PackageSection from "../PackageSection";
 import TechTypeGrid from "../TechTypeGrid";
 import StepHeader from "../StepHeader";
-import LottieAnimation from "../LottieAnimation";
 
 const Step5 = ({
   values,
@@ -42,7 +41,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "blue",
-      features: ["انترنت بحسب السرعة لديك"],
+      features: ["التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوتر تقسيط مع الفاتورة"],
     },
     {
       value: "fiber",
@@ -50,7 +49,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "green",
-      features: ["ألياف ضوئية بسرعة عالية"],
+      features: ["التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوترات الفايبر مجاناً"],
     },
     {
       value: "gigafiber",
@@ -58,12 +57,9 @@ const Step5 = ({
       speed: "1000",
       price: 699,
       color: "purple",
-      features: ["اقصى سرعة بتقنية الجيل السادس"],
+      features: ["التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوترات الفايبر مجاناً"],
     },
   ];
-
-  const [showVideo, setShowVideo] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(true);
 
   if (isWithContract) {
     return (
@@ -72,7 +68,7 @@ const Step5 = ({
           <PackageSection
             accent="blue"
             title="الباقات العائلية المخفضة"
-            description="باقات مصممة خصيصاً للعائلات مع أسعار مخفضة"
+            description="باقات الإنترنت العائلي والإقتصادي (البنية التحتية لجوك تيليكوم)"
             durationLabel={familyContractDuration === "18" ? "18 شهر" : "سنتين"}
             durations={[
               { value: "18", label: "18 شهر" },
@@ -91,11 +87,21 @@ const Step5 = ({
             packageKind="family"
             selectedPackage={values.selectedPackage}
           />
+          <div className="flex justify-center w-full mt-4">
+            <iframe
+              className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"
+              src="https://www.youtube.com/embed/lyav1Uz9DVI"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
 
           <PackageSection
             accent="purple"
             title="باقات الإنترنت VIP"
-            description="باقات متميزة للمستخدمين المتقدمين مع سرعات عالية وجودة فائقة"
+            description="باقات الإنترنت الأقوى والأسرع (البنية التحتية لترك تيليكوم)"
             durationLabel={vipContractDuration === "12" ? "سنة" : "18 شهر"}
             durations={[
               { value: "12", label: "سنة" },
@@ -114,43 +120,16 @@ const Step5 = ({
             packageKind="vip"
             selectedPackage={values.selectedPackage}
           />
-
-          {showOverlay ? (
-            <div className="bg-white p-6 rounded-3xl shadow-lg max-w-md mx-auto">
-              <h3 className="text-lg font-semibold mb-4 text-center">
-                هل تحتاج إلى شرح عن الباقات؟
-              </h3>
-              <div className="flex justify-center space-x-4">
-                <button
-                  onClick={() => {
-                    setShowOverlay(false);
-                    setShowVideo(true);
-                  }}
-                  className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
-                >
-                  نعم
-                </button>
-                <button
-                  onClick={() => setShowOverlay(false)}
-                  className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
-                >
-                  لا
-                </button>
-              </div>
-            </div>
-          ) : showVideo ? (
-            <div className="flex justify-center">
-              <iframe
-                width="560"
-                height="315"
-                src="https://www.youtube.com/embed/lyav1Uz9DVI"
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-          ) : null}
+          <div className="flex justify-center w-full mt-4">
+            <iframe
+              className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"
+              src="https://www.youtube.com/embed/lyav1Uz9DVI"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
         </div>
 
         {errors.selectedPackage && touched.selectedPackage && (
@@ -168,16 +147,9 @@ const Step5 = ({
   return (
     <div className="max-w-4xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
-        title="اختر نوع الاتصال"
-        subTitle="يمكنك اختيار نوع التقنية المفضلة لديك"
-      >
-        {/* <LottieAnimation
-          path="/animations/Network%20Speed%20-%20Animation.json"
-          width={150}
-          height={150}
-          className="inline-block"
-        /> */}
-      </StepHeader>
+        title="اختر نوع الخدمة"
+        subTitle="يمكنك اختيار نوع البنية التحتية المتوفرة لديك"
+      />
 
       <div className="md:px-4">
         <TechTypeGrid

@@ -18,40 +18,12 @@ import {
   formatDate,
   describeSelectedInquiry,
   describeNoContractTechType,
+  describeStatus,
+  statusBadgeClass,
+  maskValue
 } from "../utils/general";
 
 const ACCENT = "#18a2e3";
-
-const STATUS_LABELS = {
-  NOT_COMPLETED: "غير مكتمل",
-  NEW: "جديد",
-  UNDER_REVIEW: "قيد المراجعة",
-  UNDER_OBSERVATION: "قيد المتابعة",
-  DELAYED: "مؤجل",
-  REJECTED: "مرفوض",
-  COMPLETED: "مكتمل",
-};
-
-const statusBadgeClass = (status) => {
-  switch (status) {
-    case "NEW":
-      return "bg-blue-100 text-blue-800 ring-1 ring-blue-200/60";
-    case "COMPLETED":
-      return "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200/60";
-    case "REJECTED":
-      return "bg-red-100 text-red-800 ring-1 ring-red-200/60";
-    case "UNDER_REVIEW":
-      return "bg-amber-100 text-amber-900 ring-1 ring-amber-200/60";
-    case "UNDER_OBSERVATION":
-      return "bg-purple-100 text-purple-900 ring-1 ring-purple-200/60";
-    case "DELAYED":
-      return "bg-orange-100 text-orange-900 ring-1 ring-orange-200/60";
-    case "NOT_COMPLETED":
-      return "bg-slate-100 text-slate-700 ring-1 ring-slate-200/60";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
 
 const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
   <div
@@ -89,7 +61,6 @@ const ApplicationInfoView = ({ application, loading, error }) => {
     );
   }
 
-  const statusLabel = STATUS_LABELS[application.status] || application.status;
   const createdAtLabel = application.createdAt
     ? formatDate(application.createdAt)
     : "—";
@@ -119,18 +90,11 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold ${statusBadgeClass(application.status)}`}
                 >
-                  {statusLabel}
+                  {describeStatus(application.status)}
                 </span>
               </Row>
               <Row label="تاريخ الإنشاء" icon={<MdCalendarMonth size={18} />}>
                 {createdAtLabel}
-              </Row>
-              <Row label="هل لديك إنترنت؟" icon={<MdWifi size={18} />}>
-                {application.hasInternet === "yes"
-                  ? "نعم"
-                  : application.hasInternet === "no"
-                    ? "لا"
-                    : "—"}
               </Row>
               <Row label="نوع الطلب" icon={<MdOutlineDescription size={18} />}>
                 {describeServiceType(application.serviceType)}
@@ -152,7 +116,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                   </Row>
                 )}
               {application.serviceType === "inquiry" && (
-                <Row className="sm:col-span-2" label="الاستفسار" icon={<MdOutlineDescription size={18} />}>
+                <Row label="الاستفسار" icon={<MdOutlineDescription size={18} />}>
                   {describeSelectedInquiry(application.selectedInquiry)}
                 </Row>
               )}
@@ -169,10 +133,10 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 application.serviceType === "services" && (
                   <>
                     <Row label="شركة الإنترنت" icon={<FaBuildingCircleCheck size={18} />}>
-                      {application.internetCompany ? application.internetCompany : "—"}
+                      {application.internetCompany ? maskValue(application.internetCompany) : "—"}
                     </Row>
-                    <Row label="رقم الإشتراك" icon={<AiOutlineFieldNumber size={18} />}>
-                      {application.subscriptionNo ? application.subscriptionNo : "—"}
+                    <Row label="رقم الإشتراك" icon={<MdOutlineReceiptLong size={18} />}>
+                      {application.subscriptionNo ? maskValue(application.subscriptionNo) : "—"}
                     </Row>
                   </>
                 )
@@ -180,27 +144,6 @@ const ApplicationInfoView = ({ application, loading, error }) => {
               <Row label="العنوان" dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
                 {maskAddress(application.address)}
               </Row>
-              {application.invoiceFileUrl && application.invoiceFileUrl.trim() !== "" && (
-                <Row
-                  label="الصور المرفقة"
-                  className="sm:col-span-2"
-                  icon={<MdOutlineReceiptLong size={18} />}
-                >
-                  <div className="flex flex-wrap gap-3 mt-2">
-                    {application.invoiceFileUrl.split(",").filter(Boolean).map((url, idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="relative block w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:opacity-80 transition hover:shadow-md ring-2 ring-transparent hover:ring-[#18a2e3]"
-                      >
-                        <img src={url} alt={`مرفق ${idx + 1}`} className="w-full h-full object-cover" />
-                      </a>
-                    ))}
-                  </div>
-                </Row>
-              )}
             </div>
           </div>
 

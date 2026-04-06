@@ -30,17 +30,21 @@ function buildWhere(searchParams) {
     dateTo = s;
   }
   if (dateFrom || dateTo) {
-    const createdAt = {};
+    const dateFieldParam = searchParams.get("dateField")?.trim();
+    const VALID_DATE_FIELDS = ["createdAt", "completedAt", "delayedUntil"];
+    const targetDateField = VALID_DATE_FIELDS.includes(dateFieldParam) ? dateFieldParam : "createdAt";
+
+    const dateCondition = {};
     if (dateFrom) {
       const d = new Date(`${dateFrom}T00:00:00.000Z`);
-      if (!Number.isNaN(d.getTime())) createdAt.gte = d;
+      if (!Number.isNaN(d.getTime())) dateCondition.gte = d;
     }
     if (dateTo) {
       const d = new Date(`${dateTo}T23:59:59.999Z`);
-      if (!Number.isNaN(d.getTime())) createdAt.lte = d;
+      if (!Number.isNaN(d.getTime())) dateCondition.lte = d;
     }
-    if (Object.keys(createdAt).length) {
-      andConditions.push({ createdAt });
+    if (Object.keys(dateCondition).length) {
+      andConditions.push({ [targetDateField]: dateCondition });
     }
   }
 
@@ -61,6 +65,8 @@ function buildWhere(searchParams) {
     if (digits.length >= 3) orCond.push({ phone: { contains: digits } });
     andConditions.push({ OR: orCond });
   }
+
+  andConditions.push({ isDeleted: false });
 
   if (andConditions.length === 0) return {};
   if (andConditions.length === 1) return andConditions[0];
@@ -126,5 +132,115 @@ export async function GET(request) {
     });
   } catch {
     return NextResponse.json({ error: "فشل تحميل الطلبات" }, { status: 500 });
+  }
+}
+
+async function getNextAppIndex() {
+  const latest = await prisma.application.findFirst({
+    orderBy: { appIndex: "desc" },
+    select: { appIndex: true },
+  });
+  return (latest?.appIndex ?? 0) + 1;
+}
+
+export async function POST(request) {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+  }
+
+  try {
+    const contentType = request.headers.get("content-type") || "";
+    let body = {};
+    let invoiceFileUrl = undefined;
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      // Extract basic fields
+      for (const [key, value] of formData.entries()) {
+        if (key !== "invoiceFiles" && key !== "existingInvoiceFileUrls") {
+          body[key] = value;
+        }
+      }
+
+      const newInvoiceFiles = formData.getAll("invoiceFiles");
+      const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
+      let allUrls = existingUrlsStr.split(",").filter(Boolean);
+
+      if (newInvoiceFiles && newInvoiceFiles.length > 0) {
+        const { saveInvoiceFileLocally } = require("../../../../lib/application");
+        const validNewUrls = await Promise.all(
+          newInvoiceFiles
+            .filter((f) => typeof f === "object" && f.size > 0)
+            .map((f) => saveInvoiceFileLocally(f))
+        );
+        allUrls = [...allUrls, ...validNewUrls.filter(Boolean)];
+      }
+
+      invoiceFileUrl = allUrls.join(",") || null;
+    } else {
+      body = await request.json();
+    }
+    
+    // Select only editable fields
+    const data = {
+      status: body.status || "NEW",
+      name: body.name || "طلب جديد",
+      phone: body.phone || "-",
+      phone2: body.phone2,
+      nationalNumber: body.nationalNumber,
+      birthDate: body.birthDate,
+      addressCode: body.addressCode,
+      originalAddress: body.originalAddress === "true" || body.originalAddress === true,
+      hasInternet: body.hasInternet,
+      serviceType: body.serviceType,
+      contractPreference: body.contractPreference,
+      selectedService: body.selectedService,
+      selectedPackage: body.selectedPackage,
+      noContractTechType: body.noContractTechType,
+      selectedInquiry: body.selectedInquiry,
+      internetCompany: body.internetCompany,
+      subscriptionNo: body.subscriptionNo,
+      address: body.address,
+      note: body.note,
+      adminNote: body.adminNote,
+      delayedUntil: body.status === "DELAYED" && body.delayedUntil
+        ? new Date(body.delayedUntil)
+        : null,
+      step: 6,
+    };
+
+    if (invoiceFileUrl !== undefined) {
+      data.invoiceFileUrl = invoiceFileUrl;
+    }
+
+    // Remove undefined values
+    Object.keys(data).forEach(k => data[k] === undefined && delete data[k]);
+
+    let application = null;
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      try {
+        const nextAppIndex = await getNextAppIndex();
+        data.appIndex = nextAppIndex;
+        application = await prisma.application.create({
+          data,
+          select: {
+            id: true,
+          },
+        });
+        break;
+      } catch (error) {
+        if (error?.code !== "P2002" || attempt === 4) {
+          throw error;
+        }
+      }
+    }
+
+    return NextResponse.json(application, { status: 201 });
+  } catch (error) {
+    console.error("POST error:", error);
+    return NextResponse.json(
+      { error: "فشل إنشاء الطلب" },
+      { status: 500 }
+    );
   }
 }

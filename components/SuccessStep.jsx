@@ -1,25 +1,14 @@
 import React from "react";
 import Button from "./Button";
-import { formatDate } from "@/utils/general";
+import { describeStatus, formatDate, statusBadgeClass } from "@/utils/general";
 import { MdHome, MdAddCircleOutline, MdCheckCircle } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
-
-const STATUS_LABELS = {
-  NOT_COMPLETED: "غير مكتمل",
-  NEW: "جديد",
-  UNDER_REVIEW: "قيد المراجعة",
-  UNDER_OBSERVATION: "قيد المتابعة",
-  DELAYED: "مؤجل",
-  REJECTED: "مرفوض",
-  COMPLETED: "مكتمل",
-};
 
 const SuccessStep = ({ submissionInfo }) => {
   const appIndex = submissionInfo?.appIndex ?? "------";
   const createdAtLabel = submissionInfo?.createdAt
     ? formatDate(submissionInfo.createdAt)
     : "—";
-  const statusLabel = STATUS_LABELS[submissionInfo?.status] || "—";
 
   return (
     <div className="flex flex-row min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50">
@@ -72,8 +61,8 @@ const SuccessStep = ({ submissionInfo }) => {
               </div>
               <div className="flex items-center justify-start gap-3">
                 <span className="text-gray-700">حالة الطلب:</span>
-                <span className="text-amber-700 bg-amber-100 px-3 py-1 rounded-full font-semibold">
-                  {statusLabel}
+                <span className={`px-3 py-1 rounded-full font-semibold ${statusBadgeClass(submissionInfo?.status)}`}>
+                  {describeStatus(submissionInfo?.status)}
                 </span>
               </div>
             </div>

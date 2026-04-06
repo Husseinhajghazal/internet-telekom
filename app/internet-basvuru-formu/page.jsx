@@ -4,7 +4,6 @@ import React from "react";
 import { Form, Formik } from "formik";
 import FooterButtons from "../../components/FooterButtons";
 import ProgressBar from "../../components/ProgressBar";
-import Header from "../../components/Header";
 import ConfirmPopup from "../../components/ConfirmPopup";
 import UserAgreementPopup from "../../components/UserAgreementPopup";
 import SuccessStep from "../../components/SuccessStep";
@@ -59,35 +58,25 @@ const ApplyPage = () => {
           innerRef={formRef}
         >
           {({ setFieldValue, errors, touched, values }) => {
-            const stepData =
-              step === 4
-                ? SIDEBAR_CONTENT.step4[values.serviceType] || SIDEBAR_CONTENT.step4.services
-                : SIDEBAR_CONTENT[`step${step}`] || SIDEBAR_CONTENT.step1;
+            let stepData = SIDEBAR_CONTENT[`step${step}`] || SIDEBAR_CONTENT.step1;
+            if (step === 4) {
+              stepData = SIDEBAR_CONTENT.step4[values.serviceType] || SIDEBAR_CONTENT.step4.services;
+            } else if (step === 5 && values.contractPreference === "without") {
+              stepData = SIDEBAR_CONTENT.step5_without || SIDEBAR_CONTENT.step5;
+            } else if (step === 6 && values.serviceType === "inquiry") {
+              stepData = SIDEBAR_CONTENT.step6_inquiry || SIDEBAR_CONTENT.step6;
+            }
 
             const {
               image: sideImage,
               title: sideTitle,
               description: sideDesc,
-              iconPaths,
+              Icon: SideIconComponent,
             } = stepData;
-
-            const sideIcon = (
-              <svg className="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {iconPaths.map((pathObj, idx) => (
-                  <path
-                    key={idx}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    {...pathObj}
-                  />
-                ))}
-              </svg>
-            );
 
             return (
               <Form className="min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50 flex flex-row">
-                <div className="flex-1 lg:w-[70%] flex flex-col min-h-svh shrink-0 relative">
+                <div className="flex-1 lg:w-[70%] flex flex-col min-h-svh shrink-0 relative min-w-0">
                   {step === 1 && step1Error && (
                 <div
                   key={step1Error}
@@ -112,7 +101,19 @@ const ApplyPage = () => {
               )}
               <ProgressBar step={step} />
 
-              <div className="flex-1 px-6">
+              <div className="flex-1 px-4 md:px-6 min-w-0 overflow-x-hidden relative z-0">
+                {/* Background Shadow Icon */}
+                {SideIconComponent && (
+                  <div className="fixed top-0 right-0 bottom-0 w-full lg:w-[70%] pointer-events-none overflow-hidden -z-10">
+                    <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-[40%]">
+                      <SideIconComponent
+                        key={`bg-${sideTitle}`}
+                        className="w-[90vh] h-[90vh] text-orange-500/20 transition-all duration-700 ease-in-out"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div
                   key={step}
                   className={
@@ -189,7 +190,7 @@ const ApplyPage = () => {
                     {/* Decorative touches */}
                     <div key={sideTitle} className="absolute bottom-16 left-10 right-10 z-20 text-white flex flex-col gap-5 drop-shadow-xl animate-step-in-right">
                       <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(249,115,22,0.2)] transition-all">
-                        {sideIcon}
+                        {SideIconComponent && <SideIconComponent className="w-7 h-7 text-orange-400" />}
                       </div>
                       <div>
                         <h3 className="text-3xl font-bold mb-3 tracking-wide">{sideTitle}</h3>

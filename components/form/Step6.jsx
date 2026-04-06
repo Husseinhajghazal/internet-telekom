@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Field } from "formik";
 import { MdPhoneInTalk } from "react-icons/md";
 import { TbFileInvoiceFilled } from "react-icons/tb";
 import FormFieldBlock from "../FormFieldBlock";
 import StepHeader from "../StepHeader";
-import LottieAnimation from "../LottieAnimation";
 
 const Step6 = ({ values, errors, touched, setFieldValue }) => {
   const isInquiry = values.serviceType === "inquiry";
@@ -14,6 +13,18 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
   const invoiceFileUrls = values.invoiceFileUrls || [];
   const totalImages = invoiceFiles.length + invoiceFileUrls.length;
   const canAddMore = totalImages < 5;
+
+  // Memoize blob URLs to prevent memory leaks from URL.createObjectURL
+  const blobUrls = useMemo(() => {
+    return invoiceFiles.map((file) => URL.createObjectURL(file));
+  }, [invoiceFiles]);
+
+  // Revoke blob URLs on cleanup / when files change
+  useEffect(() => {
+    return () => {
+      blobUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [blobUrls]);
 
   const [turkeyData, setTurkeyData] = useState(null);
   const [cities, setCities] = useState([]);
@@ -102,6 +113,41 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
       </StepHeader>
 
       <div className="space-y-4 md:space-y-8 md:px-6">
+          
+        {values?.serviceType === "services" && (
+          <FormFieldBlock label="شركة الإنترنت" name="internetCompany">
+            <Field
+              type="text"
+              name="internetCompany"
+              id="internetCompany"
+              className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                errors.internetCompany && touched.internetCompany
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+              placeholder="اكتب اسم شركة الإنترنت التي تستخدمها حالياً"
+            />
+          </FormFieldBlock>
+        )}
+        {values?.serviceType === "services" && (
+          <FormFieldBlock
+            label="رقم أشتراك او فاتورة الإنترنت"
+            name="subscriptionNo"
+          >
+            <Field
+              type="text"
+              name="subscriptionNo"
+              id="subscriptionNo"
+              className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                errors.subscriptionNo && touched.subscriptionNo
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+              placeholder="رقم أشتراك او فاتورة الإنترنت"
+            />
+          </FormFieldBlock>
+        )}
+
         {!isInquiry && (
           <>
             <div className="space-y-1">
@@ -325,40 +371,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
           </>
         )}
 
-        {values?.serviceType === "services" && (
-          <FormFieldBlock label="شركة الإنترنت" name="internetCompany">
-            <Field
-              type="text"
-              name="internetCompany"
-              id="internetCompany"
-              className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
-                errors.internetCompany && touched.internetCompany
-                  ? "border-red-500"
-                  : "border-gray-300"
-              }`}
-              placeholder="اكتب اسم شركة الإنترنت التي تستخدمها حالياً"
-            />
-          </FormFieldBlock>
-        )}
-        {values?.serviceType === "services" && (
-          <FormFieldBlock
-            label="رقم أشتراك او فاتورة الإنترنت"
-            name="subscriptionNo"
-          >
-            <Field
-              type="text"
-              name="subscriptionNo"
-              id="subscriptionNo"
-              className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
-                errors.subscriptionNo && touched.subscriptionNo
-                  ? "border-red-500"
-                  : "border-gray-300"
-              }`}
-              placeholder="رقم أشتراك او فاتورة الإنترنت"
-            />
-          </FormFieldBlock>
-        )}
-
         <FormFieldBlock
           label="ملاحظة إضافية (إختياري)"
           labelClassName="md:text-lg"
@@ -434,7 +446,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between"
                   >
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={blobUrls[idx]}
                       alt={`Invoice preview ${idx}`}
                       className="w-full h-full object-cover"
                     />
@@ -506,7 +518,9 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   setFieldValue("invoiceFiles", [...invoiceFiles, ...newFiles]);
                 }}
                 onClick={() => {
-                  document.getElementById("invoice-upload").click();
+                  const input = document.getElementById("invoice-upload");
+                  input.value = ""; // Reset so re-selecting the same file triggers onChange
+                  input.click();
                 }}
               >
                 <div className="space-y-4">

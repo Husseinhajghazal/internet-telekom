@@ -91,15 +91,8 @@ export async function POST(request) {
     const matches = await findMatchesByNameAndPhone(name, phone);
 
     // Statuses that mean the application is still active — user can't create a new one
-    const ACTIVE_STATUSES = ["NEW", "UNDER_REVIEW", "UNDER_OBSERVATION", "DELAYED"];
-
-    const notCompleted = matches.find((m) => m.status === "NOT_COMPLETED");
-    if (notCompleted) {
-      return NextResponse.json({
-        action: "resume",
-        application: notCompleted,
-      });
-    }
+    // User can create new if DELAYED/REJECTED/COMPLETED
+    const ACTIVE_STATUSES = ["NEW", "UNDER_REVIEW", "UNDER_OBSERVATION"];
 
     const activeApp = matches.find((m) => ACTIVE_STATUSES.includes(m.status));
     if (activeApp) {
@@ -109,7 +102,15 @@ export async function POST(request) {
       });
     }
 
-    // REJECTED or COMPLETED — allow creating a new application
+    const notCompleted = matches.find((m) => m.status === "NOT_COMPLETED");
+    if (notCompleted) {
+      return NextResponse.json({
+        action: "resume",
+        application: notCompleted,
+      });
+    }
+
+    // DELAYED, REJECTED or COMPLETED — allow creating a new application
 
     let application = null;
     for (let attempt = 0; attempt < 5; attempt += 1) {

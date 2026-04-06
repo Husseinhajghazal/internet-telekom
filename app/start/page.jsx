@@ -41,7 +41,7 @@ export default function StartPage() {
         </motion.div>
 
         <motion.h1
-          className="text-lg md:text-2xl lg:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#128C7E] leading-tight mt-5"
+          className="text-lg md:text-2xl lg:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r to-[#f36802] from-[#5898b7] leading-tight mt-5"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}

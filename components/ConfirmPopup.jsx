@@ -90,8 +90,8 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
             )}
 
             {confirmValues?.serviceType === "services" && confirmValues?.subscriptionNo && (
-              <Row label="رقم الإشتراك" className="md:col-span-2" icon={<AiOutlineFieldNumber size={18} />}>
-                {confirmValues.subscriptionNo}
+              <Row label="رقم الإشتراك" className="md:col-span-2" icon={<MdOutlineReceiptLong size={18} />}>
+                {confirmValues.subscriptionNo ? confirmValues.subscriptionNo : "—"}
               </Row>
             )}
 
@@ -113,11 +113,25 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
               </Row>
             )}
 
-            {!isInquiry && (
-              <Row label="صورة الفاتورة" className="md:col-span-2 break-all" icon={<MdOutlineReceiptLong size={18} />}>
-                {confirmValues?.invoiceFile?.name || confirmValues?.invoiceFileUrl || "—"}
-              </Row>
-            )}
+            {!isInquiry && (() => {
+              const newFiles = confirmValues?.invoiceFiles || [];
+              const existingUrls = confirmValues?.invoiceFileUrls || [];
+              const total = newFiles.length + existingUrls.length;
+              return (
+                <Row label="الصور المرفقة" className="md:col-span-2" icon={<MdOutlineReceiptLong size={18} />}>
+                  {total > 0 ? (
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {existingUrls.map((url, idx) => (
+                        <img key={`saved-${idx}`} src={url} alt={`مرفق ${idx + 1}`} className="w-14 h-14 object-cover rounded-lg border border-gray-200" />
+                      ))}
+                      {newFiles.map((file, idx) => (
+                        <img key={`new-${idx}`} src={URL.createObjectURL(file)} alt={`جديد ${idx + 1}`} className="w-14 h-14 object-cover rounded-lg border-2 border-green-300" />
+                      ))}
+                    </div>
+                  ) : "—"}
+                </Row>
+              );
+            })()}
           </div>
 
           <div className="flex flex-col md:flex-row gap-3 md:gap-4">

@@ -29,7 +29,12 @@ model Application {
   contractPreference  String?
   selectedService     String?
   selectedPackage     String?
+  phone2              String?
+  nationalNumber      String?
+  birthDate           String?
+  addressCode         String?
   address             String?
+  originalAddress     Boolean           @default(true)
   note                String?
   invoiceFileUrl      String?
   internetCompany     String?
@@ -38,8 +43,10 @@ model Application {
   noContractTechType  String?
   adminNote           String?
   completedAt         DateTime?
+  delayedUntil        DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  isDeleted           Boolean           @default(false)
   notes               Note[]
 }
 
