@@ -121,14 +121,14 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                   <div className="text-xl font-extrabold text-gray-900 mb-4">{opt.title}</div>
                   <div className="flex items-baseline justify-end gap-2 mb-1">
                     <span className="text-sm font-bold text-gray-500 uppercase">Mbps</span>
-                    <span className={`text-6xl font-black tracking-tighter p-2 bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
+                    <span className={`text-8xl font-black tracking-tighter p-2 bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
                       {opt.speed}
                     </span>
                   </div>
                   
                   <div className="flex items-end justify-end mt-5 gap-1.5">
                     <span className="text-sm text-gray-500 font-bold mb-1.5">شهرياً / TL</span>
-                    <span className={`text-4xl font-extrabold tracking-tight ${isSelected ? palette.priceText : "text-gray-900"}`}>
+                    <span className={`text-5xl font-extrabold tracking-tight ${isSelected ? palette.priceText : "text-gray-900"}`}>
                       {opt.price}
                     </span>
                   </div>
@@ -154,23 +154,23 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                 }`}
               >
                 {/* Background Shadow Icon Reversed */}
-                <div className="absolute -right-12 -bottom-6 pointer-events-none transform rotate-12 z-0 opacity-10">
+                <div className="absolute -left-12 -bottom-6 pointer-events-none transform rotate-12 z-0 opacity-10">
                   <SpeedIcon className="w-56 h-56 text-white" />
                 </div>
 
                 {/* Compact Header */}
                 <div className="px-5 pt-5 pb-3 relative z-10 border-b border-white/20 flex justify-between items-center bg-black/10">
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-500 bg-white/20 text-white`}
-                  >
-                    <SpeedIcon className="text-xl" />
-                  </div>
-                  <div className="flex flex-col items-end justify-center gap-0.5">
+                  <div className="flex flex-col items-start justify-center gap-0.5">
                     <span className="text-base font-extrabold text-white/90 uppercase tracking-wider">{opt.title} <span className="text-base text-white/70">({opt.speed} Mbps)</span></span>
                     <span className={`text-xl font-black tracking-tight text-white flex items-center gap-1`}>
                       <span className="text-[12px] text-white/70 font-bold tracking-normal uppercase">TL / شهرياً</span>
                       {opt.price} 
                     </span>
+                  </div>
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-500 bg-white/20 text-white`}
+                  >
+                    <SpeedIcon className="text-xl" />
                   </div>
                 </div>
 
@@ -178,11 +178,11 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                 <div className="px-5 pb-6 pt-4 relative z-10 flex-1 flex flex-col justify-start">
                   <ul className="space-y-4 text-sm font-semibold text-white leading-relaxed">
                     {opt.features.map((feature, i) => (
-                      <li key={i} className="flex items-start justify-end gap-3 group/item">
+                      <li key={i} className="flex items-start justify-start gap-3 group/item">
+                        <MdCheckCircle className={`shrink-0 text-lg mt-0.5 transition-colors duration-300 ${palette.backCheck}`} />
                         <span className={`transition-colors duration-300 text-white/90`}>
                           {feature}
                         </span>
-                        <MdCheckCircle className={`shrink-0 text-lg mt-0.5 transition-colors duration-300 ${palette.backCheck}`} />
                       </li>
                     ))}
                   </ul>
