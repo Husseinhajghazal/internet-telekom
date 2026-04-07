@@ -32,6 +32,12 @@ export async function PATCH(request, { params }) {
         address: formData.get("address"),
         newAddress: formData.get("newAddress"),
         newPhone: formData.get("newPhone"),
+        addressCode: formData.get("addressCode"),
+        newAddressCode: formData.get("newAddressCode"),
+        originalAddress: formData.get("originalAddress"),
+        originalAddressText: formData.get("originalAddressText"),
+        newOriginalAddress: formData.get("newOriginalAddress"),
+        newOriginalAddressText: formData.get("newOriginalAddressText"),
         note: formData.get("note"),
         step: formData.get("step"),
         internetCompany: formData.get("internetCompany"),
@@ -39,6 +45,7 @@ export async function PATCH(request, { params }) {
         lastInvoiceAmount: formData.get("lastInvoiceAmount"),
         selectedInquiry: formData.get("selectedInquiry"),
         noContractTechType: formData.get("noContractTechType"),
+        newNationalNumber: formData.get("newNationalNumber"),
       });
 
       const newInvoiceFiles = formData.getAll("invoiceFiles");
