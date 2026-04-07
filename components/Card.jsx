@@ -66,6 +66,13 @@ const Card = ({
       check: "bg-indigo-500 border-indigo-500",
       glow: "from-indigo-500/20 to-transparent",
     },
+    cyan: {
+      selected: "border-cyan-500 bg-cyan-50 ring-4 ring-cyan-500/20 shadow-cyan-500/10",
+      hover: "hover:border-cyan-300 hover:shadow-xl",
+      icon: "text-cyan-500",
+      check: "bg-cyan-500 border-cyan-500",
+      glow: "from-cyan-500/20 to-transparent",
+    },
   };
 
   const cls = colorClasses[color];

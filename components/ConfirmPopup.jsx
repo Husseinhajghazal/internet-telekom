@@ -49,12 +49,22 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Row label="الإسم" icon={<MdPerson size={18} />}>
+            <Row label={confirmValues?.newName ? "المالك الحالي" : "الإسم"} icon={<MdPerson size={18} />}>
               {confirmValues?.name || "—"}
             </Row>
+            {confirmValues?.newName && (
+              <Row label="المالك الجديد" icon={<MdPerson size={18} />}>
+                {confirmValues.newName}
+              </Row>
+            )}
             <Row label="رقم الموبايل" dir="ltr" icon={<MdPhone size={18} />}>
               {confirmValues?.phone || "—"}
             </Row>
+            {confirmValues?.serviceType === "services" && (confirmValues?.selectedService === "change-phone" || confirmValues?.selectedService === "transfer-name") && (
+              <Row label="الرقم الجديد" dir="ltr" icon={<MdPhone size={18} />}>
+                {confirmValues?.newPhone || "—"}
+              </Row>
+            )}
             <Row label="نوع الطلب" className="md:col-span-2" icon={<MdDescription size={18} />}>
               {describeServiceType(confirmValues?.serviceType)}
             </Row>
@@ -95,6 +105,12 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
               </Row>
             )}
 
+            {confirmValues?.serviceType === "services" && confirmValues?.lastInvoiceAmount && (
+              <Row label="قيمة أخر فاتورة" className="md:col-span-2" icon={<MdOutlineReceiptLong size={18} />}>
+                {confirmValues.lastInvoiceAmount ? confirmValues.lastInvoiceAmount : "—"}
+              </Row>
+            )}
+
             {confirmValues?.serviceType === "newline" && confirmValues?.contractPreference === "with" && (
               <Row label="الباقة المختارة" className="md:col-span-2" icon={<MdSpeed size={18} />}>
                 {describeSelectedPackage(confirmValues?.selectedPackage)}
@@ -102,8 +118,14 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
             )}
 
             {!isInquiry && (
-              <Row label="العنوان" dir="ltr" className="md:col-span-2" icon={<MdHome size={18} />}>
+              <Row label={confirmValues?.selectedService === "transfer-address" ? "العنوان القديم" : "العنوان"} dir="ltr" className="md:col-span-2" icon={<MdHome size={18} />}>
                 {confirmValues?.address || "—"}
+              </Row>
+            )}
+
+            {confirmValues?.serviceType === "services" && confirmValues?.selectedService === "transfer-address" && (
+              <Row label="العنوان الجديد" dir="ltr" className="md:col-span-2" icon={<MdHome size={18} />}>
+                {confirmValues?.newAddress || "—"}
               </Row>
             )}
 

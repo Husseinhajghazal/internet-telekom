@@ -23,6 +23,7 @@ model Application {
   status              ApplicationStatus @default(NOT_COMPLETED)
   step                Int               @default(1)
   name                String
+  newName             String?
   phone               String
   hasInternet         String?
   serviceType         String?
@@ -30,17 +31,24 @@ model Application {
   selectedService     String?
   selectedPackage     String?
   phone2              String?
+  newPhone            String?
   nationalNumber      String?
   birthDate           String?
   addressCode         String?
   address             String?
+  newAddress          String?
   originalAddress     Boolean           @default(true)
   originalAddressText String?
   note                String?
   invoiceFileUrl      String?
   internetCompany     String?
   subscriptionNo      String?
+  lastInvoiceAmount   String?
   selectedInquiry     String?
+  newNationalNumber   String?
+  newOriginalAddress  Boolean           @default(true)
+  newOriginalAddressText String?
+  newAddressCode      String?
   noContractTechType  String?
   adminNote           String?
   completedAt         DateTime?

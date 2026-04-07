@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Field } from "formik";
 import { MdPhoneInTalk } from "react-icons/md";
 import { TbFileInvoiceFilled } from "react-icons/tb";
+import { formatPhoneNumber } from "../../utils/general";
 import FormFieldBlock from "../FormFieldBlock";
 import StepHeader from "../StepHeader";
 
@@ -30,6 +31,8 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [neighborhoods, setNeighborhoods] = useState([]);
+  const [newDistricts, setNewDistricts] = useState([]);
+  const [newNeighborhoods, setNewNeighborhoods] = useState([]);
 
   const buildAddressString = ({
     addressProvinceName,
@@ -98,6 +101,26 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
     setNeighborhoods(turkeyData.getNeighborhoodsByDistrict(districtCode));
   }, [turkeyData, values.addressDistrictCode, isInquiry]);
 
+  useEffect(() => {
+    if (!turkeyData || isInquiry) return;
+    const cityCode = values.newAddressProvinceCode;
+    if (!cityCode) {
+      setNewDistricts([]);
+      return;
+    }
+    setNewDistricts(turkeyData.getDistrictsByCity(cityCode));
+  }, [turkeyData, values.newAddressProvinceCode, isInquiry]);
+
+  useEffect(() => {
+    if (!turkeyData || isInquiry) return;
+    const districtCode = values.newAddressDistrictCode;
+    if (!districtCode) {
+      setNewNeighborhoods([]);
+      return;
+    }
+    setNewNeighborhoods(turkeyData.getNeighborhoodsByDistrict(districtCode));
+  }, [turkeyData, values.newAddressDistrictCode, isInquiry]);
+
   return (
     <div className="max-w-2xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
       <StepHeader
@@ -113,7 +136,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
       </StepHeader>
 
       <div className="space-y-4 md:space-y-8 md:px-6">
-          
+
         {values?.serviceType === "services" && (
           <FormFieldBlock label="شركة الإنترنت" name="internetCompany">
             <Field
@@ -129,30 +152,199 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
             />
           </FormFieldBlock>
         )}
+        {values?.serviceType === "services" && values?.selectedService === "change-phone" && (
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
+                تغيير رقم الموبايل المثبت
+              </h3>
+              <p className="text-sm text-gray-500 text-right">
+                سيتم استبدال رقمك الحالي بالرقم الجديد الذي ستدخله
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormFieldBlock label="رقم الموبايل الحالي" name="phone">
+                <div className="relative">
+                  <Field
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                      errors.phone && touched.phone
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="0 (5XX) XXX XX XX"
+                    dir="ltr"
+                    onChange={(e) => {
+                      setFieldValue("phone", formatPhoneNumber(e.target.value));
+                    }}
+                  />
+                  <MdPhoneInTalk
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                    size={20}
+                  />
+                </div>
+              </FormFieldBlock>
+
+              <FormFieldBlock label="رقم الموبايل الجديد" name="newPhone">
+                <div className="relative">
+                  <Field
+                    type="tel"
+                    name="newPhone"
+                    id="newPhone"
+                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                      errors.newPhone && touched.newPhone
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="0 (5XX) XXX XX XX"
+                    dir="ltr"
+                    onChange={(e) => {
+                      setFieldValue("newPhone", formatPhoneNumber(e.target.value));
+                    }}
+                  />
+                  <MdPhoneInTalk
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                    size={20}
+                  />
+                </div>
+              </FormFieldBlock>
+            </div>
+          </div>
+        )}
+
+        {values?.serviceType === "services" && values?.selectedService === "transfer-name" && (
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
+                نقل ملكية خط الإنترنت
+              </h3>
+              <p className="text-sm text-gray-500 text-right">
+                سيتم نقل ملكية الخط من المالك الحالي إلى المالك الجديد
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormFieldBlock label="إسم المالك الحالي" name="name">
+                <Field
+                  type="text"
+                  name="name"
+                  id="name"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                    errors.name && touched.name ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="أكتب الإسم الكامل هنا"
+                />
+              </FormFieldBlock>
+
+              <FormFieldBlock label="إسم المالك الجديد" name="newName">
+                <Field
+                  type="text"
+                  name="newName"
+                  id="newName"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                    errors.newName && touched.newName ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="أكتب الإسم الكامل هنا"
+                />
+              </FormFieldBlock>
+
+              <FormFieldBlock label="رقم موبايل المالك الحالي" name="phone">
+                <div className="relative">
+                  <Field
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                      errors.phone && touched.phone
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="0 (5XX) XXX XX XX"
+                    dir="ltr"
+                    onChange={(e) => {
+                      setFieldValue("phone", formatPhoneNumber(e.target.value));
+                    }}
+                  />
+                  <MdPhoneInTalk
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                    size={20}
+                  />
+                </div>
+              </FormFieldBlock>
+
+              <FormFieldBlock label="رقم موبايل المالك الجديد" name="newPhone">
+                <div className="relative">
+                  <Field
+                    type="tel"
+                    name="newPhone"
+                    id="newPhone"
+                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                      errors.newPhone && touched.newPhone
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="0 (5XX) XXX XX XX"
+                    dir="ltr"
+                    onChange={(e) => {
+                      setFieldValue("newPhone", formatPhoneNumber(e.target.value));
+                    }}
+                  />
+                  <MdPhoneInTalk
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                    size={20}
+                  />
+                </div>
+              </FormFieldBlock>
+            </div>
+          </div>
+        )}
+
         {values?.serviceType === "services" && (
-          <FormFieldBlock
-            label="رقم أشتراك او فاتورة الإنترنت"
-            name="subscriptionNo"
-          >
-            <Field
-              type="text"
+          <>
+            <FormFieldBlock
+              label="رقم أشتراك او فاتورة الإنترنت"
               name="subscriptionNo"
-              id="subscriptionNo"
-              className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
-                errors.subscriptionNo && touched.subscriptionNo
-                  ? "border-red-500"
-                  : "border-gray-300"
-              }`}
-              placeholder="رقم أشتراك او فاتورة الإنترنت"
-            />
-          </FormFieldBlock>
+            >
+              <Field
+                type="text"
+                name="subscriptionNo"
+                id="subscriptionNo"
+                className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                  errors.subscriptionNo && touched.subscriptionNo
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="رقم أشتراك او فاتورة الإنترنت"
+              />
+            </FormFieldBlock>
+
+            <FormFieldBlock
+              label="قيمة أخر فاتورة"
+              name="lastInvoiceAmount"
+            >
+              <Field
+                type="text"
+                name="lastInvoiceAmount"
+                id="lastInvoiceAmount"
+                className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                  errors.lastInvoiceAmount && touched.lastInvoiceAmount
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="مثال: 500 ليرة"
+              />
+            </FormFieldBlock>
+          </>
         )}
 
         {!isInquiry && (
           <>
             <div className="space-y-1">
               <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
-                اختر عنوانك
+                اختر {values.selectedService === "transfer-address" ? "عنوانك الحالي" : "عنوانك"}
               </h3>
               <p className="text-sm text-gray-500 text-right">
                 الولاية، المنطقة، المحلة، الشارع، رقم البناء، رقم الشقة
@@ -188,7 +380,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     setFieldValue("addressDistrictName", "");
                     setFieldValue("addressNeighborhoodCode", "");
                     setFieldValue("addressNeighborhoodName", "");
-                    setFieldValue("addressStreetCode", "");
                     setFieldValue("addressStreetName", "");
                     setFieldValue("addressOutsideDoorNo", "");
                     setFieldValue("addressInsideDoorNo", "");
@@ -228,7 +419,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
 
                     setFieldValue("addressNeighborhoodCode", "");
                     setFieldValue("addressNeighborhoodName", "");
-                    setFieldValue("addressStreetCode", "");
                     setFieldValue("addressStreetName", "");
                     setFieldValue("addressOutsideDoorNo", "");
                     setFieldValue("addressInsideDoorNo", "");
@@ -244,7 +434,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 </select>
               </FormFieldBlock>
 
-              <FormFieldBlock label="المحلة" name="addressDistrictCode">
+              <FormFieldBlock label="المحلة" name="addressNeighborhoodCode">
                 <select
                   disabled={!values.addressDistrictCode}
                   name="addressNeighborhoodCode"
@@ -267,7 +457,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                       nh?.neighborhoodName || "",
                     );
 
-                    setFieldValue("addressStreetCode", "");
                     setFieldValue("addressStreetName", "");
                     setFieldValue("addressOutsideDoorNo", "");
                     setFieldValue("addressInsideDoorNo", "");
@@ -296,7 +485,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   placeholder="اكتب إسم الشارع"
                   onChange={(e) => {
                     const streetName = e.target.value;
-                    setFieldValue("addressStreetCode", "");
                     setFieldValue("addressStreetName", streetName);
 
                     const nextAddress = buildAddressString({
@@ -364,6 +552,219 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                       addressInsideDoorNo: nextInside,
                     });
                     setFieldValue("address", nextAddress);
+                  }}
+                />
+              </FormFieldBlock>
+            </div>
+          </>
+        )}
+
+        {values.selectedService === "transfer-address" && (
+          <>
+            <div className="space-y-1 mt-8">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
+                اختر عنوانك الجديد
+              </h3>
+              <p className="text-sm text-gray-500 text-right">
+                الوجهة التي تريد نقل الخط إليها
+              </p>
+            </div>
+
+            {errors.newAddress && touched.newAddress && (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-right text-red-800 text-sm">
+                {errors.newAddress}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormFieldBlock label="الولاية الجديدة" name="newAddressProvinceCode">
+                <select
+                  name="newAddressProvinceCode"
+                  id="newAddressProvinceCode"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.newAddressProvinceCode && touched.newAddressProvinceCode
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  value={values.newAddressProvinceCode}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    const city = cities.find(
+                      (c) => String(c.cityCode) === String(code),
+                    );
+                    setFieldValue("newAddressProvinceCode", code);
+                    setFieldValue("newAddressProvinceName", city?.cityName || "");
+                    setFieldValue("newAddressDistrictCode", "");
+                    setFieldValue("newAddressDistrictName", "");
+                    setFieldValue("newAddressNeighborhoodCode", "");
+                    setFieldValue("newAddressNeighborhoodName", "");
+                    setFieldValue("newAddressStreetName", "");
+                    setFieldValue("newAddressOutsideDoorNo", "");
+                    setFieldValue("newAddressInsideDoorNo", "");
+                    setFieldValue("newAddress", "");
+                  }}
+                >
+                  <option value="">يرجى اختيار الولاية</option>
+                  {cities.map((c) => (
+                    <option key={c.cityCode} value={c.cityCode}>
+                      {c.cityName}
+                    </option>
+                  ))}
+                </select>
+              </FormFieldBlock>
+
+              <FormFieldBlock label="المنطقة الجديدة" name="newAddressDistrictCode">
+                <select
+                  disabled={!values.newAddressProvinceCode}
+                  name="newAddressDistrictCode"
+                  id="newAddressDistrictCode"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.newAddressDistrictCode && touched.newAddressDistrictCode
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  value={values.newAddressDistrictCode}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    const district = newDistricts.find(
+                      (d) => String(d.districtCode) === String(code),
+                    );
+                    setFieldValue("newAddressDistrictCode", code);
+                    setFieldValue(
+                      "newAddressDistrictName",
+                      district?.districtName || "",
+                    );
+                    setFieldValue("newAddressNeighborhoodCode", "");
+                    setFieldValue("newAddressNeighborhoodName", "");
+                    setFieldValue("newAddressStreetName", "");
+                    setFieldValue("newAddressOutsideDoorNo", "");
+                    setFieldValue("newAddressInsideDoorNo", "");
+                    setFieldValue("newAddress", "");
+                  }}
+                >
+                  <option value="">يرجى اختيار المنطقة</option>
+                  {newDistricts.map((d) => (
+                    <option key={d.districtCode} value={d.districtCode}>
+                      {d.districtName}
+                    </option>
+                  ))}
+                </select>
+              </FormFieldBlock>
+
+              <FormFieldBlock label="المحلة الجديدة" name="newAddressNeighborhoodCode">
+                <select
+                  disabled={!values.newAddressDistrictCode}
+                  name="newAddressNeighborhoodCode"
+                  id="newAddressNeighborhoodCode"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.newAddressNeighborhoodCode &&
+                    touched.newAddressNeighborhoodCode
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  value={values.newAddressNeighborhoodCode}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    const nh = newNeighborhoods.find(
+                      (n) => String(n.neighborhoodCode) === String(code),
+                    );
+                    setFieldValue("newAddressNeighborhoodCode", code);
+                    setFieldValue(
+                      "newAddressNeighborhoodName",
+                      nh?.neighborhoodName || "",
+                    );
+                    setFieldValue("newAddressStreetName", "");
+                    setFieldValue("newAddressOutsideDoorNo", "");
+                    setFieldValue("newAddressInsideDoorNo", "");
+                    setFieldValue("newAddress", "");
+                  }}
+                >
+                  <option value="">يرجى اختيار المحلة</option>
+                  {newNeighborhoods.map((n) => (
+                    <option key={n.neighborhoodCode} value={n.neighborhoodCode}>
+                      {n.neighborhoodName}
+                    </option>
+                  ))}
+                </select>
+              </FormFieldBlock>
+
+              <FormFieldBlock label="الشارع الجديد" name="newAddressStreetName">
+                <Field
+                  type="text"
+                  name="newAddressStreetName"
+                  id="newAddressStreetName"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.newAddressStreetName && touched.newAddressStreetName
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="اكتب إسم الشارع"
+                  onChange={(e) => {
+                    const streetName = e.target.value;
+                    setFieldValue("newAddressStreetName", streetName);
+                    const nextAddress = buildAddressString({
+                      addressProvinceName: values.newAddressProvinceName,
+                      addressDistrictName: values.newAddressDistrictName,
+                      addressNeighborhoodName: values.newAddressNeighborhoodName,
+                      addressStreetName: streetName,
+                      addressOutsideDoorNo: values.newAddressOutsideDoorNo,
+                      addressInsideDoorNo: values.newAddressInsideDoorNo,
+                    });
+                    setFieldValue("newAddress", nextAddress);
+                  }}
+                />
+              </FormFieldBlock>
+
+              <FormFieldBlock label="رقم البناء الجديد" name="newAddressOutsideDoorNo">
+                <Field
+                  type="text"
+                  name="newAddressOutsideDoorNo"
+                  id="newAddressOutsideDoorNo"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.newAddressOutsideDoorNo && touched.newAddressOutsideDoorNo
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="اكتب رقم البناء"
+                  onChange={(e) => {
+                    const nextOutside = e.target.value;
+                    setFieldValue("newAddressOutsideDoorNo", nextOutside);
+                    const nextAddress = buildAddressString({
+                      addressProvinceName: values.newAddressProvinceName,
+                      addressDistrictName: values.newAddressDistrictName,
+                      addressNeighborhoodName: values.newAddressNeighborhoodName,
+                      addressStreetName: values.newAddressStreetName,
+                      addressOutsideDoorNo: nextOutside,
+                      addressInsideDoorNo: values.newAddressInsideDoorNo,
+                    });
+                    setFieldValue("newAddress", nextAddress);
+                  }}
+                />
+              </FormFieldBlock>
+
+              <FormFieldBlock label="رقم الشقة الجديد" name="newAddressInsideDoorNo">
+                <Field
+                  type="text"
+                  name="newAddressInsideDoorNo"
+                  id="newAddressInsideDoorNo"
+                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
+                    errors.newAddressInsideDoorNo && touched.newAddressInsideDoorNo
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="اكتب رقم الباب الداخلي (الشقة)"
+                  onChange={(e) => {
+                    const nextInside = e.target.value;
+                    setFieldValue("newAddressInsideDoorNo", nextInside);
+                    const nextAddress = buildAddressString({
+                      addressProvinceName: values.newAddressProvinceName,
+                      addressDistrictName: values.newAddressDistrictName,
+                      addressNeighborhoodName: values.newAddressNeighborhoodName,
+                      addressStreetName: values.newAddressStreetName,
+                      addressOutsideDoorNo: values.newAddressOutsideDoorNo,
+                      addressInsideDoorNo: nextInside,
+                    });
+                    setFieldValue("newAddress", nextAddress);
                   }}
                 />
               </FormFieldBlock>

@@ -41,10 +41,11 @@ const describeSelectedService = (selectedService = "") => {
   const map = {
     cancel: "إلغاء الاشتراك",
     "transfer-name": "نقل ملكية",
-    "transfer-address": "نقل خط (تغيير العنوان)",
+    "transfer-address": "نقل خط الإنترنت لعنوان آخر",
     renew: "تجديد الاشتراك",
     freeze: "تجميد الاشتراك",
     upgrade: "تحويل من عقد لبدون عقد",
+    "change-phone": "تغيير رقم الموبايل المثبت",
   };
   return map[selectedService] || selectedService || "—";
 };
@@ -109,6 +110,48 @@ const formatPhoneNumber = (value = "") => {
   }
 
   return display;
+};
+
+const formatBirthDate = (value = "") => {
+  let digits = value.replace(/\D/g, "");
+  if (digits.length > 8) digits = digits.substring(0, 8);
+
+  let formatted = "";
+  if (digits.length > 0) {
+    formatted = digits.substring(0, 2);
+  }
+  if (digits.length > 2) {
+    formatted += "/" + digits.substring(2, 4);
+  }
+  if (digits.length > 4) {
+    formatted += "/" + digits.substring(4, 8);
+  }
+  return formatted;
+};
+
+const validateTC = (tc) => {
+  if (!tc || typeof tc !== "string") return false;
+  const digits = tc.replace(/\D/g, "");
+  if (digits.length !== 11 || digits.startsWith("0")) return false;
+
+  const n = digits.split("").map((d) => parseInt(d, 10));
+
+  // sum of 1, 3, 5, 7, 9
+  const sumOdd = n[0] + n[2] + n[4] + n[6] + n[8];
+  // sum of 2, 4, 6, 8
+  const sumEven = n[1] + n[3] + n[5] + n[7];
+
+  const term1 = sumOdd * 7;
+  const term2 = sumEven;
+  const digit10 = (term1 - term2) % 10;
+  // Handle negative remainder
+  const finalDigit10 = (digit10 + 10) % 10;
+  if (finalDigit10 !== n[9]) return false;
+
+  const sumFirst10 = (sumOdd + sumEven + n[9]);
+  if (sumFirst10 % 10 !== n[10]) return false;
+
+  return true;
 };
 
 const getStepFieldOrder = (step, values) => {
@@ -237,18 +280,20 @@ const maskAddress = (address = "") => {
 };
 
 function formatDate(date, type = "2") {
-  const curDate = new Date(date);
+  if (!date) return "—";
+  // Turkey is UTC+3. Since Turkey doesn't use DST, we can hard-offset it.
+  const curDate = moment.utc(date).utcOffset(3);
   let dt;
   if (type == "1") {
-    dt = moment(curDate).format("DD.MM.YYYY");
+    dt = curDate.format("DD.MM.YYYY");
   } else if (type == "2") {
-    dt = moment(curDate).format("YYYY-MM-DD HH:mm");
+    dt = curDate.format("YYYY-MM-DD HH:mm");
   } else if (type == "3") {
-    dt = moment(curDate).format("YYYY-MM-DD  HH:mm:ss.000");
+    dt = curDate.format("YYYY-MM-DD  HH:mm:ss.000");
   } else if (type == "4") {
-    dt = moment(curDate).format("YYYY-MM-DD");
+    dt = curDate.format("YYYY-MM-DD");
   } else if (type == "5") {
-    dt = moment(curDate).format("HH:mm");
+    dt = curDate.format("HH:mm");
   }
   return dt;
 }
@@ -288,6 +333,8 @@ export {
   describeSelectedService,
   describeServiceType,
   formatPhoneNumber,
+  formatBirthDate,
+  validateTC,
   getNextStep,
   getPreviousStep,
   getStepFieldOrder,

@@ -120,7 +120,7 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                 <div className="px-6 py-4 relative z-10">
                   <div className="text-xl font-extrabold text-gray-900 mb-4">{opt.title}</div>
                   <div className="flex items-baseline justify-end gap-2 mb-1">
-                    <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Mbps</span>
+                    <span className="text-sm font-bold text-gray-500 uppercase">Mbps</span>
                     <span className={`text-6xl font-black tracking-tighter p-2 bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
                       {opt.speed}
                     </span>
@@ -138,7 +138,7 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-70 my-2 relative z-10" />
 
                 <div className="px-6 pb-8 pt-5 relative z-10 flex-1 flex flex-col justify-center items-center opacity-70 mt-4">
-                  <span className={`text-sm font-bold uppercase tracking-widest animate-pulse transition-colors ${isSelected ? palette.priceText : "text-gray-500"}`}>
+                  <span className={`text-sm font-bold uppercase animate-pulse transition-colors ${isSelected ? palette.priceText : "text-gray-500"}`}>
                     اضغط هنا لرؤية تفاصيل أكثر
                   </span>
                 </div>
@@ -154,22 +154,23 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                 }`}
               >
                 {/* Background Shadow Icon Reversed */}
-                <div className="absolute -left-12 -bottom-6 pointer-events-none transform rotate-12 z-0 opacity-10">
+                <div className="absolute -right-12 -bottom-6 pointer-events-none transform rotate-12 z-0 opacity-10">
                   <SpeedIcon className="w-56 h-56 text-white" />
                 </div>
 
                 {/* Compact Header */}
                 <div className="px-5 pt-5 pb-3 relative z-10 border-b border-white/20 flex justify-between items-center bg-black/10">
-                  <div className="flex flex-col items-start justify-center gap-0.5">
-                    <span className="text-base font-extrabold text-white/90 uppercase tracking-wider">{opt.title} <span className="text-base text-white/70">({opt.speed} Mbps)</span></span>
-                    <span className={`text-xl font-black tracking-tight text-white`}>
-                      {opt.price} <span className="text-[10px] text-white/70 font-bold tracking-normal uppercase">TL / شهرياً</span>
-                    </span>
-                  </div>
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-500 bg-white/20 text-white`}
                   >
                     <SpeedIcon className="text-xl" />
+                  </div>
+                  <div className="flex flex-col items-end justify-center gap-0.5">
+                    <span className="text-base font-extrabold text-white/90 uppercase tracking-wider">{opt.title} <span className="text-base text-white/70">({opt.speed} Mbps)</span></span>
+                    <span className={`text-xl font-black tracking-tight text-white flex items-center gap-1`}>
+                      <span className="text-[12px] text-white/70 font-bold tracking-normal uppercase">TL / شهرياً</span>
+                      {opt.price} 
+                    </span>
                   </div>
                 </div>
 

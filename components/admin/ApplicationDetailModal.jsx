@@ -16,7 +16,6 @@ import {
   MdOutlinePinDrop,
 } from "react-icons/md";
 import { FaBuildingCircleCheck, FaIdCard } from "react-icons/fa6";
-import { AiOutlineFieldNumber } from "react-icons/ai";
 import { PiSpeedometerFill } from "react-icons/pi";
 import Button from "../Button";
 import {
@@ -115,20 +114,46 @@ export default function ApplicationDetailModal({ application, onClose }) {
 
         <div className="overflow-y-auto p-4 md:p-6 space-y-4 bg-linear-to-b from-slate-50/50 to-white">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Row label="الإسم" icon={<MdPerson size={18} />}>
+            <Row label={application.newName ? "الإسم واللقب القديم" : "الإسم"} icon={<MdPerson size={18} />}>
               {application.name}
             </Row>
-            <Row label="الرقم الوطني (TC)" icon={<FaIdCard size={18} />}>
+
+            {application.newName && (
+              <Row label="الإسم واللقب الجديد" icon={<MdPerson size={18} />}>
+                {application.newName}
+              </Row>
+            )}
+
+            <Row label={application.newName ? "الرقم الوطني القديم (TC)" : "الرقم الوطني (TC)"} icon={<FaIdCard size={18} />}>
               {application.nationalNumber ? application.nationalNumber : "—"}
             </Row>
+
+            {application.newNationalNumber && (
+              <Row label="الرقم الوطني الجديد (TC)" icon={<FaIdCard size={18} />}>
+                {application.newNationalNumber}
+              </Row>
+            )}
+
             <Row label="المواليد" icon={<MdCalendarMonth size={18} />}>
-              {application.birthDate ? application.birthDate : "—"}
+              {application.birthDate 
+                ? (application.birthDate.includes("-") ? formatDate(application.birthDate, "1").replaceAll(".", "/") : application.birthDate) 
+                : "—"}
             </Row>
-            <Row label="رقم الموبايل" icon={<MdPhone size={18} />}>
+
+            <Row label={application.newName ? "رقم الموبايل القديم" : "رقم الموبايل"} icon={<MdPhone size={18} />}>
               <span dir="ltr" className="inline-block">
                 {application.phone}
               </span>
             </Row>
+
+            {application.newPhone && (
+              <Row label="رقم الموبايل الجديد" icon={<MdPhone size={18} />}>
+                <span dir="ltr" className="inline-block">
+                  {application.newPhone}
+                </span>
+              </Row>
+            )}
+
             <Row label="رقم الموبايل 2" icon={<MdPhone size={18} />}>
               <span dir="ltr" className="inline-block">
                 {application.phone2 ? application.phone2 : "—"}
@@ -206,7 +231,15 @@ export default function ApplicationDetailModal({ application, onClose }) {
             >
               {application.subscriptionNo ? application.subscriptionNo : "—"}
             </Row>
-            <Row label="كود العنوان (BBK)" icon={<MdOutlinePinDrop size={18} />}>
+            {application.serviceType === "services" && (
+              <Row
+                label="قيمة أخر فاتورة"
+                icon={<MdOutlineReceiptLong size={18} />}
+              >
+                {application.lastInvoiceAmount ? application.lastInvoiceAmount : "—"}
+              </Row>
+            )}
+            <Row label={application.selectedService === "transfer-address" ? "كود العنوان الحالي (BBK)" : "كود العنوان (BBK)"} icon={<MdOutlinePinDrop size={18} />}>
               {application.addressCode ? application.addressCode : "—"}
             </Row>
             <Row label="نوع العنوان" icon={<MdHome size={18} />}>
@@ -218,13 +251,32 @@ export default function ApplicationDetailModal({ application, onClose }) {
               </Row>
             )}
             <Row
-              label="العنوان"
+              label={application.selectedService === "transfer-address" ? "العنوان الحالي" : "العنوان"}
               dir="ltr"
               className="sm:col-span-2"
               icon={<MdHome size={18} />}
             >
               {application.address ? application.address : "—"}
             </Row>
+
+            {application.selectedService === "transfer-address" && (
+              <>
+                <Row label="كود العنوان الجديد (BBK)" icon={<MdOutlinePinDrop size={18} />}>
+                  {application.newAddressCode ? application.newAddressCode : "—"}
+                </Row>
+                <Row label="نوع العنوان الجديد" icon={<MdHome size={18} />}>
+                  {application.newOriginalAddress ? "الأساسي" : "مجاور"}
+                </Row>
+                {!application.newOriginalAddress && application.newOriginalAddressText && (
+                  <Row label="العنوان الأساسي الجديد" icon={<MdHome size={18} />}>
+                    {application.newOriginalAddressText}
+                  </Row>
+                )}
+                <Row label="العنوان الجديد" dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
+                  {application.newAddress ? application.newAddress : "—"}
+                </Row>
+              </>
+            )}
             {(application.note || "").trim() ? (
               <Row
                 label="ملاحظة"

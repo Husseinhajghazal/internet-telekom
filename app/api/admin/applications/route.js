@@ -36,11 +36,11 @@ function buildWhere(searchParams) {
 
     const dateCondition = {};
     if (dateFrom) {
-      const d = new Date(`${dateFrom}T00:00:00.000Z`);
+      const d = new Date(`${dateFrom}T00:00:00.000+03:00`);
       if (!Number.isNaN(d.getTime())) dateCondition.gte = d;
     }
     if (dateTo) {
-      const d = new Date(`${dateTo}T23:59:59.999Z`);
+      const d = new Date(`${dateTo}T23:59:59.999+03:00`);
       if (!Number.isNaN(d.getTime())) dateCondition.lte = d;
     }
     if (Object.keys(dateCondition).length) {

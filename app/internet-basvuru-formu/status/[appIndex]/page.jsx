@@ -26,6 +26,7 @@ const ApplicationStatusPage = () => {
         if (!res.ok) {
           throw new Error(data.error || "تعذر تحميل الطلب.");
         }
+        console.log(data);
         if (!cancelled) setApplication(data);
       } catch (e) {
         if (!cancelled) setError(e.message || "حدث خطأ.");

@@ -164,7 +164,7 @@ export default function InquiryPage() {
                   setError(null);
                 }}
                 placeholder="مثال: 25"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl text-center text-xl font-mono tracking-widest focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl text-center text-xl font-mono focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent outline-none"
                 dir="ltr"
               />
               {error && (

@@ -15,6 +15,7 @@ import { USER_AGREEMENT_TEXT } from "../utils/data";
 
 const initialValues = {
   name: "",
+  newName: "",
   phone: "",
   userAgreementAccepted: false,
   hasInternet: "",
@@ -33,11 +34,24 @@ const initialValues = {
   addressOutsideDoorNo: "",
   addressInsideDoorNo: "",
   address: "",
+  newAddressProvinceCode: "",
+  newAddressProvinceName: "",
+  newAddressDistrictCode: "",
+  newAddressDistrictName: "",
+  newAddressNeighborhoodCode: "",
+  newAddressNeighborhoodName: "",
+  newAddressStreetCode: "",
+  newAddressStreetName: "",
+  newAddressOutsideDoorNo: "",
+  newAddressInsideDoorNo: "",
+  newAddress: "",
+  newPhone: "",
   note: "",
   invoiceFiles: [],
   invoiceFileUrls: [],
   internetCompany: "",
   subscriptionNo: "",
+  lastInvoiceAmount: "",
   selectedInquiry: "",
   noContractTechType: "",
 };
@@ -67,21 +81,46 @@ const useApplicationForm = () => {
   const getValidationSchema = (values) =>
     Yup.object({
       name:
-        step === 1
+        step === 1 || (step === 6 && values?.selectedService === "transfer-name")
           ? Yup.string()
               .trim()
               .required("الإسم مطلوب")
               .min(2, "الإسم يجب أن يكون على الأقل حرفين")
           : Yup.string(),
 
+      newName:
+        step === 6 && values?.selectedService === "transfer-name"
+          ? Yup.string()
+              .trim()
+              .required("إسم المالك الجديد مطلوب")
+              .min(2, "الإسم يجب أن يكون على الأقل حرفين")
+          : Yup.string(),
+
       phone:
-        step === 1
+        step === 1 ||
+        (step === 6 &&
+          (values?.selectedService === "change-phone" ||
+            values?.selectedService === "transfer-name"))
           ? Yup.string()
               .required("رقم الموبايل مطلوب")
               .test("phone-format", "رقم الموبايل غير صحيح", (value = "") => {
                 const digits = value.replace(/\D/g, "");
                 return digits.length === 11;
               })
+          : Yup.string(),
+
+      newPhone:
+        step === 6 && values?.selectedService === "change-phone"
+          ? Yup.string()
+              .required("رقم الموبايل الجديد مطلوب")
+              .test(
+                "phone-format",
+                "رقم الموبايل الجديد غير صحيح",
+                (value = "") => {
+                  const digits = value.replace(/\D/g, "");
+                  return digits.length === 11;
+                },
+              )
           : Yup.string(),
 
       userAgreementAccepted:
@@ -146,13 +185,19 @@ const useApplicationForm = () => {
   const mapApplicationToFormValues = (app) => ({
     ...initialValues,
     name: app.name ?? "",
+    newName: app.newName ?? "",
     phone: app.phone ?? "",
     hasInternet: app.hasInternet ?? "",
     serviceType: app.serviceType ?? "",
     contractPreference: app.contractPreference ?? "",
     selectedService: app.selectedService ?? "",
     selectedPackage: app.selectedPackage ?? "",
+    internetCompany: app.internetCompany ?? "",
+    subscriptionNo: app.subscriptionNo ?? "",
+    lastInvoiceAmount: app.lastInvoiceAmount ?? "",
     address: app.address ?? "",
+    newAddress: app.newAddress ?? "",
+    newPhone: app.newPhone ?? "",
     note: app.note ?? "",
     userAgreementAccepted: false,
     invoiceFiles: [],
@@ -218,11 +263,17 @@ const useApplicationForm = () => {
   const updateDraftByStep = async (id, values, currentStep) => {
     if (currentStep === 6) {
       const formData = new FormData();
+      formData.append("name", values.name || "");
+      formData.append("newName", values.newName || "");
+      formData.append("phone", values.phone || "");
+      formData.append("newPhone", values.newPhone || "");
       formData.append("address", values.address || "");
+      formData.append("newAddress", values.newAddress || "");
       formData.append("note", values.note || "");
       formData.append("step", String(currentStep));
       formData.append("internetCompany", values.internetCompany || "");
       formData.append("subscriptionNo", values.subscriptionNo || "");
+      formData.append("lastInvoiceAmount", values.lastInvoiceAmount || "");
       if (values.invoiceFiles && values.invoiceFiles.length > 0) {
         values.invoiceFiles.forEach((file) => {
           formData.append("invoiceFiles", file);

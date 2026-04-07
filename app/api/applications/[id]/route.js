@@ -22,16 +22,21 @@ export async function PATCH(request, { params }) {
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
       draftPayload = normalizeDraftPayload({
+        name: formData.get("name"),
+        newName: formData.get("newName"),
         hasInternet: formData.get("hasInternet"),
         serviceType: formData.get("serviceType"),
         contractPreference: formData.get("contractPreference"),
         selectedService: formData.get("selectedService"),
         selectedPackage: formData.get("selectedPackage"),
         address: formData.get("address"),
+        newAddress: formData.get("newAddress"),
+        newPhone: formData.get("newPhone"),
         note: formData.get("note"),
         step: formData.get("step"),
         internetCompany: formData.get("internetCompany"),
         subscriptionNo: formData.get("subscriptionNo"),
+        lastInvoiceAmount: formData.get("lastInvoiceAmount"),
         selectedInquiry: formData.get("selectedInquiry"),
         noContractTechType: formData.get("noContractTechType"),
       });

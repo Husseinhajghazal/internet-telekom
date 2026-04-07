@@ -235,9 +235,11 @@ export default function AdminApplicationsClient() {
   const [debouncedQ, setDebouncedQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [dateField, setDateField] = useState("createdAt");
-  const [dateFrom, setDateFrom] = useState(() =>
-    new Date().toISOString().slice(0, 10),
-  );
+  const [dateFrom, setDateFrom] = useState(() => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    return new Date(now - offset).toISOString().slice(0, 10);
+  });
   const [dateTo, setDateTo] = useState("");
   const searchFirstRun = useRef(true);
 

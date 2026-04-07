@@ -7,7 +7,7 @@ import { TbFileInvoiceFilled } from "react-icons/tb";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 import { STATUS_LABELS } from "@/utils/data";
-import { formatPhoneNumber } from "@/utils/general";
+import { formatPhoneNumber, formatBirthDate, validateTC } from "@/utils/general";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "newline", label: "خط جديد" },
@@ -23,10 +23,11 @@ const CONTRACT_PREF_OPTIONS = [
 const SELECTED_SERVICE_OPTIONS = [
   { value: "cancel", label: "إلغاء الاشتراك" },
   { value: "transfer-name", label: "نقل ملكية" },
-  { value: "transfer-address", label: "نقل خط (تغيير العنوان)" },
+  { value: "transfer-address", label: "نقل خط الإنترنت لعنوان آخر" },
   { value: "renew", label: "تجديد الاشتراك" },
   { value: "freeze", label: "تجميد الاشتراك" },
   { value: "upgrade", label: "تحويل من عقد لبدون عقد" },
+  { value: "change-phone", label: "تغيير رقم الموبايل المثبت" },
 ];
 
 const INQUIRY_OPTIONS = [
@@ -75,6 +76,7 @@ export default function EditApplicationPage() {
   const [formData, setFormData] = useState({
     status: "",
     name: "",
+    newName: "",
     phone: "",
     hasInternet: "",
     serviceType: "",
@@ -85,16 +87,23 @@ export default function EditApplicationPage() {
     selectedInquiry: "",
     internetCompany: "",
     subscriptionNo: "",
+    lastInvoiceAmount: "",
     address: "",
+    newAddress: "",
+    newPhone: "",
+    addressCode: "",
+    newAddressCode: "",
     note: "",
     adminNote: "",
     delayedUntil: "",
     phone2: "",
     nationalNumber: "",
+    newNationalNumber: "",
     birthDate: "",
-    addressCode: "",
     originalAddress: true,
     originalAddressText: "",
+    newOriginalAddress: true,
+    newOriginalAddressText: "",
     invoiceFileUrls: [],
     invoiceFiles: [],
   });
@@ -108,6 +117,7 @@ export default function EditApplicationPage() {
         setFormData({
           status: data.status || "",
           name: data.name || "",
+          newName: data.newName || "",
           phone: data.phone || "",
           hasInternet: data.hasInternet || "",
           serviceType: data.serviceType || "",
@@ -118,18 +128,27 @@ export default function EditApplicationPage() {
           selectedInquiry: data.selectedInquiry || "",
           internetCompany: data.internetCompany || "",
           subscriptionNo: data.subscriptionNo || "",
+          lastInvoiceAmount: data.lastInvoiceAmount || "",
           address: data.address || "",
-          note: data.note || "",
-          adminNote: data.adminNote || "",
-          delayedUntil: data.delayedUntil
-            ? new Date(data.delayedUntil).toISOString().slice(0, 10)
-            : "",
-          phone2: data.phone2 || "",
-          nationalNumber: data.nationalNumber || "",
-          birthDate: data.birthDate || "",
+          newAddress: data.newAddress || "",
+          newPhone: data.newPhone || "",
           addressCode: data.addressCode || "",
+          newAddressCode: data.newAddressCode || "",
           originalAddress: data.originalAddress ?? true,
           originalAddressText: data.originalAddressText || "",
+          newOriginalAddress: data.newOriginalAddress ?? true,
+          newOriginalAddressText: data.newOriginalAddressText || "",
+          note: data.note || "",
+          adminNote: data.adminNote || "",
+          delayedUntil: data.delayedUntil ? data.delayedUntil.split("T")[0] : "",
+          phone2: data.phone2 || "",
+          nationalNumber: data.nationalNumber || "",
+          newNationalNumber: data.newNationalNumber || "",
+          birthDate: data.birthDate
+            ? (data.birthDate.includes("-") 
+               ? data.birthDate.split("-").reverse().join("/") 
+               : data.birthDate)
+            : "",
           invoiceFileUrls: data.invoiceFileUrl ? data.invoiceFileUrl.split(",").filter(Boolean) : [],
           invoiceFiles: [],
         });
@@ -163,8 +182,16 @@ export default function EditApplicationPage() {
     const { name, value, type, checked } = e.target;
     let finalValue = type === "checkbox" ? checked : value;
 
-    if (name === "phone" || name === "phone2") {
+    if (name === "phone" || name === "phone2" || name === "newPhone") {
       finalValue = formatPhoneNumber(finalValue);
+    }
+
+    if (name === "birthDate") {
+      finalValue = formatBirthDate(finalValue);
+    }
+
+    if (name === "nationalNumber" || name === "newNationalNumber") {
+      finalValue = finalValue.replace(/\D/g, "").substring(0, 11);
     }
 
     setFormData((prev) => ({ 
@@ -177,6 +204,11 @@ export default function EditApplicationPage() {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if ((formData.nationalNumber.length === 11 && !validateTC(formData.nationalNumber)) || (formData.newNationalNumber.length === 11 && !validateTC(formData.newNationalNumber))) {
+        alert("يرجى التأكد من الرقم الوطني (TC) قبل الحفظ. الرقم الحالي غير صالح.");
+        return;
+    }
+
     setSaving(true);
     setError(null);
 
@@ -194,6 +226,7 @@ export default function EditApplicationPage() {
         subscriptionNo: parseEmptyToNull(formData.subscriptionNo),
         adminNote: parseEmptyToNull(formData.adminNote),
         originalAddressText: parseEmptyToNull(formData.originalAddressText),
+        newOriginalAddressText: parseEmptyToNull(formData.newOriginalAddressText),
         delayedUntil: formData.status === "DELAYED" && formData.delayedUntil
           ? formData.delayedUntil
           : null,
@@ -282,7 +315,7 @@ export default function EditApplicationPage() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className={labelClass}>الإسم واللقب</label>
+            <label className={labelClass}>{formData.selectedService === "transfer-name" ? "الإسم واللقب القديم" : "الإسم واللقب"}</label>
             <input
               name="name"
               type="text"
@@ -292,7 +325,24 @@ export default function EditApplicationPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>رقم الموبايل</label>
+            <label className={labelClass}>{formData.selectedService === "transfer-name" ? "الرقم الوطني القديم (TC)" : "الرقم الوطني (TC)"}</label>
+            <input
+              name="nationalNumber"
+              type="text"
+              maxLength={11}
+              value={formData.nationalNumber}
+              onChange={handleChange}
+              className={`${inputClass} ${formData.nationalNumber.length === 11 && !validateTC(formData.nationalNumber) ? "border-red-500! ring-red-500/30!" : ""}`}
+              placeholder="اكتب الرقم الوطني (11 خانة)"
+            />
+            {formData.nationalNumber.length === 11 && !validateTC(formData.nationalNumber) && (
+              <p className="text-red-500 text-[10px] md:text-xs mt-1 font-bold">
+                ⚠️ رقم TC غير صالح (يرجى التأكد من الأرقام)
+              </p>
+            )}
+          </div>
+          <div>
+            <label className={labelClass}>{formData.selectedService === "transfer-name" ? "رقم الموبايل القديم" : formData.selectedService === "change-phone" ? "رقم الموبايل القديم" : "رقم الموبايل"}</label>
             <input
               name="phone"
               type="text"
@@ -314,21 +364,12 @@ export default function EditApplicationPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>الرقم الوطني (TC / الكملك)</label>
-            <input
-              name="nationalNumber"
-              type="text"
-              dir="ltr"
-              value={formData.nationalNumber}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>المواليد بالكامل</label>
+            <label className={labelClass}>المواليد بالكامل (DD/MM/YYYY)</label>
             <input
               name="birthDate"
-              type="date"
+              type="text"
+              placeholder="01/01/1990"
+              dir="ltr"
               value={formData.birthDate}
               onChange={handleChange}
               className={inputClass}
@@ -349,7 +390,6 @@ export default function EditApplicationPage() {
               ))}
             </select>
           </div>
-
           {formData.status === "DELAYED" && (
             <div>
               <label className={labelClass}>تاريخ التأجيل</label>
@@ -362,7 +402,6 @@ export default function EditApplicationPage() {
               />
             </div>
           )}
-
           <div>
             <label className={labelClass}>هل لديك إنترنت؟</label>
             <select
@@ -392,7 +431,6 @@ export default function EditApplicationPage() {
               ))}
             </select>
           </div>
-
           {formData.serviceType === "newline" && (
             <div>
               <label className={labelClass}>نوع العرض</label>
@@ -411,7 +449,6 @@ export default function EditApplicationPage() {
               </select>
             </div>
           )}
-
           {formData.serviceType === "services" && (
             <div>
               <label className={labelClass}>الخدمة المختارة</label>
@@ -430,7 +467,6 @@ export default function EditApplicationPage() {
               </select>
             </div>
           )}
-
           {formData.serviceType === "newline" &&
             formData.contractPreference === "with" && (
               <div>
@@ -450,7 +486,6 @@ export default function EditApplicationPage() {
                 </select>
               </div>
             )}
-
           {formData.serviceType === "newline" &&
             formData.contractPreference === "without" && (
               <div>
@@ -500,6 +535,7 @@ export default function EditApplicationPage() {
               className={inputClass}
             />
           </div>
+
           <div>
             <label className={labelClass}>رقم الإشتراك</label>
             <input
@@ -511,8 +547,20 @@ export default function EditApplicationPage() {
             />
           </div>
 
-          <div className="md:col-span-2 space-y-4">
+          {formData.serviceType === "services" && (
             <div>
+              <label className={labelClass}>قيمة آخر فاتورة</label>
+              <input
+                name="lastInvoiceAmount"
+                type="text"
+                value={formData.lastInvoiceAmount}
+                onChange={handleChange}
+                className={inputClass}
+              />
+            </div>
+          )}
+
+            <div className="md:col-span-2">
               <label className={labelClass}>العنوان</label>
               <textarea
                 name="address"
@@ -523,10 +571,8 @@ export default function EditApplicationPage() {
                 dir="ltr"
               />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>كود العنوان (BBK)</label>
+                <label className={labelClass}>{formData.selectedService === "transfer-address" ? "كود العنوان الحالي (BBK)" : "كود العنوان (BBK)"}</label>
                 <input
                   name="addressCode"
                   type="text"
@@ -546,11 +592,9 @@ export default function EditApplicationPage() {
                   className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
                 />
                 <label htmlFor="originalAddress" className="text-sm font-semibold text-gray-700 cursor-pointer">
-                  العنوان الأساسي
+                  عنوانك الحالي هو العنوان الأساسي؟
                 </label>
               </div>
-            </div>
-
             {!formData.originalAddress && (
               <div>
                 <label className={labelClass}>العنوان الأساسي</label>
@@ -563,7 +607,109 @@ export default function EditApplicationPage() {
                 />
               </div>
             )}
-          </div>
+            
+            {(formData.selectedService === "transfer-address") && (
+              <div className="md:col-span-2">
+                <label className={labelClass}>العنوان الجديد</label>
+                <textarea
+                  name="newAddress"
+                  rows={2}
+                  value={formData.newAddress}
+                  onChange={handleChange}
+                  className={`${inputClass} border-cyan-200 bg-cyan-50/30`}
+                  dir="ltr"
+                  placeholder="سيظهر هنا العنوان الجديد في حال اختار المستخدم 'نقل العنوان'"
+                />
+              </div>
+            )}
+
+            {(formData.selectedService === "transfer-address") && (
+              <>
+                    <div>
+                      <label className={labelClass}>كود العنوان الجديد (BBK)</label>
+                      <input
+                        name="newAddressCode"
+                        type="text"
+                        dir="ltr"
+                        value={formData.newAddressCode}
+                        onChange={handleChange}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="flex items-center gap-3 mt-8">
+                      <input
+                        name="newOriginalAddress"
+                        id="newOriginalAddress"
+                        type="checkbox"
+                        checked={formData.newOriginalAddress}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-[#18a2e3] rounded focus:ring-[#18a2e3] cursor-pointer"
+                      />
+                      <label htmlFor="newOriginalAddress" className="text-sm font-semibold text-gray-700 cursor-pointer">
+                        العنوان الجديد هو العنوان الأساسي؟
+                      </label>
+                    </div>
+
+                {!formData.newOriginalAddress && (
+                  <div className="md:col-span-2">
+                    <label className={labelClass}>العنوان الأساسي الجديد</label>
+                    <input
+                      name="newOriginalAddressText"
+                      type="text"
+                      value={formData.newOriginalAddressText}
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+            
+            {(formData.selectedService === "transfer-name") && (
+              <>
+                <div>
+                  <label className={labelClass}>إسم ولقب المالك الجديد</label>
+                  <input
+                    name="newName"
+                    type="text"
+                    value={formData.newName}
+                    onChange={handleChange}
+                    className={`${inputClass} border-[#18a2e3]/20 bg-[#18a2e3]/5`}
+                    placeholder=""
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>الرقم الوطني للمالك الجديد (TC)</label>
+                  <input
+                    name="newNationalNumber"
+                    type="text"
+                    value={formData.newNationalNumber}
+                    onChange={handleChange}
+                    className={`${inputClass} ${formData.newNationalNumber.length === 11 && !validateTC(formData.newNationalNumber) ? "border-red-500! ring-red-500/30!" : ""}`}
+                    placeholder="اكتب الرقم الوطني (11 خانة)"
+                  />
+                  {formData.newNationalNumber.length === 11 && !validateTC(formData.newNationalNumber) && (
+                    <p className="text-red-500 text-[10px] md:text-xs mt-1 font-bold">
+                      ⚠️ رقم TC غير صالح (يرجى التأكد من الأرقام)
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+            {(formData.selectedService === "change-phone") && (
+              <div>
+                <label className={labelClass}>رقم الموبايل الجديد</label>
+                <input
+                  name="newPhone"
+                  type="text"
+                  value={formData.newPhone}
+                  onChange={handleChange}
+                  className={`${inputClass} border-[#18a2e3]/20 bg-[#18a2e3]/5`}
+                  dir="ltr"
+                  placeholder="اكتب رقم الموبايل الجديد"
+                />
+              </div>
+            )}
 
           <div className="md:col-span-2">
             <label className={labelClass}>ملاحظة</label>

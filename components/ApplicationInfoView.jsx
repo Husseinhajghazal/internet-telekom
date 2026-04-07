@@ -6,7 +6,6 @@ import Button from "./Button";
 import { MdHome, MdAddCircleOutline, MdOutlineDescription, MdPerson, MdPhone, MdSpeed, MdCalendarMonth, MdOutlineReceiptLong, MdWifi } from "react-icons/md";
 import { PiSpeedometerFill } from "react-icons/pi";
 import { FaBuildingCircleCheck } from "react-icons/fa6";
-import { AiOutlineFieldNumber } from "react-icons/ai";
 import {
   describeContractPreference,
   describeSelectedPackage,
@@ -78,14 +77,24 @@ const ApplicationInfoView = ({ application, loading, error }) => {
 
           <div className="py-6 md:py-8 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Row label="الإسم" icon={<MdPerson size={18} />}>
+              <Row label={application.newName ? "المالك الحالي" : "الإسم"} icon={<MdPerson size={18} />}>
                 {maskName(application.name)}
               </Row>
+              {application.newName && (
+                <Row label="المالك الجديد" icon={<MdPerson size={18} />}>
+                  {maskName(application.newName)}
+                </Row>
+              )}
               <Row label="رقم الموبايل" icon={<MdPhone size={18} />}>
                 <span dir="ltr" className="inline-block">
                   {maskPhone(application.phone)}
                 </span>
               </Row>
+              {application.serviceType === "services" && (application.selectedService === "change-phone" || application.selectedService === "transfer-name") && (
+                <Row label="الرقم الجديد" dir="ltr" icon={<MdPhone size={18} />}>
+                  {maskPhone(application.newPhone)}
+                </Row>
+              )}
               <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold ${statusBadgeClass(application.status)}`}
@@ -138,12 +147,24 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                     <Row label="رقم الإشتراك" icon={<MdOutlineReceiptLong size={18} />}>
                       {application.subscriptionNo ? maskValue(application.subscriptionNo) : "—"}
                     </Row>
+                    {application.lastInvoiceAmount && (
+                      <Row label="قيمة أخر فاتورة" icon={<MdOutlineReceiptLong size={18} />}>
+                        {maskValue(application.lastInvoiceAmount)}
+                      </Row>
+                    )}
                   </>
                 )
               }
-              <Row label="العنوان" dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
-                {maskAddress(application.address)}
-              </Row>
+              {!application.originalAddress && (
+                <Row label={application.selectedService === "transfer-address" ? "العنوان القديم" : "العنوان"} dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
+                  {maskAddress(application.address)}
+                </Row>
+              )}
+              {application.serviceType === "services" && application.selectedService === "transfer-address" && (
+                <Row label="العنوان الجديد" dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
+                  {maskAddress(application.newAddress)}
+                </Row>
+              )}
             </div>
           </div>
 
