@@ -70,8 +70,8 @@ const Step5 = ({
         <div className="md:px-6">
           <PackageSection
             accent="green"
-            title="الباقات العائلية المخفضة"
-            description="باقات الإنترنت العائلي والإقتصادي (البنية التحتية لجوك تيليكوم)"
+            title="باقات الإنترنت العائلي والإقتصادي"
+            description="البنية التحتية لجوك تيليكوم"
             durationLabel={familyContractDuration === "18" ? "18 شهر" : "سنتين"}
             durations={[
               { value: "18", label: "18 شهر" },
@@ -101,8 +101,8 @@ const Step5 = ({
 
           <PackageSection
             accent="blue"
-            title="باقات الإنترنت VIP"
-            description="باقات الإنترنت الأقوى والأسرع (البنية التحتية لترك تيليكوم)"
+            title="باقات الإنترنت الأقوى والأسرع"
+            description="البنية التحتية لترك تيليكوم"
             durationLabel={vipContractDuration === "12" ? "سنة" : "18 شهر"}
             durations={[
               { value: "12", label: "سنة" },

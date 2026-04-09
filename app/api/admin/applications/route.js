@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import { isAdminAuthenticated } from "../../../../lib/admin-api";
+import { formatPhoneNumber } from "@/utils/general";
 
 const PAGE_SIZE = 20;
 
@@ -53,7 +54,10 @@ function buildWhere(searchParams) {
     const digits = q.replace(/\D/g, "");
     const orCond = [
       { name: { contains: q, mode: "insensitive" } },
-      { phone: { contains: q, mode: "insensitive" } },
+      { newName: { contains: q, mode: "insensitive" } },
+      { phone: { contains: formatPhoneNumber(q), mode: "insensitive" } },
+      { phone2: { contains: formatPhoneNumber(q), mode: "insensitive" } },
+      { newPhone: { contains: formatPhoneNumber(q), mode: "insensitive" } },
     ];
     // `appIndex` is an integer, so we can only do an exact match here.
     if (digits.length > 0) {
@@ -62,7 +66,11 @@ function buildWhere(searchParams) {
         orCond.push({ appIndex: idx });
       }
     }
-    if (digits.length >= 3) orCond.push({ phone: { contains: digits } });
+    if (digits.length >= 3) {
+      orCond.push({ phone: { contains: digits } });
+      orCond.push({ phone2: { contains: digits } });
+      orCond.push({ newPhone: { contains: digits } });
+    }
     andConditions.push({ OR: orCond });
   }
 
