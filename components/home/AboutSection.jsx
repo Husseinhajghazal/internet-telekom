@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import {
   FaMapMarkerAlt,
@@ -19,6 +19,7 @@ const highlights = [
 const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const [playVideo, setPlayVideo] = useState(false);
 
   return (
     <section
@@ -33,16 +34,8 @@ const AboutSection = () => {
       <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] bg-[#5898b7]/[0.04] rounded-full blur-[100px]" />
 
       {/* animated glow orbs */}
-      <motion.div
-        animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.15, 0.08] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute z-[1] top-1/4 right-1/4 w-[400px] h-[400px] bg-[#18a2e3] rounded-full blur-[150px]"
-      />
-      <motion.div
-        animate={{ scale: [1.2, 1, 1.2], opacity: [0.06, 0.12, 0.06] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute z-[1] bottom-1/4 left-1/3 w-[350px] h-[350px] bg-[#f36802] rounded-full blur-[140px]"
-      />
+      <div className="absolute z-[1] top-1/4 right-1/4 w-[400px] h-[400px] bg-[#18a2e3] rounded-full blur-[150px] animate-glow-pulse opacity-10" />
+      <div className="absolute z-[1] bottom-1/4 left-1/3 w-[350px] h-[350px] bg-[#f36802] rounded-full blur-[140px] animate-glow-pulse-alt opacity-10" />
 
       {/* big background icon */}
       <div className="absolute z-[1] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
@@ -62,24 +55,36 @@ const AboutSection = () => {
               {/* main logo card */}
               <div className="bg-white rounded-3xl shadow-xl shadow-black/[0.04] border border-gray-100/80">
                 <div className="relative w-full h-[300px] md:h-[350px]">
-                  <iframe
-                    className="rounded-3xl w-full h-full"
-                    src="https://www.youtube.com/embed/lyav1Uz9DVI"
-                    title="YouTube video player"
-                    frameBorder="0"
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
+                  {!playVideo ? (
+                    <div 
+                      className="absolute inset-0 bg-gray-200 rounded-3xl cursor-pointer group flex items-center justify-center overflow-hidden"
+                      onClick={() => setPlayVideo(true)}
+                    >
+                      <img 
+                        src="https://img.youtube.com/vi/lyav1Uz9DVI/maxresdefault.jpg" 
+                        alt="تعرف علينا" 
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="w-16 h-16 bg-[#18a2e3]/90 rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-all duration-300 group-hover:bg-[#f36802]">
+                        <div className="w-0 h-0 border-t-8 border-t-transparent border-l-[14px] border-l-white border-b-8 border-b-transparent ml-1" />
+                      </div>
+                    </div>
+                  ) : (
+                    <iframe
+                      className="rounded-3xl w-full h-full"
+                      src="https://www.youtube.com/embed/lyav1Uz9DVI?autoplay=1"
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  )}
                 </div>
               </div>
 
               {/* floating stats cards */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-6 -left-4 bg-white rounded-2xl p-4 shadow-lg shadow-black/[0.06] border border-gray-100"
-              >
+              <div className="absolute -top-6 -left-4 bg-white rounded-2xl p-4 shadow-lg shadow-black/[0.06] border border-gray-100 animate-float-icon">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[#18a2e3]/10 flex items-center justify-center">
                     <FaUsers size={16} className="text-[#18a2e3]" />
@@ -89,13 +94,9 @@ const AboutSection = () => {
                     <div className="text-xs text-gray-400">عميل سعيد</div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -bottom-6 -right-4 bg-white rounded-2xl p-4 shadow-lg shadow-black/[0.06] border border-gray-100"
-              >
+              <div className="absolute -bottom-6 -right-4 bg-white rounded-2xl p-4 shadow-lg shadow-black/[0.06] border border-gray-100 animate-float-icon" style={{ animationDelay: "1s" }}>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                     <FaCalendarAlt size={16} className="text-emerald-500" />
@@ -105,7 +106,7 @@ const AboutSection = () => {
                     <div className="text-xs text-gray-400">سنوات خبرة</div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
 

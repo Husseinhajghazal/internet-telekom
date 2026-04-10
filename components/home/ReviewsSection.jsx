@@ -80,15 +80,11 @@ const ReviewsSection = () => {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#5898b7]/[0.03] rounded-full blur-[120px]" />
 
       {/* animated glow orbs */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.14, 0.08] }}
-        transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute z-[1] top-1/3 left-20 w-[350px] h-[350px] bg-[#ffb245] rounded-full blur-[150px]"
+      <div
+        className="absolute z-[1] top-1/3 left-20 w-[350px] h-[350px] bg-[#ffb245] rounded-full blur-[150px] animate-glow-pulse opacity-10"
       />
-      <motion.div
-        animate={{ scale: [1.15, 1, 1.15], opacity: [0.06, 0.12, 0.06] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute z-[1] bottom-1/4 right-10 w-[300px] h-[300px] bg-[#18a2e3] rounded-full blur-[130px]"
+      <div
+        className="absolute z-[1] bottom-1/4 right-10 w-[300px] h-[300px] bg-[#18a2e3] rounded-full blur-[130px] animate-glow-pulse-alt opacity-10"
       />
 
       {/* big background icon */}

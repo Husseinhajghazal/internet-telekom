@@ -20,15 +20,11 @@ const PackagesSection = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#18a2e3]/[0.03] rounded-full blur-[150px]" />
 
       {/* animated glow orbs */}
-      <motion.div
-        animate={{ scale: [1, 1.25, 1], opacity: [0.08, 0.14, 0.08] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute z-[1] top-20 right-20 w-[400px] h-[400px] bg-[#f36802] rounded-full blur-[160px]"
+      <div
+        className="absolute z-[1] top-20 right-20 w-[400px] h-[400px] bg-[#f36802] rounded-full blur-[160px] animate-glow-pulse opacity-10"
       />
-      <motion.div
-        animate={{ scale: [1.1, 1, 1.1], opacity: [0.06, 0.12, 0.06] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute z-[1] bottom-20 left-10 w-[350px] h-[350px] bg-[#18a2e3] rounded-full blur-[140px]"
+      <div
+        className="absolute z-[1] bottom-20 left-10 w-[350px] h-[350px] bg-[#18a2e3] rounded-full blur-[140px] animate-glow-pulse-alt opacity-10"
       />
 
       {/* big background icon */}
