@@ -61,17 +61,14 @@ const ServicesSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-[#18a2e3]/10 text-[#18a2e3] text-sm font-semibold mb-4">
-            خدماتنا
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
             الخدمات التي{" "}
             <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
               نقدمها لكم
             </span>
           </h2>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">
-            حلول متكاملة تغطي جميع احتياجاتكم من خدمات الإنترنت في تركيا
+          <p className="text-gray-500 md:text-lg max-w-xl mx-auto">
+            حلول متكاملة تغطي جميع إحتياجاتكم
           </p>
         </motion.div>
 
@@ -84,7 +81,7 @@ const ServicesSection = () => {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.15 * i }}
             >
-              <div className="group relative h-full bg-white rounded-3xl border border-gray-100 p-8 hover:border-transparent hover:shadow-2xl hover:shadow-black/[0.06] transition-all duration-500 overflow-hidden">
+              <div className="group relative h-full bg-white rounded-3xl border border-4 border-gray-100 p-8 hover:border-transparent hover:shadow-2xl hover:shadow-black/[0.06] transition-all duration-500 overflow-hidden">
                 {/* hover gradient bg */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"

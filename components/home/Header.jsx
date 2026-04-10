@@ -19,16 +19,8 @@ const navLinks = [
 ];
 
 const Header = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
-
-  /* ── scroll listener ── */
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   /* ── intersection observer for active link ── */
   useEffect(() => {
@@ -74,11 +66,7 @@ const Header = () => {
   return (
     <header
       id="main-header"
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-xl shadow-[0_2px_24px_rgba(24,162,227,0.10)]"
-          : "bg-transparent"
-      }`}
+      className={`absolute top-0 right-0 left-0 z-50 transition-all duration-500 bg-transparent`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px]">
         {/* ── logo ── */}
@@ -105,8 +93,6 @@ const Header = () => {
                 className={`relative px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 z-10 ${
                   isActive
                     ? "text-[#18a2e3]"
-                    : scrolled
-                    ? "text-gray-600 hover:text-[#18a2e3]"
                     : "text-white/90 hover:text-white"
                 }`}
               >
@@ -121,12 +107,8 @@ const Header = () => {
 
         {/* ── desktop CTA ── */}
         <Link
-          href="/admin"
-          className={`hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 group ${
-            scrolled
-              ? "bg-gradient-to-l from-[#f36802] to-[#ffb245] text-white shadow-lg shadow-[#f36802]/20 hover:shadow-xl hover:shadow-[#f36802]/30 hover:scale-105"
-              : "bg-white/15 backdrop-blur-sm text-white border border-white/25 hover:bg-white/25"
-          }`}
+          href="/panel"
+          className={`hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 group bg-white/15 backdrop-blur-sm text-white border border-white/25 hover:bg-white/25`}
         >
           لوحة التحكم
           <FaChevronLeft className="text-xs transition-transform duration-300 group-hover:-translate-x-1" />
@@ -138,8 +120,6 @@ const Header = () => {
           className={`lg:hidden relative z-50 w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${
             mobileOpen
               ? "bg-red-500/10 text-red-500"
-              : scrolled
-              ? "text-gray-700 hover:bg-gray-100"
               : "text-white hover:bg-white/10"
           }`}
           aria-label="القائمة"
@@ -188,7 +168,7 @@ const Header = () => {
 
             <div className="mt-4 pt-4 border-t border-gray-100">
               <Link
-                href="/admin"
+                href="/panel"
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-l from-[#f36802] to-[#ffb245] text-white font-bold shadow-lg shadow-[#f36802]/20"
               >

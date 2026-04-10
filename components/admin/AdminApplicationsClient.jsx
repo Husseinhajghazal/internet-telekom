@@ -25,6 +25,9 @@ import {
   MdAdd,
   MdDelete,
 } from "react-icons/md";
+import {
+  FaWhatsapp,
+} from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
 import { FaRegEdit } from "react-icons/fa";
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
@@ -45,7 +48,7 @@ import { useRouter } from "next/navigation";
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
 
-const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, openStatusModal, openCustomerNoteModal }) => {
+const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, openStatusModal, openCustomerNoteModal, isDeletedMode, userRole, handleSendReviewLink }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const menuRef = useRef(null);
@@ -96,7 +99,7 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
       
       setCoords({
         top,
-        left: rect.right + window.scrollX - 176, // 11rem (w-44) width
+        left: rect.right + window.scrollX - 50,
       });
     }
     setIsOpen(!isOpen);
@@ -128,85 +131,119 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
             تفاصيل
           </button>
 
-          <button
-            onClick={() => router.push(`/admin/applications/${app.id}/edit`)}
+          {!isDeletedMode && <button
+            onClick={() => router.push(`/panel/applications/${app.id}/edit`)}
             className="w-full px-4 py-2.5 text-sm text-orange-600 hover:bg-orange-50 transition flex items-center gap-2.5 font-bold"
           >
             <FaRegEdit size={18} />
             تحرير
-          </button>
+          </button>}
 
-          <button
-            onClick={() => {
-              setIsOpen(false);
-              openStatusModal(app);
-            }}
-            className="w-full px-4 py-2.5 text-sm text-violet-600 hover:bg-violet-50 transition flex items-center gap-2.5 font-bold"
-          >
-            <MdSwapHoriz size={18} />
-            تحديث الحالة
-          </button>
-          
-          <button
-            onClick={() => {
-              setIsOpen(false);
-              openCustomerNoteModal(app);
-            }}
-            className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
-          >
-            <MdOutlineSpeakerNotes size={18} />
-            ملاحظة للمشترك
-          </button>
-          
-          <button
-            disabled={!canChangeStatus(app.status) || actionId === app.id}
-            onClick={() => {
-              setIsOpen(false);
-              setConfirm({
-                kind: "reject",
-                appId: app.id,
-                appIndex: app.appIndex,
-              });
-            }}
-            className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <MdClose size={18} />
-            إلغاء
-          </button>
+          {!isDeletedMode && (
+             <button
+               onClick={() => {
+                 setIsOpen(false);
+                 handleSendReviewLink(app);
+               }}
+               className={`w-full px-4 py-2.5 text-sm transition flex items-center gap-2.5 font-bold border-t border-gray-50 ${app.Review ? "text-gray-400 bg-gray-50/50 cursor-not-allowed" : "text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"}`}
+             >
+               <FaWhatsapp size={18} />
+               {app.Review ? "تم طلب التقييم مسبقاً" : "إرسال طلب تقييم"}
+             </button>
+          )}
 
-          <button
-            disabled={!canChangeStatus(app.status) || actionId === app.id}
-            onClick={() => {
-              setIsOpen(false);
-              setConfirm({
-                kind: "complete",
-                appId: app.id,
-                appIndex: app.appIndex,
-              });
-            }}
-            className="w-full px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <MdDone size={18} />
-            إكمال
-          </button>
+          {isDeletedMode && (
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                setConfirm({ kind: "restore", appId: app.id, appIndex: app.appIndex });
+              }}
+              className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
+            >
+              <MdOutlineRefresh size={18} />
+              إستعادة الطلب
+            </button>
+          )}
+
+          {!isDeletedMode && (
+            <>
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  openStatusModal(app);
+                }}
+                className="w-full px-4 py-2.5 text-sm text-violet-600 hover:bg-violet-50 transition flex items-center gap-2.5 font-bold"
+              >
+                <MdSwapHoriz size={18} />
+                تحديث الحالة
+              </button>
+              
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  openCustomerNoteModal(app);
+                }}
+                className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
+              >
+                <MdOutlineSpeakerNotes size={18} />
+                ملاحظة للمشترك
+              </button>
+              
+              <button
+                disabled={!canChangeStatus(app.status) || actionId === app.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  setConfirm({
+                    kind: "reject",
+                    appId: app.id,
+                    appIndex: app.appIndex,
+                  });
+                }}
+                className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <MdClose size={18} />
+                إلغاء
+              </button>
+
+              <button
+                disabled={!canChangeStatus(app.status) || actionId === app.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  setConfirm({
+                    kind: "complete",
+                    appId: app.id,
+                    appIndex: app.appIndex,
+                  });
+                }}
+                className="w-full px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <MdDone size={18} />
+                إكمال
+              </button>
+            </>
+          )}
           
           <div className="my-1 border-t border-gray-100" />
           
-          <button
-            disabled={actionId === app.id}
-            onClick={() => {
-              setIsOpen(false);
-              setConfirm({
-                kind: "delete",
-                appId: app.id,
-                appIndex: app.appIndex,
-              });
-            }}
-            className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <MdDelete size={18} />
-            حذف نهائي
-          </button>
+          <div className="my-1 border-t border-gray-100" />
+          
+          {userRole === "ADMIN" && (
+            <button
+              disabled={actionId === app.id}
+              onClick={() => {
+                setIsOpen(false);
+                setConfirm({
+                  kind: "delete",
+                  appId: app.id,
+                  appIndex: app.appIndex,
+                });
+              }}
+              className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <MdDelete size={18} />
+              {isDeletedMode ? "حذف نهائي" : "حذف"}
+            </button>
+          )}
         </div>,
         document.body
       )}
@@ -214,7 +251,7 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
   );
 };
 
-export default function AdminApplicationsClient() {
+export default function AdminApplicationsClient({ isDeletedMode = false, userRole = "ADMIN" }) {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
@@ -231,10 +268,29 @@ export default function AdminApplicationsClient() {
   const [alertMsg, setAlertMsg] = useState(null);
   const [exportLoading, setExportLoading] = useState(false);
 
+  const handleSendReviewLink = (app) => {
+    if (app.Review) {
+      setAlertMsg("لقد تم تقديم تقييم لهذا الطلب مسبقاً.");
+      return;
+    }
+    const reviewLink = `${window.location.origin}/review?appId=${app.id}`;
+    const text = `أهلاً ${app.newName || app.name}، شكراً لثقتك بنا لتنفيذ خدمة (${app.service || "الإنترنت"}).\nنسعد بتقييمك لتجربتك معنا عبر الرابط التالي:\n${reviewLink}`;
+    
+    let phoneToUse = app.phone || app.phone2 || app.newPhone;
+    console.log(phoneToUse);
+    // 0 (538) 897 79 39
+    if(phoneToUse) {
+       const waUrl = `https://wa.me/${phoneToUse.replace(/\D/g, "").replace(/^0/, "90")}?text=${encodeURIComponent(text)}`;
+       window.open(waUrl, '_blank');
+    } else {
+       setAlertMsg("لا يوجد رقم هاتف متاح لإرسال رسالة الواتساب.");
+    }
+  };
+
   const [searchInput, setSearchInput] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [dateField, setDateField] = useState("createdAt");
+  const [dateField, setDateField] = useState(isDeletedMode ? "updatedAt" : "createdAt");
   const [dateFrom, setDateFrom] = useState(() => {
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000;
@@ -255,6 +311,7 @@ export default function AdminApplicationsClient() {
   const buildQuery = useCallback(
     (p) => {
       const params = new URLSearchParams({ page: String(p) });
+      if (isDeletedMode) params.set("deleted", "true");
       if (debouncedQ) params.set("q", debouncedQ);
       if (statusFilter) params.set("status", statusFilter);
       if (dateField && dateField !== "createdAt") params.set("dateField", dateField);
@@ -270,7 +327,7 @@ export default function AdminApplicationsClient() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/admin/applications?${buildQuery(p)}`);
+        const res = await fetch(`/api/panel/applications?${buildQuery(p)}`);
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(json.error || "فشل التحميل");
@@ -291,7 +348,7 @@ export default function AdminApplicationsClient() {
   }, [page, load]);
 
   const handleCreateBlankApp = () => {
-    router.push(`/admin/applications/new/edit`);
+    router.push(`/panel/applications/new/edit`);
   };
 
   const exportToExcel = useCallback(async () => {
@@ -303,7 +360,7 @@ export default function AdminApplicationsClient() {
 
       do {
         const query = buildQuery(currentPage);
-        const res = await fetch(`/api/admin/applications?${query}`);
+        const res = await fetch(`/api/panel/applications?${query}`);
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(json.error || "فشل التحميل");
@@ -360,7 +417,7 @@ export default function AdminApplicationsClient() {
 
   const refreshDetail = async (id) => {
     try {
-      const res = await fetch(`/api/admin/applications/${id}`);
+      const res = await fetch(`/api/panel/applications/${id}`);
       const json = await res.json().catch(() => ({}));
       if (res.ok) setDetailApp(json);
     } catch {
@@ -371,7 +428,7 @@ export default function AdminApplicationsClient() {
   const deleteStatus = async (id) => {
     setActionId(id);
     try {
-      const res = await fetch(`/api/admin/applications/${id}`, {
+      const res = await fetch(`/api/panel/applications/${id}${isDeletedMode ? "?hard=true" : ""}`, {
         method: "DELETE",
       });
       const json = await res.json().catch(() => ({}));
@@ -386,10 +443,30 @@ export default function AdminApplicationsClient() {
     }
   };
 
+  const restoreStatus = async (id) => {
+    setActionId(id);
+    try {
+      const res = await fetch(`/api/panel/applications/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isDeleted: false }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAlertMsg(json.error || "فشل إستعادة الطلب");
+        return;
+      }
+      setConfirm(null);
+      await load(page);
+    } finally {
+      setActionId(null);
+    }
+  };
+
   const updateStatus = async (id, status) => {
     setActionId(id);
     try {
-      const res = await fetch(`/api/admin/applications/${id}`, {
+      const res = await fetch(`/api/panel/applications/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -435,7 +512,7 @@ export default function AdminApplicationsClient() {
       if (newStatus === "DELAYED" && delayedUntil) {
         body.delayedUntil = delayedUntil;
       }
-      const res = await fetch(`/api/admin/applications/${statusApp.id}`, {
+      const res = await fetch(`/api/panel/applications/${statusApp.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -456,7 +533,7 @@ export default function AdminApplicationsClient() {
     if (!customerNoteApp) return;
     setActionId(customerNoteApp.id);
     try {
-      const res = await fetch(`/api/admin/applications/${customerNoteApp.id}`, {
+      const res = await fetch(`/api/panel/applications/${customerNoteApp.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ adminNote: newAdminNote }),
@@ -531,11 +608,11 @@ export default function AdminApplicationsClient() {
                 background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`,
               }}
             >
-              <MdOutlineAssignment size={26} />
+              {isDeletedMode ? <MdDelete size={26} /> : <MdOutlineAssignment size={26} />}
             </span>
             <div>
               <h2 className="text-xl md:text-2xl font-extrabold text-gray-900 tracking-tight">
-                الطلبات
+                {isDeletedMode ? "الطلبات المحذوفة" : "الطلبات"}
               </h2>
               <p className="text-sm text-gray-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="inline-flex items-center gap-1">
@@ -554,23 +631,25 @@ export default function AdminApplicationsClient() {
               </p>
             </div>
           </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={handleCreateBlankApp}
-              disabled={creatingApp || loading}
-              className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
-              style={{
-                background: `linear-gradient(to left, #ffb245, #f36802)`,
-              }}
-            >
-              {creatingApp ? (
-                <MdOutlineRefresh size={20} className="animate-spin" />
-              ) : (
-                <MdAdd size={20} />
-              )}
-              إنشاء طلب جديد
-            </button>
+          <div className="flex flex-col md:flex-row gap-3">
+            {!isDeletedMode && (
+              <button
+                type="button"
+                onClick={handleCreateBlankApp}
+                disabled={creatingApp || loading}
+                className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
+                style={{
+                  background: `linear-gradient(to left, #ffb245, #f36802)`,
+                }}
+              >
+                {creatingApp ? (
+                  <MdOutlineRefresh size={20} className="animate-spin" />
+                ) : (
+                  <MdAdd size={20} />
+                )}
+                إنشاء طلب جديد
+              </button>
+            )}
             <button
               type="button"
               onClick={() => load(page)}
@@ -611,7 +690,7 @@ export default function AdminApplicationsClient() {
           <span>بحث وتصفية</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
-          <div className="lg:col-span-3 relative">
+          <div className={`${isDeletedMode ? "lg:col-span-5" : "lg:col-span-3"} relative`}>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               بحث (الإسم، رقم الطلب، الموبايل)
             </label>
@@ -630,7 +709,7 @@ export default function AdminApplicationsClient() {
               />
             </div>
           </div>
-          <div className="lg:col-span-2">
+          {!isDeletedMode && <div className="lg:col-span-2">
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               حالة الطلب
             </label>
@@ -647,7 +726,7 @@ export default function AdminApplicationsClient() {
                 <option key={key} value={key}>{label}</option>
               ))}
             </select>
-          </div>
+          </div>}
           <div className="lg:col-span-2">
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               تصفية حسب
@@ -661,8 +740,9 @@ export default function AdminApplicationsClient() {
               className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
             >
               <option value="createdAt">تاريخ الإنشاء</option>
-              <option value="completedAt">تاريخ الإكتمال</option>
-              <option value="delayedUntil">تاريخ التأجيل</option>
+              {isDeletedMode && <option value="updatedAt">تاريخ الحذف</option>}
+              {!isDeletedMode && <option value="completedAt">تاريخ الإكتمال</option>}
+              {!isDeletedMode && <option value="delayedUntil">تاريخ التأجيل</option>}
             </select>
           </div>
           <div className="lg:col-span-2">
@@ -751,30 +831,37 @@ export default function AdminApplicationsClient() {
                       رقم الموبايل
                     </span>
                   </th>
-                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                  {!isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdOutlineTaskAlt size={18} />
                       الحالة
                     </span>
-                  </th>
+                  </th>}
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdCalendarMonth size={18} />
                       تاريخ الإنشاء
                     </span>
                   </th>
-                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                  {isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MdCalendarMonth size={18} />
+                      تاريخ الحذف
+                    </span>
+                  </th>}
+                  {!isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdDoneAll size={18} />
                       تاريخ الإكتمال
                     </span>
-                  </th>
-                  <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                  </th>}
+                  {!isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdOutlineTimer size={18} />
                       تاريخ التأجيل
                     </span>
-                  </th>
+                  </th>}
+                  
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdOutlineSpeakerNotes size={18} />
@@ -846,28 +933,33 @@ export default function AdminApplicationsClient() {
                           )}
                         </span>
                       </td>
-                      <td className="px-3 py-3.5">
+                      {!isDeletedMode && <td className="px-3 py-3.5">
                         <span
                           className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(app.status)}`}
                         >
                           {describeStatus(app.status)}
                         </span>
-                      </td>
+                      </td>}
                       <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                         {app.createdAt
                           ? formatDate(app.createdAt)
                           : "—"}
                       </td>
-                      <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                      {isDeletedMode && <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                        {app.updatedAt
+                          ? formatDate(app.updatedAt)
+                          : "—"}
+                      </td>}
+                      {!isDeletedMode && <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                         {app.completedAt
                           ? formatDate(app.completedAt)
                           : "—"}
-                      </td>
-                      <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                      </td>}
+                      {!isDeletedMode && <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                         {app.delayedUntil
                           ? formatDate(app.delayedUntil)
                           : "—"}
-                      </td>
+                      </td>}
                       <td className="px-3 py-3.5 max-w-48">
                         <button
                           onClick={() => setNotesApp(app)}
@@ -893,6 +985,9 @@ export default function AdminApplicationsClient() {
                           actionId={actionId}
                           openStatusModal={setStatusApp}
                           openCustomerNoteModal={setCustomerNoteApp}
+                          isDeletedMode={isDeletedMode}
+                          userRole={userRole}
+                          handleSendReviewLink={handleSendReviewLink}
                         />
                       </td>
                     </tr>
@@ -939,6 +1034,7 @@ export default function AdminApplicationsClient() {
       {detailApp && (
         <ApplicationDetailModal
           application={detailApp}
+          isDeletedMode={isDeletedMode}
           onClose={() => setDetailApp(null)}
         />
       )}
@@ -977,21 +1073,27 @@ export default function AdminApplicationsClient() {
             ? "إلغاء الطلب؟"
             : confirm?.kind === "delete"
               ? "حذف الطلب نهائياً؟"
-              : "إكمال الطلب؟"
+              : confirm?.kind === "restore"
+                ? "إستعادة الطلب؟"
+                : "إكمال الطلب؟"
         }
         message={
           confirm?.kind === "delete"
-            ? `هل أنت متأكد من مسح الطلب #${confirm.appIndex}؟ سيختفي من القائمة.`
-            : confirm
-              ? `هل أنت متأكد؟ الطلب #${confirm.appIndex}`
-              : ""
+            ? `هل أنت متأكد من الحذف النهائي للطلب #${confirm?.appIndex}؟ سيتم فقدان البيانات للأبد.`
+            : confirm?.kind === "restore"
+              ? `هل تريد إستعادة الطلب #${confirm?.appIndex} ليعود لصفحة الطلبات الأساسية؟`
+              : confirm
+                ? `هل أنت متأكد؟ الطلب #${confirm?.appIndex}`
+                : ""
         }
         confirmLabel={
           confirm?.kind === "reject"
             ? "نعم، إلغاء"
             : confirm?.kind === "delete"
               ? "نعم، حذف"
-              : "نعم، إكمال"
+              : confirm?.kind === "restore"
+                ? "نعم، إستعادة"
+                : "نعم، إكمال"
         }
         cancelLabel="رجوع"
         loading={!!actionId && confirm && actionId === confirm.appId}
@@ -1000,6 +1102,8 @@ export default function AdminApplicationsClient() {
           if (!confirm) return;
           if (confirm.kind === "delete") {
             deleteStatus(confirm.appId);
+          } else if (confirm.kind === "restore") {
+            restoreStatus(confirm.appId);
           } else {
             updateStatus(
               confirm.appId,

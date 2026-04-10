@@ -37,7 +37,7 @@ const Footer = () => {
               <Link href="/" className="inline-block mb-4">
                 <div className="relative w-[170px] h-[48px]">
                   <Image
-                    src="/full-logo-white.png"
+                    src="/full-logo.png"
                     alt="إنترنت تيليكوم"
                     fill
                     sizes="170px"

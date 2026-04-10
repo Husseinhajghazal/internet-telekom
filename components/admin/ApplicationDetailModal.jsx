@@ -49,7 +49,7 @@ const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
   </div>
 );
 
-export default function ApplicationDetailModal({ application, onClose }) {
+export default function ApplicationDetailModal({ application, onClose, isDeletedMode }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -321,14 +321,14 @@ export default function ApplicationDetailModal({ application, onClose }) {
           >
             اغلاق
           </Button>
-          <Button
+          {!isDeletedMode && <Button
             variant="secondary"
             type="button"
-            onClick={() => router.push(`/admin/applications/${application.id}/edit`)}
+            onClick={() => router.push(`/panel/applications/${application.id}/edit`)}
             className="rounded-xl! min-w-30"
           >
             تحرير
-          </Button>
+          </Button>}
         </div>
       </div>
     </div>

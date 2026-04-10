@@ -186,7 +186,7 @@ const FeaturesSection = () => {
               الخيار الأفضل
             </span>
           </h2>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">
+          <p className="text-gray-500 md:text-lg max-w-xl mx-auto">
             نقدم لكم تجربة إنترنت فريدة تجمع بين الجودة والمرونة والسعر المنافس
           </p>
         </motion.div>

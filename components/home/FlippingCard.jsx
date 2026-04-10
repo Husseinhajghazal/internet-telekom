@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   MdSpeed,
@@ -31,10 +32,14 @@ const FlippingCard = ({
   palette,
   popular,
 }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
   const SpeedIcon = getSpeedIcon(speed);
 
   return (
-    <div className="group relative [perspective:2000px] transition-transform duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] rounded-3xl">
+    <div 
+      className="group relative [perspective:2000px] transition-transform duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] rounded-3xl cursor-pointer"
+      onClick={() => setIsFlipped(!isFlipped)}
+    >
       {/* popular badge */}
       {popular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-30">
@@ -45,7 +50,7 @@ const FlippingCard = ({
       )}
 
       {/* 3D Flipping Container */}
-      <div className="relative grid w-full h-full rounded-3xl transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+      <div className={`relative grid w-full h-full rounded-3xl transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}>
 
         {/* === FRONT FACE === */}
         <div className="col-start-1 row-start-1 relative flex flex-col h-full rounded-3xl border-2 border-transparent bg-white/70 backdrop-blur-xl [backface-visibility:hidden] overflow-hidden shadow-md hover:border-gray-200">
@@ -140,6 +145,7 @@ const FlippingCard = ({
           <div className="px-5 pb-5 relative z-10">
             <Link
               href="/internet-basvuru-formu"
+              onClick={(e) => e.stopPropagation()}
               className="block w-full py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white text-center font-bold text-sm transition-all duration-300 backdrop-blur-sm"
             >
               سجّل الآن ←

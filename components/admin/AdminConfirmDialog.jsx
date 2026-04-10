@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { MdCancel, MdCheckCircle, MdWarning } from "react-icons/md";
+import { MdCancel, MdCheckCircle, MdWarning, MdRestore } from "react-icons/md";
 import Button from "../Button";
 
 const ACCENT = "#18a2e3";
 
 /**
- * @param {'reject' | 'complete' | 'alert' | 'delete'} kind
+ * @param {'reject' | 'complete' | 'alert' | 'delete' | 'restore'} kind
  */
 export default function AdminConfirmDialog({
   open,
@@ -35,6 +35,7 @@ export default function AdminConfirmDialog({
   const isComplete = kind === "complete";
   const isAlert = kind === "alert";
   const isDelete = kind === "delete";
+  const isRestore = kind === "restore";
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -50,12 +51,14 @@ export default function AdminConfirmDialog({
         aria-labelledby="confirm-title"
       >
         <div
-          className={`px-6 pt-6 pb-4 text-center ${
+          className={`px-6 pt-6 pb-4 text-center relative overflow-hidden ${
             isReject || isDelete
               ? "bg-linear-to-br from-red-50 to-white"
               : isComplete
                 ? "bg-linear-to-br from-emerald-50 to-white"
-                : "bg-linear-to-br from-cyan-50/80 to-white"
+                : isRestore
+                  ? "bg-linear-to-br from-indigo-50/80 to-white"
+                  : "bg-linear-to-br from-cyan-50/80 to-white"
           }`}
         >
           <div className="flex justify-center mb-3">
@@ -77,6 +80,13 @@ export default function AdminConfirmDialog({
                 }}
               >
                 <MdWarning size={28} />
+              </span>
+            )}
+            {isRestore && (
+              <span
+                className="inline-flex h-14 w-14 items-center justify-center rounded-2xl shadow-inner text-white !bg-gradient-to-r !from-indigo-600 !to-purple-600 "
+              >
+                <MdRestore size={28} />
               </span>
             )}
           </div>
@@ -107,11 +117,13 @@ export default function AdminConfirmDialog({
             type="button"
             variant="primary"
             size="large"
-            className={`min-w-[140px] ${isAlert ? "" : "flex-1 sm:flex-none min-w-[120px]"} ${
+            className={`min-w-[140px] font-bold ${isAlert ? "" : "flex-1 sm:flex-none min-w-[120px]"} ${
               (isReject || isDelete) ? "!bg-linear-to-r !from-red-500 !to-red-600 hover:opacity-95" : ""
-            } ${isComplete ? "!bg-linear-to-r !from-emerald-600 !to-emerald-700 hover:opacity-95" : ""}`}
+            } ${isComplete ? "!bg-linear-to-r !from-emerald-600 !to-emerald-700 hover:opacity-95" : ""} ${
+              isRestore ? "!bg-gradient-to-r !from-indigo-600 !to-purple-600 !border-0 hover:scale-[1.03] shadow-lg shadow-indigo-500/25 transition-all" : ""
+            }`}
             style={
-              !isReject && !isComplete && !isDelete
+              !isReject && !isComplete && !isDelete && !isRestore
                 ? { background: `linear-gradient(to right, ${ACCENT}, #0d8bc9)` }
                 : undefined
             }

@@ -12,7 +12,7 @@ import {
 const highlights = [
   { icon: FaCalendarAlt, label: "تأسست عام", value: "01/05/2015" },
   { icon: FaMapMarkerAlt, label: "المقر الرئيسي", value: "إسطنبول" },
-  { icon: FaGlobeAmericas, label: "التغطية", value: "جميع الولايات التركية" },
+  { icon: FaGlobeAmericas, label: "التغطية", value: "كامل تركيا" },
   { icon: FaUsers, label: "المدير العام", value: "أ. مهند التاجر" },
 ];
 
@@ -122,16 +122,16 @@ const AboutSection = () => {
             </span>
 
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 leading-tight">
-              الجسر الموثوق الذي يربطكم
+              أولى الشركات العربية
               <br />
-              <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
-                بأفضل خدمات الإنترنت
+              <span className="mt-2 bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
+                لخدمات الإنترنت في تركيا
               </span>
             </h2>
 
             <div className="space-y-4 text-gray-500 leading-relaxed text-[15px] mb-8">
               <p>
-                تأسست إنترنت تيليكوم في عام 2015 لتكون الجسر الموثوق والآمن الذي يربطكم بأفضل خدمات الإنترنت المنزلي في تركيا. على مدار أكثر من عقد من الزمان، نجحنا في ترسيخ مكانتنا كشركة معتمدة تقدم حلولاً متكاملة تجمع بين الجودة والسعر المنافس.
+                تأسست إنترنت تيليكوم في عام 2015 لتكون الجسر الموثوق والآمن الذي يربطكم إرثٌ من الثقة والريادة.. نُسخره لخدمتكم المنزلي في تركيا. على مدار أكثر من عقد من الزمان، نجحنا في ترسيخ مكانتنا كشركة معتمدة تقدم حلولاً متكاملة تجمع بين الجودة والسعر المنافس.
               </p>
               <p>
                 يتمركز مقرنا الرئيسي في مدينة إسطنبول، ومنها انطلقنا لنوسع نطاق خدماتنا حتى شملت فروعنا كافة الولايات التركية، لضمان وصول الإنترنت عالي السرعة لكل بيت بجودة واحترافية لا تُضاهى.

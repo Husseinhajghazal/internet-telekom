@@ -54,10 +54,11 @@ const WithContractCards = () => (
         </div>
 
         {/* speed cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="flex sm:grid sm:grid-cols-3 gap-5 overflow-x-auto pb-4 sm:pb-0 sm:overflow-visible snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {group.speeds.map((item, i) => (
             <motion.div
               key={`${gi}-${item.speed}`}
+              className="flex-shrink-0 w-[75vw] md:w-[85vw] max-w-[320px] md:w-auto md:max-w-none snap-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 * i }}

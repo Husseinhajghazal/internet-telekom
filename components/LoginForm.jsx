@@ -17,7 +17,7 @@ export default function AdminLoginForm() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("/api/panel/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -27,7 +27,7 @@ export default function AdminLoginForm() {
         setError(data.error || "فشل تسجيل الدخول.");
         return;
       }
-      router.push("/admin");
+      router.push("/panel");
       router.refresh();
     } catch {
       setError("تعذر الاتصال بالخادم.");

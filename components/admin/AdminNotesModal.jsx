@@ -9,7 +9,6 @@ const ACCENT = "#18a2e3";
 export default function AdminNotesModal({ application, onClose, onNoteAdded }) {
   const [isAdding, setIsAdding] = useState(false);
   const [text, setText] = useState("");
-  const [adminName, setAdminName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -18,20 +17,19 @@ export default function AdminNotesModal({ application, onClose, onNoteAdded }) {
   const handleSave = async (e) => {
     e.preventDefault();
     setError(null);
-    if (!text.trim() || !adminName.trim()) {
-      setError("الرجاء إدخال الملاحظة والاسم");
+    if (!text.trim()) {
+      setError("الرجاء إدخال الملاحظة");
       return;
     }
 
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/notes", {
+      const res = await fetch("/api/panel/notes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           applicationId: application.id,
           text,
-          adminName,
         }),
       });
 
@@ -43,7 +41,6 @@ export default function AdminNotesModal({ application, onClose, onNoteAdded }) {
       const newNote = await res.json();
       setIsAdding(false);
       setText("");
-      // keep adminName for next note just in case
       if (onNoteAdded) {
         onNoteAdded(newNote); // parent can update state
       }
@@ -133,17 +130,7 @@ export default function AdminNotesModal({ application, onClose, onNoteAdded }) {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">الإسم</label>
-                <input
-                  type="text"
-                  value={adminName}
-                  onChange={(e) => setAdminName(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-slate-50 p-3 text-sm text-gray-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-                  placeholder="اسم الموظف أو الإداري"
-                  dir="rtl"
-                />
-              </div>
+
 
               <div className="flex gap-2 justify-end pt-2">
                 <button

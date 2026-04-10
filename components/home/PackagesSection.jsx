@@ -49,8 +49,8 @@ const PackagesSection = () => {
               المناسبة لك
             </span>
           </h2>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">
-            باقات مرنة تناسب جميع الاحتياجات سواء بعقد أو بدون عقد
+          <p className="text-gray-500 md:text-lg max-w-xl mx-auto">
+            باقات مرنة تناسب جميع الإحتياجات
           </p>
         </motion.div>
 
@@ -133,7 +133,7 @@ const PackagesSection = () => {
         >
           <Link
             href="/internet-basvuru-formu"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-[#ffb245] font-bold text-lg hover:scale-105 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl border-[4px] border-[#ffb245] text-[#ffb245] font-bold text-lg hover:scale-105 transition-all duration-300"
           >
             سجّل الآن واحصل على باقتك
             <FaArrowLeft className="text-sm" />

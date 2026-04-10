@@ -5,7 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { FaQuoteRight } from "react-icons/fa";
 import ScrollRow from "./ScrollRow";
 
-const reviews = [
+const staticReviews = [
   {
     name: "أحمد المحمد",
     rating: 5,
@@ -27,46 +27,24 @@ const reviews = [
       "سرعة الإنترنت ممتازة والأسعار مناسبة جداً. أنصح الجميع بالتعامل معهم. الباقة بدون عقد أعطتني مرونة كبيرة.",
     service: "اشتراك بدون عقد - Fiber",
   },
-  {
-    name: "فاطمة الزهراء",
-    rating: 5,
-    comment:
-      "استشارة مجانية ساعدتني أختار الباقة الصح. الفريق متعاون جداً وصبور في الشرح. تجربة رائعة من البداية للنهاية.",
-    service: "استشارة مجانية",
-  },
-  {
-    name: "عبدالله كريم",
-    rating: 5,
-    comment:
-      "جمّدت اشتراكي لمدة شهرين بسبب السفر وتم إعادة التفعيل فوراً عند عودتي. خدمة محترمة وتواصل سهل بالعربية.",
-    service: "تجميد خط الإنترنت",
-  },
-  {
-    name: "نور الهدى",
-    rating: 4,
-    comment:
-      "GigaFiber سرعة خيالية! ألعاب أونلاين وبث مباشر بدون أي تقطيع. سعيدة جداً بالخدمة والسعر مقارنة بالشركات الأخرى.",
-    service: "اشتراك بدون عقد - GigaFiber",
-  },
-  {
-    name: "خالد الراشد",
-    rating: 5,
-    comment:
-      "نقلت ملكية الخط من صديقي لاسمي بكل سهولة. الإجراءات كانت بسيطة والفريق تابع معي خطوة بخطوة حتى اكتمل كل شيء.",
-    service: "نقل ملكية خط الإنترنت",
-  },
-  {
-    name: "ريم الأحمد",
-    rating: 5,
-    comment:
-      "أكثر شيء أعجبني هو الشفافية في الأسعار. لا رسوم مخفية ولا مفاجآت بالفاتورة. تجربة ممتازة وأنصح فيها الجميع.",
-    service: "اشتراك بدون عقد - VDSL",
-  },
 ];
 
 const ReviewsSection = () => {
-  const ref = useRef(null);
+  const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const [reviews, setReviews] = React.useState(staticReviews);
+
+  React.useEffect(() => {
+    fetch("/api/reviews")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.length > 0) {
+          setReviews(data);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const reversedReviews = [...reviews].reverse();
 
@@ -109,7 +87,7 @@ const ReviewsSection = () => {
               عملاؤنا عنّا
             </span>
           </h2>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">
+          <p className="text-gray-500 md:text-lg max-w-xl mx-auto">
             ثقة آلاف العملاء هي أعظم شهادة على جودة خدماتنا
           </p>
         </motion.div>

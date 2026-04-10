@@ -55,10 +55,11 @@ const purplePalette = {
 };
 
 const NoContractCards = () => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
+  <div className="flex md:grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto overflow-x-auto pb-4 md:pb-0 md:overflow-visible snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
     {noContractPackages.map((pkg, i) => (
       <motion.div
         key={pkg.value}
+        className="flex-shrink-0 w-[75vw] md:w-[85vw] max-w-[320px] md:w-auto md:max-w-none snap-center"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 * i }}
