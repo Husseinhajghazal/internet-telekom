@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { FaStar, FaQuoteRight } from "react-icons/fa";
+import { FaQuoteRight } from "react-icons/fa";
+import ScrollRow from "./ScrollRow";
 
 const reviews = [
   {
@@ -62,143 +63,6 @@ const reviews = [
     service: "اشتراك بدون عقد - VDSL",
   },
 ];
-
-/* ── single review card ── */
-const ReviewCard = ({ review }) => (
-  <div style={{ flexShrink: 0, width: 380 }}>
-    <div className="relative h-full bg-white rounded-2xl border border-gray-100 p-6 hover:border-[#18a2e3]/15 hover:shadow-xl hover:shadow-black/[0.04] transition-all duration-500">
-      {/* quote icon */}
-      <div className="absolute top-5 left-5 text-[#18a2e3]/10">
-        <FaQuoteRight size={28} />
-      </div>
-
-      {/* stars */}
-      <div className="flex items-center gap-1 mb-4">
-        {[...Array(5)].map((_, j) => (
-          <FaStar
-            key={j}
-            size={14}
-            className={
-              j < review.rating ? "text-amber-400" : "text-gray-200"
-            }
-          />
-        ))}
-      </div>
-
-      {/* comment */}
-      <p className="text-gray-600 text-sm leading-relaxed mb-6 min-h-[80px]">
-        {review.comment}
-      </p>
-
-      {/* divider */}
-      <div className="w-full h-px bg-gray-100 mb-4" />
-
-      {/* user info */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-bl from-[#18a2e3] to-[#5898b7] flex items-center justify-center text-white font-bold text-sm">
-          {review.name.charAt(0)}
-        </div>
-        <div>
-          <div className="text-sm font-bold text-gray-900">
-            {review.name}
-          </div>
-          <div className="text-xs text-gray-400">{review.service}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-/* ── Scrolling row component ── */
-const ScrollRow = ({ items, direction = "right", speed = 40 }) => {
-  const trackRef = useRef(null);
-
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-
-    // Calculate the width of one set of items
-    const totalChildren = el.children.length;
-    const halfCount = totalChildren / 2;
-    let singleSetWidth = 0;
-    for (let i = 0; i < halfCount; i++) {
-      singleSetWidth += el.children[i].offsetWidth + 24; // 24px = gap
-    }
-
-    // Create the keyframes dynamically (reversed for RTL)
-    const name = `scroll-${direction}-${Date.now()}`;
-    const fromX = direction === "right" ? singleSetWidth : 0;
-    const toX = direction === "right" ? 0 : singleSetWidth;
-
-    const styleEl = document.createElement("style");
-    styleEl.textContent = `
-      @keyframes ${name} {
-        from { transform: translateX(${fromX}px); }
-        to { transform: translateX(${toX}px); }
-      }
-    `;
-    document.head.appendChild(styleEl);
-
-    el.style.animation = `${name} ${speed}s linear infinite`;
-
-    return () => {
-      document.head.removeChild(styleEl);
-    };
-  }, [direction, speed]);
-
-  return (
-    <div style={{ overflow: "hidden", position: "relative" }}>
-      {/* fade edges */}
-      <div
-        style={{
-          position: "absolute",
-          right: 0,
-          top: 0,
-          bottom: 0,
-          width: 100,
-          background: "linear-gradient(to left, white, transparent)",
-          zIndex: 10,
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: 100,
-          background: "linear-gradient(to right, white, transparent)",
-          zIndex: 10,
-          pointerEvents: "none",
-        }}
-      />
-
-      <div
-        ref={trackRef}
-        style={{
-          display: "flex",
-          gap: 24,
-          width: "max-content",
-          willChange: "transform",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.animationPlayState = "paused";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.animationPlayState = "running";
-        }}
-      >
-        {items.map((review, i) => (
-          <ReviewCard key={`set1-${i}`} review={review} />
-        ))}
-        {items.map((review, i) => (
-          <ReviewCard key={`set2-${i}`} review={review} />
-        ))}
-      </div>
-    </div>
-  );
-};
 
 const ReviewsSection = () => {
   const ref = useRef(null);

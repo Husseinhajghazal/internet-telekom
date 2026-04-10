@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   FaBars,
   FaTimes,
@@ -83,12 +82,12 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px]">
         {/* ── logo ── */}
-        <Link href="/" className="flex-shrink-0 relative w-[160px] h-[44px] md:w-[190px] md:h-[50px]">
+        <Link href="/" className="flex-shrink-0 relative">
           <Image
             src="/logo.png"
             alt="إنترنت تيليكوم"
-            fill
-            sizes="(max-width: 768px) 160px, 190px"
+            width={50}
+            height={100}
             className="object-contain"
             priority
           />
@@ -103,7 +102,7 @@ const Header = () => {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => scrollTo(e, link.href)}
-                className={`relative px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                className={`relative px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 z-10 ${
                   isActive
                     ? "text-[#18a2e3]"
                     : scrolled
@@ -113,11 +112,7 @@ const Header = () => {
               >
                 {link.label}
                 {isActive && (
-                  <motion.span
-                    layoutId="nav-pill"
-                    className="absolute inset-0 rounded-full bg-[#18a2e3]/10 -z-10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
+                  <span className="absolute inset-0 rounded-full bg-[#18a2e3]/10 -z-10 animate-fade-in" />
                 )}
               </a>
             );
@@ -149,91 +144,61 @@ const Header = () => {
           }`}
           aria-label="القائمة"
         >
-          <AnimatePresence mode="wait">
-            {mobileOpen ? (
-              <motion.span
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <FaTimes size={20} />
-              </motion.span>
-            ) : (
-              <motion.span
-                key="menu"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <FaBars size={20} />
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {mobileOpen ? (
+            <FaTimes size={20} className="animate-fade-in" />
+          ) : (
+            <FaBars size={20} className="animate-fade-in" />
+          )}
         </button>
       </div>
 
       {/* ── mobile menu ── */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            {/* overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 lg:hidden"
-              onClick={() => setMobileOpen(false)}
-            />
+      {mobileOpen && (
+        <>
+          {/* overlay */}
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 lg:hidden animate-fade-in"
+            onClick={() => setMobileOpen(false)}
+          />
 
-            {/* panel */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-              className="absolute top-[72px] right-4 left-4 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-black/10 p-6 z-40 lg:hidden border border-white/50"
-            >
-              <nav className="flex flex-col gap-1">
-                {navLinks.map((link, i) => {
-                  const isActive =
-                    activeSection === link.href.replace("#", "");
-                  return (
-                    <motion.a
-                      key={link.href}
-                      href={link.href}
-                      onClick={(e) => scrollTo(e, link.href)}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className={`px-4 py-3 rounded-xl text-base font-semibold transition-all duration-200 ${
-                        isActive
-                          ? "bg-[#18a2e3]/10 text-[#18a2e3]"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      {link.label}
-                    </motion.a>
-                  );
-                })}
-              </nav>
+          {/* panel */}
+          <div
+            className="absolute top-[72px] right-4 left-4 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-black/10 p-6 z-40 lg:hidden border border-white/50 animate-slide-in-top"
+          >
+            <nav className="flex flex-col gap-1">
+              {navLinks.map((link, i) => {
+                const isActive = activeSection === link.href.replace("#", "");
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={(e) => scrollTo(e, link.href)}
+                    style={{ animationDelay: `${i * 0.04}s` }}
+                    className={`px-4 py-3 rounded-xl text-base font-semibold transition-colors duration-200 animate-slide-in-top opacity-0 [animation-fill-mode:forwards] ${
+                      isActive
+                        ? "bg-[#18a2e3]/10 text-[#18a2e3]"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {link.label}
+                  </a>
+                );
+              })}
+            </nav>
 
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <Link
-                  href="/admin"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-l from-[#f36802] to-[#ffb245] text-white font-bold shadow-lg shadow-[#f36802]/20"
-                >
-                  لوحة التحكم
-                  <FaChevronLeft className="text-xs" />
-                </Link>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-l from-[#f36802] to-[#ffb245] text-white font-bold shadow-lg shadow-[#f36802]/20"
+              >
+                لوحة التحكم
+                <FaChevronLeft className="text-xs" />
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
     </header>
   );
 };

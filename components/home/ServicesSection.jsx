@@ -7,12 +7,7 @@ import {
   FaWifi,
   FaTools,
   FaComments,
-  FaArrowLeft,
-  FaHeadset,
-  FaServer,
-  FaCog,
-  FaEnvelope,
-  FaPhoneAlt,
+  FaArrowLeft
 } from "react-icons/fa";
 
 const services = [
@@ -48,15 +43,6 @@ const services = [
   },
 ];
 
-/* ── floating background icons ── */
-const floatingIcons = [
-  { Icon: FaHeadset, size: 28, top: "12%", right: "8%", delay: 0, duration: 20 },
-  { Icon: FaServer, size: 24, top: "65%", right: "88%", delay: 2, duration: 18 },
-  { Icon: FaCog, size: 22, top: "25%", right: "55%", delay: 4, duration: 22 },
-  { Icon: FaEnvelope, size: 26, top: "70%", right: "15%", delay: 1, duration: 16 },
-  { Icon: FaPhoneAlt, size: 20, top: "40%", right: "75%", delay: 3, duration: 24 },
-];
-
 const ServicesSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -66,32 +52,6 @@ const ServicesSection = () => {
       {/* subtle bg decoration */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-[#18a2e3]/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#5898b7]/5 rounded-full blur-[120px] translate-x-1/3 translate-y-1/3" />
-
-      {/* ── floating icons ── */}
-      {floatingIcons.map((item, i) => (
-        <motion.div
-          key={i}
-          className="absolute z-[2] pointer-events-none"
-          style={{
-            top: item.top,
-            right: item.right,
-            color: "rgba(88,152,183,0.12)",
-          }}
-          animate={{
-            y: [0, -20, 0, 15, 0],
-            x: [0, 12, 0, -8, 0],
-            rotate: [0, 8, 0, -8, 0],
-          }}
-          transition={{
-            duration: item.duration,
-            repeat: Infinity,
-            delay: item.delay,
-            ease: "easeInOut",
-          }}
-        >
-          <item.Icon size={item.size} />
-        </motion.div>
-      ))}
 
       <div ref={ref} className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
         {/* section header */}
