@@ -2,6 +2,9 @@
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
+  experimental: {
+    optimizeCss: true,
+  },
 };
 
 export default nextConfig;

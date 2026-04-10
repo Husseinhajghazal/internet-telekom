@@ -85,7 +85,7 @@ const Header = () => {
         {/* ── logo ── */}
         <Link href="/" className="flex-shrink-0 relative w-[160px] h-[44px] md:w-[190px] md:h-[50px]">
           <Image
-            src="/full-logo.png"
+            src="/logo.png"
             alt="إنترنت تيليكوم"
             fill
             className="object-contain"

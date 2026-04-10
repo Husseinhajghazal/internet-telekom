@@ -40,7 +40,7 @@ const Footer = () => {
               <Link href="/" className="inline-block mb-4">
                 <div className="relative w-[170px] h-[48px]">
                   <Image
-                    src="/full-logo.png"
+                    src="/full-logo-white.png"
                     alt="إنترنت تيليكوم"
                     fill
                     className="object-contain brightness-110"
