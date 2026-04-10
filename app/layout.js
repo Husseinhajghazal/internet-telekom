@@ -4,6 +4,7 @@ import "./globals.css";
 const cairo = Cairo({
   variable: "--font-cairo",
   subsets: ["arabic"],
+  display: "swap",
 });
 
 export const metadata = {
