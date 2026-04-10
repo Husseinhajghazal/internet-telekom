@@ -29,5 +29,13 @@
     "babel-plugin-react-compiler": "1.0.0",
     "prisma": "^6.5.0",
     "tailwindcss": "^4"
-  }
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not op_mini all",
+    "not dead",
+    "> 0.5%",
+    "last 2 versions"
+  ]
 }

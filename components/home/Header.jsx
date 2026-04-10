@@ -88,6 +88,7 @@ const Header = () => {
             src="/logo.png"
             alt="إنترنت تيليكوم"
             fill
+            sizes="(max-width: 768px) 160px, 190px"
             className="object-contain"
             priority
           />

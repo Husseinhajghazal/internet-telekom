@@ -43,6 +43,7 @@ const Footer = () => {
                     src="/full-logo-white.png"
                     alt="إنترنت تيليكوم"
                     fill
+                    sizes="170px"
                     className="object-contain brightness-110"
                   />
                 </div>
