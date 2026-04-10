@@ -113,7 +113,7 @@ const SuccessStep = ({ submissionInfo }) => {
             <Button variant="primary" size="large" onClick={() => window.location.reload()}>
               طلب جديد
             </Button>
-            <Button variant="secondary" size="large" onClick={() => window.location.href = '/start'}>
+            <Button variant="secondary" size="large" onClick={() => window.location.href = '/'}>
               الصفحة الرئيسية
             </Button>
           </div>

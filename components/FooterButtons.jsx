@@ -7,7 +7,7 @@ const FooterButtons = ({ step, handleBack, handleForward }) => {
         <button
           type="button"
           onClick={
-            step === 1 ? () => (window.location.href = "/start") : handleBack
+            step === 1 ? () => (window.location.href = "/") : handleBack
           }
           className="text-sm md:text-base flex-1 cursor-pointer bg-linear-to-r from-[#18a2e3] to-[#0d8bc9] text-white py-3 px-6 rounded-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
         >

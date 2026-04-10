@@ -175,7 +175,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 طلب جديد
               </Button>
             </Link>
-            <Link href="/start">
+            <Link href="/">
               <Button variant="primary" size="large" className="flex w-full items-center justify-center gap-2">
                 <MdHome size={22} />
                 الصفحة الرئيسية

@@ -222,7 +222,7 @@ export default function InquiryPage() {
               variant="secondary"
               size="large"
               className="flex-1 sm:flex-none min-w-35 flex items-center justify-center gap-2"
-              onClick={() => router.push("/start")}
+              onClick={() => router.push("/")}
             >
               <MdHome size={22} />
               الصفحة الرئيسية
