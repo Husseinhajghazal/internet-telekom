@@ -35,14 +35,16 @@ const Footer = () => {
             {/* logo & about */}
             <div className="md:col-span-1">
               <Link href="/" className="inline-block mb-4">
-                <div className="relative w-[170px] h-[48px]">
-                  <Image
-                    src="/full-logo.png"
-                    alt="إنترنت تيليكوم"
-                    fill
-                    sizes="170px"
-                    className="object-contain brightness-110"
-                  />
+                <div className="bg-white px-5 py-2.5 rounded-2xl shadow-lg flex items-center justify-center">
+                  <div className="relative w-[160px] h-[44px]">
+                    <Image
+                      src="/full-logo.png"
+                      alt="إنترنت تيليكوم"
+                      fill
+                      sizes="160px"
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
               </Link>
               <p className="text-white/40 text-sm leading-relaxed max-w-sm">
