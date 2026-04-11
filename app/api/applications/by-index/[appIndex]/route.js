@@ -49,7 +49,7 @@ export async function GET(request, { params }) {
     }
 
     const application = await prisma.application.findUnique({
-      where: { appIndex },
+      where: { appIndex, isDeleted: false },
       select: applicationSelect,
     });
 

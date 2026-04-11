@@ -7,11 +7,13 @@ import { FiList, FiChevronRight, FiChevronLeft, FiStar, FiUser } from "react-ico
 import { MdDelete, MdPerson } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 import { useRouter } from "next/navigation";
+import AdminConfirmDialog from "./AdminConfirmDialog";
 
 export default function AdminSidebar({ userRole, userName }) {
   // Read state from localStorage if available, defaulting to false, doing this in useEffect to avoid hydration mismatch
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -120,7 +122,7 @@ export default function AdminSidebar({ userRole, userName }) {
 
       <div className={`p-4 border-t border-gray-100 shrink-0 transition-all duration-500`}>
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutConfirm(true)}
           title={isCollapsed ? "تسجيل الخروج" : undefined}
           className={`group relative flex items-center py-4 text-red-500 font-bold rounded-2xl hover:bg-red-50 hover:text-red-600 transition-all duration-300 overflow-hidden ${
             isCollapsed ? "px-0 justify-center w-full" : "px-5 w-full"
@@ -139,6 +141,17 @@ export default function AdminSidebar({ userRole, userName }) {
           </div>
         </button>
       </div>
+
+      <AdminConfirmDialog
+        open={showLogoutConfirm}
+        kind="reject"
+        title="تسجيل الخروج"
+        message="هل أنت متأكد أنك تريد تسجيل الخروج من لوحة التحكم؟"
+        confirmLabel="نعم، تسجيل الخروج"
+        cancelLabel="إلغاء"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </aside>
   );
 }

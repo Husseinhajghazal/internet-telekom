@@ -55,6 +55,7 @@ model Application {
   delayedUntil        DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  lastUpdatedBy       String?
   isDeleted           Boolean           @default(false)
   notes               Note[]
   Review              Review?

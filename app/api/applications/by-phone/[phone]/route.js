@@ -49,7 +49,7 @@ export async function GET(request, { params }) {
 
     // Get all applications for this phone, newest first
     const applications = await prisma.application.findMany({
-      where: { phone: formattedPhone },
+      where: { phone: formattedPhone, isDeleted: false },
       select: applicationSelect,
       orderBy: { createdAt: "desc" },
     });

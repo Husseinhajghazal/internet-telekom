@@ -22,7 +22,6 @@ const HeroSection = () => {
       <div className="absolute inset-0">
         {/* main gradient */}
         <div className="absolute inset-0 bg-gradient-to-bl from-[#050d1a] via-[#0c2240] to-[#0f3a6e]" />
-
         {/* animated mesh */}
         <div
           className="absolute inset-0 opacity-30"
@@ -52,7 +51,7 @@ const HeroSection = () => {
       <HeroBackground />
 
       {/* ── content ── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 w-full pt-24 pb-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 w-full pt-28 pb-12">
         <div className="flex flex-col items-center text-center">
           {/* badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-8 mt-4 md:mt-0">

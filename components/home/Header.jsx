@@ -6,8 +6,8 @@ import Link from "next/link";
 import {
   FaBars,
   FaTimes,
-  FaChevronLeft,
 } from "react-icons/fa";
+import { IoIosSearch } from "react-icons/io";
 
 const navLinks = [
   { label: "الرئيسية", href: "#hero" },
@@ -66,16 +66,16 @@ const Header = () => {
   return (
     <header
       id="main-header"
-      className={`absolute top-0 right-0 left-0 z-50 transition-all duration-500 bg-transparent`}
+      className={`absolute top-0 right-0 left-0 z-50 transition-all duration-500 bg-white rounded-b-4xl md:rounded-full md:top-4 md:max-w-7xl mx-auto`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px]">
         {/* ── logo ── */}
         <Link href="/" className="flex-shrink-0 relative">
           <Image
-            src="/logo.png"
+            src="/full-logo.png"
             alt="إنترنت تيليكوم"
-            width={50}
-            height={100}
+            width={150}
+            height={75}
             className="object-contain"
             priority
           />
@@ -92,13 +92,13 @@ const Header = () => {
                 onClick={(e) => scrollTo(e, link.href)}
                 className={`relative px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 z-10 ${
                   isActive
-                    ? "text-[#18a2e3]"
-                    : "text-white/90 hover:text-white"
+                    ? "text-blue-500"
+                    : "text-black hover:text-blue-500"
                 }`}
               >
                 {link.label}
                 {isActive && (
-                  <span className="absolute inset-0 rounded-full bg-[#18a2e3]/10 -z-10 animate-fade-in" />
+                  <span className="absolute inset-0 rounded-full bg-blue-500/10 -z-10 animate-fade-in" />
                 )}
               </a>
             );
@@ -107,11 +107,11 @@ const Header = () => {
 
         {/* ── desktop CTA ── */}
         <Link
-          href="/panel"
-          className={`hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 group bg-white/15 backdrop-blur-sm text-white border border-white/25 hover:bg-white/25`}
+          href="/inquiry"
+          className={`hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 group bg-linear-to-l from-[#f36802] to-[#ffb245] text-white border`}
         >
-          لوحة التحكم
-          <FaChevronLeft className="text-xs transition-transform duration-300 group-hover:-translate-x-1" />
+          استعلم عن طلبك
+          <IoIosSearch className="text-lg transition-transform duration-300 group-hover:-translate-x-1" />
         </Link>
 
         {/* ── mobile hamburger ── */}
@@ -120,7 +120,7 @@ const Header = () => {
           className={`lg:hidden relative z-50 w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${
             mobileOpen
               ? "bg-red-500/10 text-red-500"
-              : "text-white hover:bg-white/10"
+              : "text-black hover:bg-black/10"
           }`}
           aria-label="القائمة"
         >
@@ -168,12 +168,12 @@ const Header = () => {
 
             <div className="mt-4 pt-4 border-t border-gray-100">
               <Link
-                href="/panel"
+                href="/inquiry"
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-l from-[#f36802] to-[#ffb245] text-white font-bold shadow-lg shadow-[#f36802]/20"
               >
-                لوحة التحكم
-                <FaChevronLeft className="text-xs" />
+                استعلم عن طلبك
+                <IoIosSearch className="text-lg" />
               </Link>
             </div>
           </div>

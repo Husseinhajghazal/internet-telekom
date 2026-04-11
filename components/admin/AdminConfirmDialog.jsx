@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { MdCancel, MdCheckCircle, MdWarning, MdRestore } from "react-icons/md";
 import Button from "../Button";
 
@@ -20,6 +21,12 @@ export default function AdminConfirmDialog({
   onConfirm,
   onCancel,
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
@@ -29,7 +36,7 @@ export default function AdminConfirmDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onCancel]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const isReject = kind === "reject";
   const isComplete = kind === "complete";
@@ -37,7 +44,7 @@ export default function AdminConfirmDialog({
   const isDelete = kind === "delete";
   const isRestore = kind === "restore";
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
@@ -134,6 +141,7 @@ export default function AdminConfirmDialog({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

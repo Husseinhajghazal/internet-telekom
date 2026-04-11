@@ -5,6 +5,8 @@ import {
   FaFacebookF,
   FaWhatsapp,
   FaEnvelope,
+  FaInstagram,
+  FaTiktok,
   FaHeart,
 } from "react-icons/fa";
 
@@ -24,18 +26,17 @@ const Footer = () => {
         >
           <path
             d="M0 40C360 100 720 0 1080 40C1260 60 1380 80 1440 40V100H0V40Z"
-            fill="#0a1628"
+            fill="#1B2B3A"
           />
         </svg>
       </div>
 
-      <div className="bg-[#0a1628] pb-8 -mt-1">
+      <div className="bg-[#1B2B3A] pb-8 -mt-1">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 pb-10 border-b border-white/10">
             {/* logo & about */}
             <div className="md:col-span-1">
               <Link href="/" className="inline-block mb-4">
-                <div className="bg-white px-5 py-2.5 rounded-2xl shadow-lg flex items-center justify-center">
                   <div className="relative w-[160px] h-[44px]">
                     <Image
                       src="/full-logo.png"
@@ -45,7 +46,6 @@ const Footer = () => {
                       className="object-contain"
                     />
                   </div>
-                </div>
               </Link>
               <p className="text-white/40 text-sm leading-relaxed max-w-sm">
                 منذ 2015 نعمل على توفير أفضل خدمات الإنترنت المنزلي في تركيا
@@ -103,9 +103,25 @@ const Footer = () => {
                   href="https://www.facebook.com/internettelekom.net.tr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:bg-[#1877f2]/20 hover:text-[#1877f2] transition-all duration-300"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#1877f2]/20 text-[#1877f2] transition-all duration-300"
                 >
                   <FaFacebookF size={16} />
+                </a>
+                <a
+                  href="https://www.instagram.com/internettelekom.net.tr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-500/20 text-pink-500 transition-all duration-300"
+                >
+                  <FaInstagram size={16} />
+                </a>
+                <a
+                  href="https://www.tiktok.com/@internettelekom.net.tr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-black/20 text-black transition-all duration-300"
+                >
+                  <FaTiktok size={16} />
                 </a>
               </div>
             </div>

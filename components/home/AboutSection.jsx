@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import {
   FaMapMarkerAlt,
@@ -98,12 +99,15 @@ const AboutSection = () => {
 
               <div className="absolute -bottom-6 -right-4 bg-white rounded-2xl p-4 shadow-lg shadow-black/[0.06] border border-gray-100 animate-float-icon" style={{ animationDelay: "1s" }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                    <FaCalendarAlt size={16} className="text-emerald-500" />
-                  </div>
                   <div>
-                    <div className="text-lg font-black text-gray-900">+10</div>
-                    <div className="text-xs text-gray-400">سنوات خبرة</div>
+                    <Image
+                      src="/full-logo.png"
+                      alt="إنترنت تيليكوم"
+                      width={150}
+                      height={75}
+                      className="object-contain"
+                      priority
+                    />
                   </div>
                 </div>
               </div>

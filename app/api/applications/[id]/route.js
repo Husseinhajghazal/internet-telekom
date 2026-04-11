@@ -48,7 +48,7 @@ export async function PATCH(request, { params }) {
         newNationalNumber: formData.get("newNationalNumber"),
       });
 
-      const newInvoiceFiles = formData.getAll("invoiceFiles");
+      const newInvoiceFiles = formData.getAll("invoiceFiles[]").length > 0 ? formData.getAll("invoiceFiles[]") : formData.getAll("invoiceFiles");
       const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
       let allUrls = existingUrlsStr.split(",").filter(Boolean);
 

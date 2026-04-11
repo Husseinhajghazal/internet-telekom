@@ -242,7 +242,7 @@ export default function EditApplicationPage() {
       // Append saved urls and new files
       payload.append("existingInvoiceFileUrls", formData.invoiceFileUrls.join(","));
       formData.invoiceFiles.forEach((file) => {
-        payload.append("invoiceFiles", file);
+        payload.append("invoiceFiles[]", file);
       });
 
       const url = id === "new" ? "/api/panel/applications" : `/api/panel/applications/${id}`;

@@ -25,52 +25,122 @@ function buildWhere(searchParams) {
 
   let dateFrom = searchParams.get("dateFrom")?.trim();
   let dateTo = searchParams.get("dateTo")?.trim();
+
   if (dateFrom && dateTo && dateFrom > dateTo) {
     const s = dateFrom;
     dateFrom = dateTo;
     dateTo = s;
   }
+
   if (dateFrom || dateTo) {
     const dateFieldParam = searchParams.get("dateField")?.trim();
-    const VALID_DATE_FIELDS = ["createdAt", "completedAt", "delayedUntil", "updatedAt"];
-    const targetDateField = VALID_DATE_FIELDS.includes(dateFieldParam) ? dateFieldParam : "createdAt";
+    const VALID_DATE_FIELDS = [
+      "createdAt",
+      "completedAt",
+      "delayedUntil",
+      "updatedAt",
+    ];
+
+    const targetDateField = VALID_DATE_FIELDS.includes(dateFieldParam)
+      ? dateFieldParam
+      : "createdAt";
 
     const dateCondition = {};
+
     if (dateFrom) {
       const d = new Date(`${dateFrom}T00:00:00.000+03:00`);
-      if (!Number.isNaN(d.getTime())) dateCondition.gte = d;
+      if (!Number.isNaN(d.getTime())) {
+        dateCondition.gte = d;
+      }
     }
+
     if (dateTo) {
       const d = new Date(`${dateTo}T23:59:59.999+03:00`);
-      if (!Number.isNaN(d.getTime())) dateCondition.lte = d;
+      if (!Number.isNaN(d.getTime())) {
+        dateCondition.lte = d;
+      }
     }
+
     if (Object.keys(dateCondition).length) {
       andConditions.push({ [targetDateField]: dateCondition });
     }
   }
 
   const q = searchParams.get("q")?.trim();
+
   if (q) {
     const digits = q.replace(/\D/g, "");
+
     const orCond = [
       { name: { contains: q, mode: "insensitive" } },
       { newName: { contains: q, mode: "insensitive" } },
-      { phone: { contains: formatPhoneNumber(q), mode: "insensitive" } },
-      { phone2: { contains: formatPhoneNumber(q), mode: "insensitive" } },
-      { newPhone: { contains: formatPhoneNumber(q), mode: "insensitive" } },
+      { phone: { contains: q, mode: "insensitive" } },
+      { phone2: { contains: q, mode: "insensitive" } },
+      { newPhone: { contains: q, mode: "insensitive" } },
     ];
-    // `appIndex` is an integer, so we can only do an exact match here.
+
+    // appIndex exact match
     if (digits.length > 0) {
       const idx = Number(digits);
-      if (Number.isInteger(idx) && idx > 0) {
+
+      if (
+        Number.isInteger(idx) &&
+        idx > 0 &&
+        idx <= 2147483647
+      ) {
         orCond.push({ appIndex: idx });
       }
     }
-    if (digits.length >= 3) {
-      orCond.push({ phone: { contains: digits } });
-      orCond.push({ phone2: { contains: digits } });
-      orCond.push({ newPhone: { contains: digits } });
+
+    // Phone variations
+    const digitPositions = [0, 3, 4, 5, 8, 9, 10, 12, 13, 15, 16];
+    const templateStr = "0 (XXX) XXX XX XX";
+
+    const variations = new Set();
+
+    // raw digits
+    variations.add(digits);
+
+    // formatted version
+    const formatted = formatPhoneNumber(digits);
+    if (formatted && formatted.length > 6) {
+      variations.add(formatted);
     }
+
+    // sliding window variations
+    for (let startSlot = 0; startSlot <= 11 - digits.length; startSlot++) {
+      let result = "";
+      let dIdx = 0;
+
+      const startCharIdx = digitPositions[startSlot];
+      const endCharIdx =
+        digitPositions[startSlot + digits.length - 1];
+
+      for (let i = startCharIdx; i <= endCharIdx; i++) {
+        if (digitPositions.includes(i)) {
+          result += digits[dIdx++];
+        } else {
+          result += templateStr[i];
+        }
+      }
+
+      variations.add(result);
+    }
+
+    variations.forEach((val) => {
+      if (val.length >= 3) {
+        orCond.push({
+          phone: { contains: val, mode: "insensitive" },
+        });
+        orCond.push({
+          phone2: { contains: val, mode: "insensitive" },
+        });
+        orCond.push({
+          newPhone: { contains: val, mode: "insensitive" },
+        });
+      }
+    });
+
     andConditions.push({ OR: orCond });
   }
 
@@ -79,6 +149,7 @@ function buildWhere(searchParams) {
 
   if (andConditions.length === 0) return {};
   if (andConditions.length === 1) return andConditions[0];
+
   return { AND: andConditions };
 }
 
@@ -154,7 +225,8 @@ async function getNextAppIndex() {
 }
 
 export async function POST(request) {
-  if (!(await isAdminAuthenticated())) {
+  const sessionUser = await isAdminAuthenticated();
+  if (!sessionUser) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
@@ -172,7 +244,7 @@ export async function POST(request) {
         }
       }
 
-      const newInvoiceFiles = formData.getAll("invoiceFiles");
+      const newInvoiceFiles = formData.getAll("invoiceFiles[]").length > 0 ? formData.getAll("invoiceFiles[]") : formData.getAll("invoiceFiles");
       const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
       let allUrls = existingUrlsStr.split(",").filter(Boolean);
 
@@ -217,6 +289,7 @@ export async function POST(request) {
         ? new Date(body.delayedUntil)
         : null,
       step: 6,
+      lastUpdatedBy: sessionUser.fullName,
     };
 
     if (invoiceFileUrl !== undefined) {

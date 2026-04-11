@@ -105,50 +105,77 @@ const FlippingCard = ({
           </div>
         </div>
 
-        {/* === BACK FACE === */}
-        <div className={`col-start-1 row-start-1 relative flex flex-col h-full rounded-3xl border-2 border-transparent ${palette.backGradient} [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-hidden shadow-xl`}>
-          {/* Background Shadow Icon  */}
-          <div className="absolute -left-12 -bottom-6 pointer-events-none transform rotate-12 z-0 opacity-10">
-            <SpeedIcon className="w-56 h-56 text-white" />
+        {/* === BACK FACE (Dark Premium & Neon) === */}
+        <div className="col-start-1 row-start-1 relative flex flex-col h-full rounded-3xl border border-gray-800 bg-[#0B1120] [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-hidden shadow-2xl">
+          
+          {/* Subtle colored glow from top */}
+          <div className={`absolute top-0 left-0 w-full h-1/2 opacity-20 bg-gradient-to-b ${palette.backGradient.replace('bg-gradient-to-br ', '') || palette.backGradient} blur-3xl pointer-events-none`} />
+
+          {/* Large wireframe/opacity icon in center */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-[0.03]">
+            <SpeedIcon className="w-80 h-80 text-white" />
           </div>
 
-          {/* Compact Header */}
-          <div className="px-5 pt-5 pb-3 relative z-10 border-b border-white/20 flex justify-between items-center bg-black/10">
-            <div className="flex flex-col items-start justify-center">
-              <span className="flex items-baseline justify-start gap-1 text-2xl font-black tracking-tighter text-white">
-                <span className="text-base font-bold text-white/70 uppercase">Mbps</span>
-                <span>{speed}</span>
-              </span>
-              <span className="text-lg font-extrabold text-white flex items-center gap-1">
-                <span className="text-[12px] text-white/70 font-bold tracking-normal uppercase">شهرياً / TL</span>
-                {price}
-              </span>
+          {/* Premium Header */}
+          <div className="px-6 pt-10 pb-4 relative z-10 text-center flex flex-col items-center">
+            {/* Glowing Icon Container */}
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center bg-gray-900 border border-gray-700/50 mb-5 shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)] relative`}>
+              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${palette.textGradient} opacity-20 blur-md`} />
+              <SpeedIcon className="text-3xl text-white relative z-10" />
             </div>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-white/20 text-white">
-              <SpeedIcon className="text-xl" />
+            
+            <h4 className="text-white font-black text-5xl tracking-tighter mb-1 relative flex items-baseline gap-1.5">
+              {speed} 
+              <span className="text-sm text-gray-500 uppercase tracking-widest font-bold">Mbps</span>
+            </h4>
+            
+            <div className="flex items-center justify-center gap-1.5 mt-2">
+              <span className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
+                {price} 
+              </span>
+              <span className="text-gray-500 text-xs">TL / شهرياً</span>
             </div>
+
+            {title && (
+              <div className="mt-4">
+                <span className="text-[11px] font-bold text-gray-400 bg-gray-800/80 border border-gray-700/50 px-3 py-1.5 rounded-full tracking-wide">
+                  {title}
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Features List */}
-          <div className="px-5 pb-6 pt-4 relative z-10 flex-1 flex flex-col justify-start">
-            <ul className="space-y-4 text-sm font-semibold text-white leading-relaxed">
+          {/* Features */}
+          <div className="px-6 pb-6 relative z-10 flex-1 flex flex-col justify-start">
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-700 to-transparent mb-5 opacity-50" />
+            
+            <ul className="space-y-4 flex-1 mt-1">
               {features.map((feature, i) => (
-                <li key={i} className="flex items-start justify-start gap-3">
-                  <MdCheckCircle className="shrink-0 text-lg mt-0.5 text-white" />
-                  <span className="text-white/90">{feature}</span>
+                <li key={i} className="flex items-start gap-4 group/feature">
+                  <div className={`mt-0.5 rounded-full w-5 h-5 flex items-center justify-center shrink-0 bg-gradient-to-br ${palette.textGradient} shadow-[0_0_10px_rgba(255,255,255,0.1)] group-hover/feature:scale-110 transition-transform duration-300`}>
+                    <MdCheckCircle className="text-white text-xs" />
+                  </div>
+                  <span className="text-gray-400 text-sm font-medium group-hover/feature:text-gray-200 transition-colors leading-snug">{feature}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* CTA button on back */}
-          <div className="px-5 pb-5 relative z-10">
+          {/* CTA Footer: Magic Gradient Button */}
+          <div className="p-5 relative z-10 w-full mt-auto bg-gradient-to-t from-[#0B1120] via-[#0B1120] to-transparent">
             <Link
               href="/internet-basvuru-formu"
               onClick={(e) => e.stopPropagation()}
-              className="block w-full py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white text-center font-bold text-sm transition-all duration-300 backdrop-blur-sm"
+              className={`group/btn relative w-full flex items-center justify-center rounded-2xl overflow-hidden ${palette.backGradient} transition-transform duration-300 hover:scale-[1.03] active:scale-95 p-[1.5px] shadow-[0_0_15px_-5px_rgba(255,255,255,0.2)]`}
             >
-              سجّل الآن ←
+              <div className="w-full bg-[#0B1120] px-4 py-3.5 rounded-[14px] flex items-center justify-center gap-2 group-hover/btn:bg-transparent transition-all duration-300">
+                <span className="text-white font-extrabold text-sm transition-transform duration-300 group-hover/btn:-translate-x-1">
+                  سجّل الآن واشترك
+                </span>
+                <span className="text-white font-bold transition-transform duration-300 group-hover/btn:-translate-x-1">
+                  ←
+                </span>
+              </div>
             </Link>
           </div>
         </div>

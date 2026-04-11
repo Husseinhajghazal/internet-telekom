@@ -65,6 +65,8 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: "لا يوجد بيانات لتحديثها" }, { status: 400 });
     }
 
+    data.lastUpdatedBy = sessionUser.fullName;
+
     const updated = await prisma.application.update({
       where: { id },
       data,
@@ -111,7 +113,8 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
-  if (!(await isAdminAuthenticated())) {
+  const sessionUser = await isAdminAuthenticated();
+  if (!sessionUser) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
@@ -135,7 +138,7 @@ export async function PUT(request, { params }) {
         }
       }
 
-      const newInvoiceFiles = formData.getAll("invoiceFiles");
+      const newInvoiceFiles = formData.getAll("invoiceFiles[]").length > 0 ? formData.getAll("invoiceFiles[]") : formData.getAll("invoiceFiles");
       const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
       let allUrls = existingUrlsStr.split(",").filter(Boolean);
 
@@ -190,6 +193,7 @@ export async function PUT(request, { params }) {
       delayedUntil: body.status === "DELAYED" && body.delayedUntil
         ? new Date(body.delayedUntil)
         : null,
+      lastUpdatedBy: sessionUser.fullName,
     };
 
     if (invoiceFileUrl !== undefined && contentType.includes("multipart/form-data")) {

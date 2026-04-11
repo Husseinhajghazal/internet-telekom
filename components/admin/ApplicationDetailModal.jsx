@@ -286,6 +286,7 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                 {application.note}
               </Row>
             ) : null}
+            
             <Row
               label="الصور المرفقة"
               className="sm:col-span-2"
@@ -309,6 +310,12 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                 "—"
               )}
             </Row>
+
+            {application.lastUpdatedBy && (
+              <Row label="أخر تحديث بواسطة" icon={<MdPerson size={18} />} className="sm:col-span-2">
+                <span className="font-bold text-cyan-800">{application.lastUpdatedBy}</span>
+              </Row>
+            )}
           </div>
         </div>
 

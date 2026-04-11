@@ -276,7 +276,7 @@ const useApplicationForm = () => {
       formData.append("lastInvoiceAmount", values.lastInvoiceAmount || "");
       if (values.invoiceFiles && values.invoiceFiles.length > 0) {
         values.invoiceFiles.forEach((file) => {
-          formData.append("invoiceFiles", file);
+          formData.append("invoiceFiles[]", file);
         });
       }
       if (values.invoiceFileUrls) {
