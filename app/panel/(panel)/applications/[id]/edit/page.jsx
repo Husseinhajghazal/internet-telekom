@@ -741,14 +741,13 @@ export default function EditApplicationPage() {
             <div className="flex items-center justify-between">
               <label className={labelClass + " !mb-0"}>الصور المرفقة</label>
               {(formData.invoiceFiles.length + formData.invoiceFileUrls.length) < 5 && (
-                <button
-                  type="button"
-                  onClick={() => document.getElementById("admin-invoice-upload").click()}
-                  className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition"
+                <label
+                  htmlFor="admin-invoice-upload"
+                  className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                 >
                   <TbFileInvoiceFilled size={18} />
                   إضافة صورة
-                </button>
+                </label>
               )}
             </div>
             

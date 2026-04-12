@@ -885,8 +885,9 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
 
             {/* Dropzone for more files */}
             {canAddMore && (
-              <div
-                className="relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer group border-gray-300 hover:border-[#18a2e3] hover:bg-blue-50"
+              <label
+                htmlFor="invoice-upload"
+                className="block relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer group border-gray-300 hover:border-[#18a2e3] hover:bg-blue-50"
                 onDragOver={(e) => {
                   e.preventDefault();
                   e.currentTarget.classList.add(
@@ -917,11 +918,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   const newFiles = droppedFiles.slice(0, availableSlots);
 
                   setFieldValue("invoiceFiles", [...invoiceFiles, ...newFiles]);
-                }}
-                onClick={() => {
-                  const input = document.getElementById("invoice-upload");
-                  input.value = ""; // Reset so re-selecting the same file triggers onChange
-                  input.click();
                 }}
               >
                 <div className="space-y-4">
@@ -959,7 +955,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     }}
                   />
                 </div>
-              </div>
+              </label>
             )}
           </div>
         )}
