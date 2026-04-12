@@ -902,7 +902,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     "bg-blue-50",
                   );
                 }}
-                onDrop={(e) => {
+                onDrop={async (e) => {
                   e.preventDefault();
                   e.currentTarget.classList.remove(
                     "border-[#18a2e3]",
@@ -917,7 +917,12 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                   const availableSlots = 5 - totalImages;
                   const newFiles = droppedFiles.slice(0, availableSlots);
 
-                  setFieldValue("invoiceFiles", [...invoiceFiles, ...newFiles]);
+                  const { compressImage } = await import("../../utils/general");
+                  const compressedFiles = await Promise.all(
+                    newFiles.map(file => compressImage(file))
+                  );
+
+                  setFieldValue("invoiceFiles", [...invoiceFiles, ...compressedFiles]);
                 }}
               >
                 <div className="space-y-4">
@@ -941,14 +946,20 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     multiple
                     className="hidden"
                     id="invoice-upload"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const selected = Array.from(e.target.files);
                       if (selected.length > 0) {
                         const availableSlots = 5 - totalImages;
                         const newFiles = selected.slice(0, availableSlots);
+
+                        const { compressImage } = await import("../../utils/general");
+                        const compressedFiles = await Promise.all(
+                          newFiles.map(file => compressImage(file))
+                        );
+
                         setFieldValue("invoiceFiles", [
                           ...invoiceFiles,
-                          ...newFiles,
+                          ...compressedFiles,
                         ]);
                       }
                       e.target.value = ""; // Reset input to allow selecting the same file again if removed

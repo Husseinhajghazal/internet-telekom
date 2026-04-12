@@ -757,13 +757,19 @@ export default function EditApplicationPage() {
               accept="image/*"
               multiple
               className="hidden"
-              onChange={(e) => {
+              onChange={async (e) => {
                 let newFiles = Array.from(e.target.files);
                 const currentTotal = formData.invoiceFiles.length + formData.invoiceFileUrls.length;
                 const allowed = 5 - currentTotal;
                 if (allowed <= 0) return;
                 if (newFiles.length > allowed) newFiles = newFiles.slice(0, allowed);
-                setFormData(prev => ({ ...prev, invoiceFiles: [...prev.invoiceFiles, ...newFiles] }));
+                
+                const { compressImage } = await import("@/utils/general");
+                const compressedFiles = await Promise.all(
+                  newFiles.map(file => compressImage(file))
+                );
+
+                setFormData(prev => ({ ...prev, invoiceFiles: [...prev.invoiceFiles, ...compressedFiles] }));
                 e.target.value = "";
               }}
             />
