@@ -36,7 +36,7 @@ const SuccessStep = ({ submissionInfo }) => {
 
           {/* Success Message */}
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-800">
               تم إستلام طلبك بنجاح!
             </h1>
             <p className="text-xl text-gray-600">
