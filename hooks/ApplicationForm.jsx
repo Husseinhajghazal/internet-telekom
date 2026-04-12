@@ -157,13 +157,6 @@ const useApplicationForm = () => {
         values?.contractPreference === "with"
           ? Yup.string().required("يرجى اختيار الباقة المناسبة")
           : Yup.string(),
-
-      internetCompany:
-        step === 6 &&
-        (values?.serviceType === "services" ||
-          values?.serviceType === "upgrade")
-          ? Yup.string().required("يرجى كتابة شركة الإنترنت")
-          : Yup.string(),
     });
 
   const validate = async (values) => {
