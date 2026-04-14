@@ -11,10 +11,10 @@ import { IoIosSearch } from "react-icons/io";
 
 const navLinks = [
   { label: "الرئيسية", href: "#hero" },
+  { label: "الباقات", href: "#packages" },
   { label: "من نحن", href: "#about" },
   { label: "خدماتنا", href: "#services" },
   { label: "ميزاتنا", href: "#features" },
-  { label: "الباقات", href: "#packages" },
   { label: "التقييمات", href: "#reviews" },
 ];
 
@@ -66,9 +66,9 @@ const Header = () => {
   return (
     <header
       id="main-header"
-      className={`absolute top-0 right-0 left-0 z-50 transition-all duration-500 bg-white rounded-b-4xl md:rounded-full md:top-4 md:max-w-7xl mx-auto`}
+      className={`absolute top-0 right-0 left-0 z-50 transition-all duration-500 md:top-4 md:max-w-7xl mx-auto`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px]">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px] bg-[#ebebeb] rounded-b-4xl md:rounded-full">
         {/* ── logo ── */}
         <Link href="/" className="flex-shrink-0 relative">
           <Image
@@ -108,7 +108,7 @@ const Header = () => {
         {/* ── desktop CTA ── */}
         <Link
           href="/inquiry"
-          className={`hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 group bg-linear-to-l from-[#f36802] to-[#ffb245] text-white border`}
+          className={`hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 group bg-linear-to-l from-[#f36802] to-[#ffb245] text-white`}
         >
           استعلم عن طلبك
           <IoIosSearch className="text-lg transition-transform duration-300 group-hover:-translate-x-1" />

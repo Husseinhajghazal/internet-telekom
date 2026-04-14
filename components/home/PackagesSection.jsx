@@ -131,13 +131,6 @@ const PackagesSection = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="text-center mt-12"
         >
-          <Link
-            href="/internet-basvuru-formu"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl border-[2px] border-[#ffb245] text-[#ffb245] font-bold text-lg hover:scale-105 transition-all duration-300"
-          >
-            سجّل الآن واحصل على باقتك
-            <FaArrowLeft className="text-sm" />
-          </Link>
         </motion.div>
       </div>
     </section>

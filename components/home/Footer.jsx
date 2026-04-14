@@ -8,6 +8,7 @@ import {
   FaInstagram,
   FaTiktok,
   FaHeart,
+  FaPhoneAlt
 } from "react-icons/fa";
 
 const Footer = () => {
@@ -47,7 +48,7 @@ const Footer = () => {
                     />
                   </div>
               </Link>
-              <p className="text-white/40 text-sm leading-relaxed max-w-sm">
+              <p className="text-[#ebebeb] text-sm leading-relaxed max-w-sm">
                 منذ 2015 نعمل على توفير أفضل خدمات الإنترنت المنزلي في تركيا
                 للمجتمع العربي. نقدم حلولاً متكاملة بمعايير عالية وأسعار منافسة.
               </p>
@@ -61,30 +62,19 @@ const Footer = () => {
               <ul className="space-y-3">
                 <li>
                   <a
-                    href="https://wa.me/905387345820"
+                    href="tel:05387345820"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-white/50 hover:text-[#25d366] transition-colors duration-300 text-sm"
+                    className="flex items-center gap-3 text-[#ebebeb] hover:text-[#25d366] transition-colors duration-300 text-sm"
                   >
-                    <FaWhatsapp size={16} />
+                    <FaPhoneAlt size={16} />
                     <span dir="ltr">+90 538 734 58 20</span>
                   </a>
                 </li>
                 <li>
                   <a
-                    href="https://wa.me/902126112122"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-white/50 hover:text-[#25d366] transition-colors duration-300 text-sm"
-                  >
-                    <FaWhatsapp size={16} />
-                    <span dir="ltr">+90 212 611 21 22</span>
-                  </a>
-                </li>
-                <li>
-                  <a
                     href="mailto:internet.telekom.merkez@gmail.com"
-                    className="flex items-center gap-3 text-white/50 hover:text-[#18a2e3] transition-colors duration-300 text-sm"
+                    className="flex items-center gap-3 text-[#ebebeb] hover:text-[#18a2e3] transition-colors duration-300 text-sm"
                   >
                     <FaEnvelope size={14} />
                     <span>internet.telekom.merkez@gmail.com</span>
@@ -103,25 +93,33 @@ const Footer = () => {
                   href="https://www.facebook.com/internettelekom.net.tr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#1877f2]/20 text-[#1877f2] transition-all duration-300"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-[#1877f2] transition-all duration-300"
                 >
-                  <FaFacebookF size={16} />
+                  <FaFacebookF size={20} />
                 </a>
                 <a
                   href="https://www.instagram.com/internettelekom.net.tr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-500/20 text-pink-500 transition-all duration-300"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-pink-500 transition-all duration-300"
                 >
-                  <FaInstagram size={16} />
+                  <FaInstagram size={20} />
                 </a>
                 <a
                   href="https://www.tiktok.com/@internettelekom.net.tr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-black/20 text-black transition-all duration-300"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-black transition-all duration-300"
                 >
-                  <FaTiktok size={16} />
+                  <FaTiktok size={20} />
+                </a>
+                <a
+                  href="https://wa.me/902126112122"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-[#25d366] transition-all duration-300"
+                >
+                  <FaWhatsapp size={20} />
                 </a>
               </div>
             </div>
@@ -129,10 +127,10 @@ const Footer = () => {
 
           {/* bottom copyright */}
           <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
-            <p className="text-white/30 text-xs">
+            <p className="text-[#ebebeb] text-xs">
               © {currentYear} إنترنت تيليكوم. جميع الحقوق محفوظة.
             </p>
-            <p className="text-white/20 text-xs flex items-center gap-1">
+            <p className="text-[#ebebeb] text-xs flex items-center gap-1">
               صُنع بـ <FaHeart size={10} className="text-red-500/60" /> في إسطنبول
             </p>
           </div>

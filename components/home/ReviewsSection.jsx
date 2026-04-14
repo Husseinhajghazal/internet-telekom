@@ -84,7 +84,7 @@ const ReviewsSection = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
             ماذا يقول{" "}
             <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
-              عملاؤنا عنّا
+              عملاؤنا عن شركتنا
             </span>
           </h2>
           <p className="text-gray-500 md:text-lg max-w-xl mx-auto">

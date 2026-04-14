@@ -33,7 +33,7 @@ const ReviewCard = ({ review }) => (
 
       {/* user info */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-bl from-[#18a2e3] to-[#5898b7] flex items-center justify-center text-white font-bold text-sm">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-bl from-[#f36802] to-[#ffb245] flex items-center justify-center text-white font-bold text-sm">
           {review.name.charAt(0)}
         </div>
         <div>

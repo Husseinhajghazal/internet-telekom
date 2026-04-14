@@ -18,9 +18,11 @@
     "lottie-web": "^5.12.2",
     "moment": "^2.30.1",
     "next": "16.1.7",
+    "prop-types": "^15.8.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-icons": "^5.6.0",
+    "react-simple-maps": "^3.0.0",
     "turkey_province_image": "^3.3.0",
     "xlsx": "^0.18.5",
     "yup": "^1.7.1"

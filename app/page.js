@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import Header from "@/components/home/Header";
 import HeroSection from "@/components/home/HeroSection";
 
+const StatsSection = dynamic(() => import("@/components/home/StatsSection"));
 const AboutSection = dynamic(() => import("@/components/home/AboutSection"));
 const ServicesSection = dynamic(() => import("@/components/home/ServicesSection"));
 const FeaturesSection = dynamic(() => import("@/components/home/FeaturesSection"));
@@ -14,10 +15,11 @@ export default function Home() {
     <main className="min-h-screen">
       <Header />
       <HeroSection />
+      <StatsSection />
+      <PackagesSection />
       <AboutSection />
       <ServicesSection />
       <FeaturesSection />
-      <PackagesSection />
       <ReviewsSection />
       <Footer />
     </main>

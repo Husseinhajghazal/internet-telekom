@@ -1,20 +1,20 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import Image from "next/image";
 import { motion, useInView } from "framer-motion";
+import { FaGlobeAmericas } from "react-icons/fa";
 import {
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-  FaUsers,
-  FaGlobeAmericas,
-} from "react-icons/fa";
+  HiCalendarDays,
+  HiBuildingOffice2,
+} from "react-icons/hi2";
+import { FcManager } from "react-icons/fc";
+import { SiTurkishairlines } from "react-icons/si";
 
 const highlights = [
-  { icon: FaCalendarAlt, label: "تأسست عام", value: "01/05/2015" },
-  { icon: FaMapMarkerAlt, label: "المقر الرئيسي", value: "إسطنبول" },
-  { icon: FaGlobeAmericas, label: "التغطية", value: "كامل تركيا" },
-  { icon: FaUsers, label: "المدير العام", value: "أ. مهند التاجر" },
+  { icon: HiCalendarDays, label: "تأسست عام", value: "01/05/2015" },
+  { icon: HiBuildingOffice2, label: "المقر الرئيسي", value: "إسطنبول" },
+  { icon: SiTurkishairlines, label: "التغطية", value: "كامل تركيا" },
+  { icon: FcManager, label: "المدير العام", value: "أ. مهند التاجر" },
 ];
 
 const AboutSection = () => {
@@ -83,34 +83,6 @@ const AboutSection = () => {
                   )}
                 </div>
               </div>
-
-              {/* floating stats cards */}
-              <div className="absolute -top-6 -left-4 bg-white rounded-2xl p-4 shadow-lg shadow-black/[0.06] border border-gray-100 animate-float-icon">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#18a2e3]/10 flex items-center justify-center">
-                    <FaUsers size={16} className="text-[#18a2e3]" />
-                  </div>
-                  <div>
-                    <div className="text-lg font-black text-gray-900">+50K</div>
-                    <div className="text-xs text-gray-400">عميل سعيد</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-6 -right-4 bg-white rounded-2xl p-4 shadow-lg shadow-black/[0.06] border border-gray-100 animate-float-icon" style={{ animationDelay: "1s" }}>
-                <div className="flex items-center gap-3">
-                  <div>
-                    <Image
-                      src="/full-logo.png"
-                      alt="إنترنت تيليكوم"
-                      width={150}
-                      height={75}
-                      className="object-contain"
-                      priority
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
           </motion.div>
 
@@ -153,10 +125,10 @@ const AboutSection = () => {
                   initial={{ opacity: 0, y: 15 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.4 + 0.1 * i }}
-                  className="flex items-center gap-3 bg-white rounded-xl p-3 border border-gray-100 shadow-sm"
+                  className="flex items-center gap-3 bg-[#f2f2f2] rounded-xl p-3 border border-gray-100 shadow-sm"
                 >
                   <div className="w-9 h-9 rounded-lg bg-[#18a2e3]/10 flex items-center justify-center flex-shrink-0">
-                    <item.icon size={14} className="text-[#18a2e3]" />
+                    <item.icon size={20} className="text-[#18a2e3]" />
                   </div>
                   <div>
                     <div className="text-xs text-gray-400">{item.label}</div>
