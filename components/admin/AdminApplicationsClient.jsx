@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import {
   MdCalendarMonth,
@@ -25,9 +31,7 @@ import {
   MdAdd,
   MdDelete,
 } from "react-icons/md";
-import {
-  FaWhatsapp,
-} from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
 import { FaRegEdit } from "react-icons/fa";
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
@@ -37,18 +41,25 @@ import ApplicationDetailModal from "./ApplicationDetailModal";
 import AdminNotesModal from "./AdminNotesModal";
 import AdminStatusModal from "./AdminStatusModal";
 import AdminCustomerNoteModal from "./AdminCustomerNoteModal";
-import {
-  formatDate,
-  describeStatus,
-  statusBadgeClass
-} from "@/utils/general";
+import { formatDate, describeStatus, statusBadgeClass } from "@/utils/general";
 import { STATUS_LABELS } from "@/utils/data";
 import { useRouter } from "next/navigation";
 
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
 
-const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, openStatusModal, openCustomerNoteModal, isDeletedMode, userRole, handleSendReviewLink }) => {
+const ActionMenu = ({
+  app,
+  openDetail,
+  setConfirm,
+  canChangeStatus,
+  actionId,
+  openStatusModal,
+  openCustomerNoteModal,
+  isDeletedMode,
+  userRole,
+  handleSendReviewLink,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const menuRef = useRef(null);
@@ -58,17 +69,21 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
-        menuRef.current && !menuRef.current.contains(e.target) &&
-        buttonRef.current && !buttonRef.current.contains(e.target)
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target)
       ) {
         setIsOpen(false);
       }
     };
-    
+
     const handleScroll = (e) => {
       if (
-        menuRef.current && !menuRef.current.contains(e.target) &&
-        buttonRef.current && !buttonRef.current.contains(e.target)
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target)
       ) {
         setIsOpen(false);
       }
@@ -76,7 +91,7 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      window.addEventListener("scroll", handleScroll, true); 
+      window.addEventListener("scroll", handleScroll, true);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -89,14 +104,14 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
       const rect = buttonRef.current.getBoundingClientRect();
       const dropdownHeight = 190; // Approximate rendered height
       const spaceBelow = window.innerHeight - rect.bottom;
-      
+
       let top = rect.bottom + window.scrollY;
       if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
         top = rect.top + window.scrollY - dropdownHeight - 4; // Open upwards
       } else {
         top = top + 4; // Open downwards
       }
-      
+
       setCoords({
         top,
         left: rect.right + window.scrollX - 50,
@@ -114,144 +129,157 @@ const ActionMenu = ({ app, openDetail, setConfirm, canChangeStatus, actionId, op
       >
         <MdMoreVert size={22} />
       </button>
-      {isOpen && typeof document !== "undefined" && createPortal(
-        <div
-          ref={menuRef}
-          style={{ top: coords.top, left: coords.left }}
-          className="absolute w-44 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden text-right"
-        >
-          <button
-            onClick={() => {
-              setIsOpen(false);
-              openDetail(app);
-            }}
-            className="w-full px-4 py-2.5 text-sm text-cyan-700 hover:bg-cyan-50 transition flex items-center gap-2.5 font-bold"
+      {isOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{ top: coords.top, left: coords.left }}
+            className="absolute w-44 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden text-right"
           >
-            <MdVisibility size={18} />
-            تفاصيل
-          </button>
-
-          {!isDeletedMode && <button
-            onClick={() => router.push(`/panel/applications/${app.id}/edit`)}
-            className="w-full px-4 py-2.5 text-sm text-orange-600 hover:bg-orange-50 transition flex items-center gap-2.5 font-bold"
-          >
-            <FaRegEdit size={18} />
-            تحرير
-          </button>}
-
-          {!isDeletedMode && (
-             <button
-               onClick={() => {
-                 setIsOpen(false);
-                 handleSendReviewLink(app);
-               }}
-               className={`w-full px-4 py-2.5 text-sm transition flex items-center gap-2.5 font-bold border-t border-gray-50 ${app.Review ? "text-gray-400 bg-gray-50/50 cursor-not-allowed" : "text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"}`}
-             >
-               <FaWhatsapp size={18} />
-               {app.Review ? "تم طلب التقييم مسبقاً" : "إرسال طلب تقييم"}
-             </button>
-          )}
-
-          {isDeletedMode && (
             <button
               onClick={() => {
                 setIsOpen(false);
-                setConfirm({ kind: "restore", appId: app.id, appIndex: app.appIndex });
+                openDetail(app);
               }}
-              className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
+              className="w-full px-4 py-2.5 text-sm text-cyan-700 hover:bg-cyan-50 transition flex items-center gap-2.5 font-bold"
             >
-              <MdOutlineRefresh size={18} />
-              إستعادة الطلب
+              <MdVisibility size={18} />
+              تفاصيل
             </button>
-          )}
 
-          {!isDeletedMode && (
-            <>
+            {!isDeletedMode && (
+              <button
+                onClick={() =>
+                  router.push(`/panel/applications/${app.id}/edit`)
+                }
+                className="w-full px-4 py-2.5 text-sm text-orange-600 hover:bg-orange-50 transition flex items-center gap-2.5 font-bold"
+              >
+                <FaRegEdit size={18} />
+                تحرير
+              </button>
+            )}
+
+            {!isDeletedMode && (
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  openStatusModal(app);
+                  handleSendReviewLink(app);
                 }}
-                className="w-full px-4 py-2.5 text-sm text-violet-600 hover:bg-violet-50 transition flex items-center gap-2.5 font-bold"
+                className={`w-full px-4 py-2.5 text-sm transition flex items-center gap-2.5 font-bold border-t border-gray-50 ${app.Review ? "text-gray-400 bg-gray-50/50 cursor-not-allowed" : "text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"}`}
               >
-                <MdSwapHoriz size={18} />
-                تحديث الحالة
+                <FaWhatsapp size={18} />
+                {app.Review ? "تم طلب التقييم مسبقاً" : "إرسال طلب تقييم"}
               </button>
-              
+            )}
+
+            {isDeletedMode && (
               <button
-                onClick={() => {
-                  setIsOpen(false);
-                  openCustomerNoteModal(app);
-                }}
-                className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
-              >
-                <MdOutlineSpeakerNotes size={18} />
-                ملاحظة للمشترك
-              </button>
-              
-              <button
-                disabled={!canChangeStatus(app.status) || actionId === app.id}
                 onClick={() => {
                   setIsOpen(false);
                   setConfirm({
-                    kind: "reject",
+                    kind: "restore",
+                    appId: app.id,
+                    appIndex: app.appIndex,
+                  });
+                }}
+                className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
+              >
+                <MdOutlineRefresh size={18} />
+                إستعادة الطلب
+              </button>
+            )}
+
+            {!isDeletedMode && (
+              <>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    openStatusModal(app);
+                  }}
+                  className="w-full px-4 py-2.5 text-sm text-violet-600 hover:bg-violet-50 transition flex items-center gap-2.5 font-bold"
+                >
+                  <MdSwapHoriz size={18} />
+                  تحديث الحالة
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    openCustomerNoteModal(app);
+                  }}
+                  className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
+                >
+                  <MdOutlineSpeakerNotes size={18} />
+                  ملاحظة للمشترك
+                </button>
+
+                <button
+                  disabled={!canChangeStatus(app.status) || actionId === app.id}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setConfirm({
+                      kind: "reject",
+                      appId: app.id,
+                      appIndex: app.appIndex,
+                    });
+                  }}
+                  className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <MdClose size={18} />
+                  إلغاء
+                </button>
+
+                <button
+                  disabled={!canChangeStatus(app.status) || actionId === app.id}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setConfirm({
+                      kind: "complete",
+                      appId: app.id,
+                      appIndex: app.appIndex,
+                    });
+                  }}
+                  className="w-full px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <MdDone size={18} />
+                  إكمال
+                </button>
+              </>
+            )}
+
+            <div className="my-1 border-t border-gray-100" />
+
+            <div className="my-1 border-t border-gray-100" />
+
+            {userRole === "ADMIN" && (
+              <button
+                disabled={actionId === app.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  setConfirm({
+                    kind: "delete",
                     appId: app.id,
                     appIndex: app.appIndex,
                   });
                 }}
                 className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <MdClose size={18} />
-                إلغاء
+                <MdDelete size={18} />
+                {isDeletedMode ? "حذف نهائي" : "حذف"}
               </button>
-
-              <button
-                disabled={!canChangeStatus(app.status) || actionId === app.id}
-                onClick={() => {
-                  setIsOpen(false);
-                  setConfirm({
-                    kind: "complete",
-                    appId: app.id,
-                    appIndex: app.appIndex,
-                  });
-                }}
-                className="w-full px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <MdDone size={18} />
-                إكمال
-              </button>
-            </>
-          )}
-          
-          <div className="my-1 border-t border-gray-100" />
-          
-          <div className="my-1 border-t border-gray-100" />
-          
-          {userRole === "ADMIN" && (
-            <button
-              disabled={actionId === app.id}
-              onClick={() => {
-                setIsOpen(false);
-                setConfirm({
-                  kind: "delete",
-                  appId: app.id,
-                  appIndex: app.appIndex,
-                });
-              }}
-              className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <MdDelete size={18} />
-              {isDeletedMode ? "حذف نهائي" : "حذف"}
-            </button>
-          )}
-        </div>,
-        document.body
-      )}
+            )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 };
 
-export default function AdminApplicationsClient({ isDeletedMode = false, userRole = "ADMIN" }) {
+export default function AdminApplicationsClient({
+  isDeletedMode = false,
+  userRole = "ADMIN",
+}) {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
@@ -275,22 +303,24 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
     }
     const reviewLink = `${window.location.origin}/review?appId=${app.id}`;
     const text = `أهلاً ${app.newName || app.name}، شكراً لثقتك بنا لتنفيذ خدمة (${app.service || "الإنترنت"}).\nنسعد بتقييمك لتجربتك معنا عبر الرابط التالي:\n${reviewLink}`;
-    
+
     let phoneToUse = app.phone || app.phone2 || app.newPhone;
     console.log(phoneToUse);
     // 0 (538) 897 79 39
-    if(phoneToUse) {
-       const waUrl = `https://wa.me/${phoneToUse.replace(/\D/g, "").replace(/^0/, "90")}?text=${encodeURIComponent(text)}`;
-       window.open(waUrl, '_blank');
+    if (phoneToUse) {
+      const waUrl = `https://wa.me/${phoneToUse.replace(/\D/g, "").replace(/^0/, "90")}?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, "_blank");
     } else {
-       setAlertMsg("لا يوجد رقم هاتف متاح لإرسال رسالة الواتساب.");
+      setAlertMsg("لا يوجد رقم هاتف متاح لإرسال رسالة الواتساب.");
     }
   };
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [dateField, setDateField] = useState(isDeletedMode ? "updatedAt" : "createdAt");
+  const [dateField, setDateField] = useState(
+    isDeletedMode ? "updatedAt" : "createdAt",
+  );
   const [dateFrom, setDateFrom] = useState(() => {
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000;
@@ -314,7 +344,8 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
       if (isDeletedMode) params.set("deleted", "true");
       if (debouncedQ) params.set("q", debouncedQ);
       if (statusFilter) params.set("status", statusFilter);
-      if (dateField && dateField !== "createdAt") params.set("dateField", dateField);
+      if (dateField && dateField !== "createdAt")
+        params.set("dateField", dateField);
       if (dateFrom) params.set("dateFrom", dateFrom);
       if (dateTo) params.set("dateTo", dateTo);
       return params.toString();
@@ -375,6 +406,7 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
         [
           "رقم الطلب",
           "الإسم واللقب",
+          "رقم الموبايل",
           "رقم الوطني",
           "المواليد",
           "كود العنوان",
@@ -428,9 +460,12 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
   const deleteStatus = async (id) => {
     setActionId(id);
     try {
-      const res = await fetch(`/api/panel/applications/${id}${isDeletedMode ? "?hard=true" : ""}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/panel/applications/${id}${isDeletedMode ? "?hard=true" : ""}`,
+        {
+          method: "DELETE",
+        },
+      );
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
         setAlertMsg(json.error || "فشل الحذف");
@@ -497,11 +532,14 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
       const newApps = prev.applications.map((app) =>
         app.id === notesApp.id
           ? { ...app, notes: [newNote, ...(app.notes || [])] }
-          : app
+          : app,
       );
       return { ...prev, applications: newApps };
     });
-    setNotesApp((prev) => ({ ...prev, notes: [newNote, ...(prev.notes || [])] }));
+    setNotesApp((prev) => ({
+      ...prev,
+      notes: [newNote, ...(prev.notes || [])],
+    }));
   };
 
   const handleStatusUpdate = async (newStatus, delayedUntil) => {
@@ -566,7 +604,9 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
     }
     return {
       dupNames: new Set(Object.keys(nameCount).filter((k) => nameCount[k] > 1)),
-      dupPhones: new Set(Object.keys(phoneCount).filter((k) => phoneCount[k] > 1)),
+      dupPhones: new Set(
+        Object.keys(phoneCount).filter((k) => phoneCount[k] > 1),
+      ),
     };
   }, [applications]);
 
@@ -608,7 +648,11 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
                 background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`,
               }}
             >
-              {isDeletedMode ? <MdDelete size={26} /> : <MdOutlineAssignment size={26} />}
+              {isDeletedMode ? (
+                <MdDelete size={26} />
+              ) : (
+                <MdOutlineAssignment size={26} />
+              )}
             </span>
             <div>
               <h2 className="text-xl md:text-2xl font-extrabold text-gray-900 tracking-tight">
@@ -690,7 +734,9 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
           <span>بحث وتصفية</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
-          <div className={`${isDeletedMode ? "lg:col-span-5" : "lg:col-span-3"} relative`}>
+          <div
+            className={`${isDeletedMode ? "lg:col-span-5" : "lg:col-span-3"} relative`}
+          >
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               بحث (الإسم، رقم الطلب، الموبايل)
             </label>
@@ -709,24 +755,28 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
               />
             </div>
           </div>
-          {!isDeletedMode && <div className="lg:col-span-2">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              حالة الطلب
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-            >
-              <option value="">كل الحالات</option>
-              {Object.entries(STATUS_LABELS).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
-              ))}
-            </select>
-          </div>}
+          {!isDeletedMode && (
+            <div className="lg:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                حالة الطلب
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+              >
+                <option value="">كل الحالات</option>
+                {Object.entries(STATUS_LABELS).map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="lg:col-span-2">
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               تصفية حسب
@@ -741,8 +791,12 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
             >
               <option value="createdAt">تاريخ الإنشاء</option>
               {isDeletedMode && <option value="updatedAt">تاريخ الحذف</option>}
-              {!isDeletedMode && <option value="completedAt">تاريخ الإكتمال</option>}
-              {!isDeletedMode && <option value="delayedUntil">تاريخ التأجيل</option>}
+              {!isDeletedMode && (
+                <option value="completedAt">تاريخ الإكتمال</option>
+              )}
+              {!isDeletedMode && (
+                <option value="delayedUntil">تاريخ التأجيل</option>
+              )}
             </select>
           </div>
           <div className="lg:col-span-2">
@@ -831,37 +885,45 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
                       رقم الموبايل
                     </span>
                   </th>
-                  {!isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5">
-                      <MdOutlineTaskAlt size={18} />
-                      الحالة
-                    </span>
-                  </th>}
+                  {!isDeletedMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdOutlineTaskAlt size={18} />
+                        الحالة
+                      </span>
+                    </th>
+                  )}
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdCalendarMonth size={18} />
                       تاريخ الإنشاء
                     </span>
                   </th>
-                  {isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5">
-                      <MdCalendarMonth size={18} />
-                      تاريخ الحذف
-                    </span>
-                  </th>}
-                  {!isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5">
-                      <MdDoneAll size={18} />
-                      تاريخ الإكتمال
-                    </span>
-                  </th>}
-                  {!isDeletedMode && <th className="px-3 py-3.5 font-bold whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5">
-                      <MdOutlineTimer size={18} />
-                      تاريخ التأجيل
-                    </span>
-                  </th>}
-                  
+                  {isDeletedMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdCalendarMonth size={18} />
+                        تاريخ الحذف
+                      </span>
+                    </th>
+                  )}
+                  {!isDeletedMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdDoneAll size={18} />
+                        تاريخ الإكتمال
+                      </span>
+                    </th>
+                  )}
+                  {!isDeletedMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdOutlineTimer size={18} />
+                        تاريخ التأجيل
+                      </span>
+                    </th>
+                  )}
+
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdOutlineSpeakerNotes size={18} />
@@ -903,7 +965,7 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
                         dir="ltr"
                         style={{ color: ACCENT }}
                       >
-                      {app.appIndex}
+                        {app.appIndex}
                       </td>
                       <td
                         className="px-3 py-3.5 text-gray-800 max-w-40 truncate font-medium"
@@ -923,7 +985,10 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
                         dir="ltr"
                       >
                         <span className="inline-flex items-center gap-1.5">
-                          <a href={`whatsapp://send?phone=9${app.phone.replace(/\D/g, '')}`} target="_blank">
+                          <a
+                            href={`whatsapp://send?phone=9${app.phone.replace(/\D/g, "")}`}
+                            target="_blank"
+                          >
                             {app.phone}
                           </a>
                           {isDupPhone(app.phone) && (
@@ -933,33 +998,35 @@ export default function AdminApplicationsClient({ isDeletedMode = false, userRol
                           )}
                         </span>
                       </td>
-                      {!isDeletedMode && <td className="px-3 py-3.5">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(app.status)}`}
-                        >
-                          {describeStatus(app.status)}
-                        </span>
-                      </td>}
+                      {!isDeletedMode && (
+                        <td className="px-3 py-3.5">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(app.status)}`}
+                          >
+                            {describeStatus(app.status)}
+                          </span>
+                        </td>
+                      )}
                       <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                        {app.createdAt
-                          ? formatDate(app.createdAt)
-                          : "—"}
+                        {app.createdAt ? formatDate(app.createdAt) : "—"}
                       </td>
-                      {isDeletedMode && <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                        {app.updatedAt
-                          ? formatDate(app.updatedAt)
-                          : "—"}
-                      </td>}
-                      {!isDeletedMode && <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                        {app.completedAt
-                          ? formatDate(app.completedAt)
-                          : "—"}
-                      </td>}
-                      {!isDeletedMode && <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                        {app.delayedUntil
-                          ? formatDate(app.delayedUntil)
-                          : "—"}
-                      </td>}
+                      {isDeletedMode && (
+                        <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                          {app.updatedAt ? formatDate(app.updatedAt) : "—"}
+                        </td>
+                      )}
+                      {!isDeletedMode && (
+                        <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                          {app.completedAt ? formatDate(app.completedAt) : "—"}
+                        </td>
+                      )}
+                      {!isDeletedMode && (
+                        <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                          {app.delayedUntil
+                            ? formatDate(app.delayedUntil)
+                            : "—"}
+                        </td>
+                      )}
                       <td className="px-3 py-3.5 max-w-48">
                         <button
                           onClick={() => setNotesApp(app)}
