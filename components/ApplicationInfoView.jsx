@@ -3,7 +3,17 @@
 import React from "react";
 import Link from "next/link";
 import Button from "./Button";
-import { MdHome, MdAddCircleOutline, MdOutlineDescription, MdPerson, MdPhone, MdSpeed, MdCalendarMonth, MdOutlineReceiptLong, MdWifi } from "react-icons/md";
+import {
+  MdHome,
+  MdAddCircleOutline,
+  MdOutlineDescription,
+  MdPerson,
+  MdPhone,
+  MdSpeed,
+  MdCalendarMonth,
+  MdOutlineReceiptLong,
+  MdWifi,
+} from "react-icons/md";
 import { PiSpeedometerFill } from "react-icons/pi";
 import { FaBuildingCircleCheck } from "react-icons/fa6";
 import {
@@ -19,7 +29,7 @@ import {
   describeNoContractTechType,
   describeStatus,
   statusBadgeClass,
-  maskValue
+  maskValue,
 } from "../utils/general";
 
 const ACCENT = "#18a2e3";
@@ -34,7 +44,8 @@ const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
     </div>
     <div
       dir={dir}
-      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap break-words">
+      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap break-words"
+    >
       {children}
     </div>
   </div>
@@ -77,7 +88,10 @@ const ApplicationInfoView = ({ application, loading, error }) => {
 
           <div className="py-6 md:py-8 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Row label={application.newName ? "المالك الحالي" : "الإسم"} icon={<MdPerson size={18} />}>
+              <Row
+                label={application.newName ? "المالك الحالي" : "الإسم"}
+                icon={<MdPerson size={18} />}
+              >
                 {maskName(application.name)}
               </Row>
               {application.newName && (
@@ -90,11 +104,17 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                   {maskPhone(application.phone)}
                 </span>
               </Row>
-              {application.serviceType === "services" && (application.selectedService === "change-phone" || application.selectedService === "transfer-name") && (
-                <Row label="الرقم الجديد" dir="ltr" icon={<MdPhone size={18} />}>
-                  {maskPhone(application.newPhone)}
-                </Row>
-              )}
+              {application.serviceType === "services" &&
+                (application.selectedService === "change-phone" ||
+                  application.selectedService === "transfer-name") && (
+                  <Row
+                    label="الرقم الجديد"
+                    dir="ltr"
+                    icon={<MdPhone size={18} />}
+                  >
+                    {maskPhone(application.newPhone)}
+                  </Row>
+                )}
               <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold ${statusBadgeClass(application.status)}`}
@@ -109,12 +129,18 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 {describeServiceType(application.serviceType)}
               </Row>
               {application.serviceType === "newline" && (
-                <Row label="نوع العرض" icon={<MdOutlineDescription size={18} />}>
+                <Row
+                  label="نوع العرض"
+                  icon={<MdOutlineDescription size={18} />}
+                >
                   {describeContractPreference(application.contractPreference)}
                 </Row>
               )}
               {application.serviceType === "services" && (
-                <Row label="الخدمة المختارة" icon={<MdOutlineDescription size={18} />}>
+                <Row
+                  label="الخدمة المختارة"
+                  icon={<MdOutlineDescription size={18} />}
+                >
                   {describeSelectedService(application.selectedService)}
                 </Row>
               )}
@@ -125,58 +151,99 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                   </Row>
                 )}
               {application.serviceType === "inquiry" && (
-                <Row label="الاستفسار" icon={<MdOutlineDescription size={18} />}>
+                <Row
+                  label="الاستفسار"
+                  icon={<MdOutlineDescription size={18} />}
+                >
                   {describeSelectedInquiry(application.selectedInquiry)}
                 </Row>
               )}
-              {
-                application.serviceType === "newline" &&
-                application.contractPreference === "without" &&
-                (
-                  <Row label="نوع التقنية" icon={<PiSpeedometerFill size={18} />}>
-                    {application.noContractTechType ? describeNoContractTechType(application.noContractTechType) : "—"}
+              {application.serviceType === "newline" &&
+                application.contractPreference === "without" && (
+                  <Row
+                    label="نوع التقنية"
+                    icon={<PiSpeedometerFill size={18} />}
+                  >
+                    {application.noContractTechType
+                      ? describeNoContractTechType(
+                          application.noContractTechType,
+                        )
+                      : "—"}
                   </Row>
-                )
-              }
-              {
-                application.serviceType === "services" && (
-                  <>
-                    <Row label="شركة الإنترنت" icon={<FaBuildingCircleCheck size={18} />}>
-                      {application.internetCompany ? maskValue(application.internetCompany) : "—"}
+                )}
+              {application.serviceType === "services" && (
+                <>
+                  <Row
+                    label="شركة الإنترنت"
+                    icon={<FaBuildingCircleCheck size={18} />}
+                  >
+                    {application.internetCompany
+                      ? maskValue(application.internetCompany)
+                      : "—"}
+                  </Row>
+                  <Row
+                    label="رقم الإشتراك"
+                    icon={<MdOutlineReceiptLong size={18} />}
+                  >
+                    {application.subscriptionNo
+                      ? maskValue(application.subscriptionNo)
+                      : "—"}
+                  </Row>
+                  {application.lastInvoiceAmount && (
+                    <Row
+                      label="قيمة أخر فاتورة"
+                      icon={<MdOutlineReceiptLong size={18} />}
+                    >
+                      {maskValue(application.lastInvoiceAmount)}
                     </Row>
-                    <Row label="رقم الإشتراك" icon={<MdOutlineReceiptLong size={18} />}>
-                      {application.subscriptionNo ? maskValue(application.subscriptionNo) : "—"}
-                    </Row>
-                    {application.lastInvoiceAmount && (
-                      <Row label="قيمة أخر فاتورة" icon={<MdOutlineReceiptLong size={18} />}>
-                        {maskValue(application.lastInvoiceAmount)}
-                      </Row>
-                    )}
-                  </>
-                )
-              }
+                  )}
+                </>
+              )}
               {!application.originalAddress && (
-                <Row label={application.selectedService === "transfer-address" ? "العنوان القديم" : "العنوان"} dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
+                <Row
+                  label={
+                    application.selectedService === "transfer-address"
+                      ? "العنوان القديم"
+                      : "العنوان"
+                  }
+                  dir="ltr"
+                  className="sm:col-span-2"
+                  icon={<MdHome size={18} />}
+                >
                   {maskAddress(application.address)}
                 </Row>
               )}
-              {application.serviceType === "services" && application.selectedService === "transfer-address" && (
-                <Row label="العنوان الجديد" dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
-                  {maskAddress(application.newAddress)}
-                </Row>
-              )}
+              {application.serviceType === "services" &&
+                application.selectedService === "transfer-address" && (
+                  <Row
+                    label="العنوان الجديد"
+                    dir="ltr"
+                    className="sm:col-span-2"
+                    icon={<MdHome size={18} />}
+                  >
+                    {maskAddress(application.newAddress)}
+                  </Row>
+                )}
             </div>
           </div>
 
           <div className="flex justify-center gap-4 flex-col md:flex-row">
             <Link href="/internet-basvuru-formu">
-              <Button variant="secondary" size="large" className="flex w-full items-center justify-center gap-2">
+              <Button
+                variant="secondary"
+                size="large"
+                className="flex w-full items-center justify-center gap-2"
+              >
                 <MdAddCircleOutline size={22} />
-                طلب جديد
+                تسجيل طلب جديد
               </Button>
             </Link>
             <Link href="/">
-              <Button variant="primary" size="large" className="flex w-full items-center justify-center gap-2">
+              <Button
+                variant="primary"
+                size="large"
+                className="flex w-full items-center justify-center gap-2"
+              >
                 <MdHome size={22} />
                 الصفحة الرئيسية
               </Button>
@@ -190,14 +257,16 @@ const ApplicationInfoView = ({ application, loading, error }) => {
         <div className="fixed top-0 left-0 lg:w-[30%] h-svh bg-blue-50 overflow-hidden">
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/40 to-black/20 z-10 pointer-events-none"></div>
-          
+
           {/* Decorative touches */}
           <div className="absolute bottom-16 left-10 right-10 z-20 text-white flex flex-col gap-5 drop-shadow-xl animate-fade-in-up">
             <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
               <MdOutlineDescription className="w-8 h-8 text-blue-300" />
             </div>
             <div>
-              <h3 className="text-3xl font-bold mb-3 tracking-wide">تفاصيل الطلب</h3>
+              <h3 className="text-3xl font-bold mb-3 tracking-wide">
+                تفاصيل الطلب
+              </h3>
               <p className="text-white/80 text-sm leading-relaxed opacity-95">
                 يمكنك هنا مراجعة جميع التفاصيل والمرفقات الخاصة بطلبك.
               </p>

@@ -3,10 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 
 const navLinks = [
@@ -35,7 +32,7 @@ const Header = () => {
         ([entry]) => {
           if (entry.isIntersecting) setActiveSection(id);
         },
-        { rootMargin: "-40% 0px -55% 0px" }
+        { rootMargin: "-40% 0px -55% 0px" },
       );
       obs.observe(el);
       observers.push(obs);
@@ -60,13 +57,15 @@ const Header = () => {
   /* ── lock body scroll when mobile menu open ── */
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
   return (
     <header
       id="main-header"
-      className={`absolute top-0 right-0 left-0 z-50 transition-all duration-500 md:top-4 md:max-w-7xl mx-auto`}
+      className="absolute inset-x-0 top-0 z-50 md:top-4 md:px-4 lg:px-8"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px] bg-[#ebebeb] rounded-b-4xl md:rounded-full">
         {/* ── logo ── */}
@@ -91,9 +90,7 @@ const Header = () => {
                 href={link.href}
                 onClick={(e) => scrollTo(e, link.href)}
                 className={`relative px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 z-10 ${
-                  isActive
-                    ? "text-blue-500"
-                    : "text-black hover:text-blue-500"
+                  isActive ? "text-blue-500" : "text-black hover:text-blue-500"
                 }`}
               >
                 {link.label}
@@ -142,10 +139,8 @@ const Header = () => {
           />
 
           {/* panel */}
-          <div
-            className="absolute top-[72px] right-4 left-4 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-black/10 p-6 z-40 lg:hidden border border-white/50 animate-slide-in-top"
-          >
-            <nav className="flex flex-col gap-1">
+          <div className="absolute top-[72px] right-4 left-4 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-black/10 p-6 z-40 lg:hidden border border-white/50 animate-slide-in-top">
+            <nav className="flex flex-col gap-1 text-center">
               {navLinks.map((link, i) => {
                 const isActive = activeSection === link.href.replace("#", "");
                 return (

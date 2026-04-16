@@ -50,7 +50,7 @@ const purplePalette = {
   iconBg: "bg-purple-100 text-purple-600",
   badgeBg: "bg-purple-500",
   textGradient: "from-purple-600 to-fuchsia-500",
-  backGradient: "bg-gradient-to-br from-purple-600 to-fuchsia-600",
+  backGradient: "bg-linear-to-br from-purple-600 to-fuchsia-600",
   priceText: "text-purple-700",
 };
 

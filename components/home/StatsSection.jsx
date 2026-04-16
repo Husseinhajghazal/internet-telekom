@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { BiSupport } from "react-icons/bi";
 import { BiWorld } from "react-icons/bi";
 import { FaPeopleGroup } from "react-icons/fa6";
+import { FaUsers, FaMapMarkedAlt, FaStar, FaHeadset } from "react-icons/fa";
 
 
 const stats = [
@@ -13,24 +14,28 @@ const stats = [
     suffix: "K+",
     suffixColor: "text-[#f36802]",
     label: "ألف عميل سعيد",
+    icon: FaUsers,
   },
   {
     value: "81",
     suffix: "+",
     suffixColor: "text-[#f36802]",
     label: "ولاية مغطاة",
+    icon: FaMapMarkedAlt,
   },
   {
     value: "10",
     suffix: "Y+",
     suffixColor: "text-[#f36802]",
     label: "سنوات من الخبرة",
+    icon: FaStar,
   },
   {
     value: "24",
     suffix: "/7",
     suffixColor: "text-[#f36802]",
     label: "دعم فني بالعربية",
+    icon: FaHeadset,
   },
 ];
 
@@ -61,6 +66,9 @@ const StatsSection = () => {
               transition={{ duration: 0.5, delay: idx * 0.1 }}
               className="flex flex-col items-center text-center"
             >
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0c2240]/10 mb-3 md:mb-4">
+                <stat.icon className="text-2xl text-[#f36802]" />
+              </div>
               <div className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0c2240] mb-2 md:mb-4 tracking-wider" dir="ltr">
                 {stat.value}
                 {stat.suffix && (

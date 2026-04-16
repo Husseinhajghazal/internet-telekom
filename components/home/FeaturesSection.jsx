@@ -101,16 +101,26 @@ const ScrollRow = ({ items, speed = 35 }) => {
       {/* fade edges */}
       <div
         style={{
-          position: "absolute", right: 0, top: 0, bottom: 0, width: 100,
+          position: "absolute",
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: 100,
           background: "linear-gradient(to left, #eef5fb, transparent)",
-          zIndex: 10, pointerEvents: "none",
+          zIndex: 10,
+          pointerEvents: "none",
         }}
       />
       <div
         style={{
-          position: "absolute", left: 0, top: 0, bottom: 0, width: 100,
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 100,
           background: "linear-gradient(to right, #eef5fb, transparent)",
-          zIndex: 10, pointerEvents: "none",
+          zIndex: 10,
+          pointerEvents: "none",
         }}
       />
 
@@ -149,7 +159,8 @@ const FeaturesSection = () => {
       id="features"
       className="py-20 md:py-28 relative overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, #f8fbff 0%, #eef5fb 50%, #f0f7fc 100%)",
+        background:
+          "linear-gradient(135deg, #f8fbff 0%, #eef5fb 50%, #f0f7fc 100%)",
       }}
     >
       {/* animated glow orbs */}
@@ -160,7 +171,12 @@ const FeaturesSection = () => {
       />
       <motion.div
         animate={{ scale: [1.1, 1, 1.1], opacity: [0.06, 0.12, 0.06] }}
-        transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        transition={{
+          duration: 11,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 3,
+        }}
         className="absolute z-[1] bottom-10 left-20 w-[300px] h-[300px] bg-[#ffb245] rounded-full blur-[130px]"
       />
 
@@ -177,9 +193,6 @@ const FeaturesSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-14 px-4"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-[#f36802]/10 text-[#f36802] text-sm font-semibold mb-4">
-            لماذا نحن؟
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
             ميزات تجعلنا{" "}
             <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
@@ -187,7 +200,7 @@ const FeaturesSection = () => {
             </span>
           </h2>
           <p className="text-gray-500 md:text-lg max-w-xl mx-auto">
-            نقدم لكم تجربة إنترنت فريدة تجمع بين الجودة والمرونة والسعر المنافس
+            نقدم لكم انترنت يجمع بين الجودة والمرونة والسعر المنافس
           </p>
         </motion.div>
 

@@ -58,12 +58,8 @@ const ReviewsSection = () => {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#5898b7]/[0.03] rounded-full blur-[120px]" />
 
       {/* animated glow orbs */}
-      <div
-        className="absolute z-[1] top-1/3 left-20 w-[350px] h-[350px] bg-[#ffb245] rounded-full blur-[150px] animate-glow-pulse opacity-10"
-      />
-      <div
-        className="absolute z-[1] bottom-1/4 right-10 w-[300px] h-[300px] bg-[#18a2e3] rounded-full blur-[130px] animate-glow-pulse-alt opacity-10"
-      />
+      <div className="absolute z-[1] top-1/3 left-20 w-[350px] h-[350px] bg-[#ffb245] rounded-full blur-[150px] animate-glow-pulse opacity-10" />
+      <div className="absolute z-[1] bottom-1/4 right-10 w-[300px] h-[300px] bg-[#18a2e3] rounded-full blur-[130px] animate-glow-pulse-alt opacity-10" />
 
       {/* big background icon */}
       <div className="absolute z-[1] top-1/2 right-20 -translate-y-1/2 pointer-events-none">
@@ -78,9 +74,6 @@ const ReviewsSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-14 px-4"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full text-[#18a2e3] text-sm font-semibold mb-4">
-            آراء عملائنا
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
             ماذا يقول{" "}
             <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">

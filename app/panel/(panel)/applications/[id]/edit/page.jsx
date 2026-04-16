@@ -533,10 +533,16 @@ export default function EditApplicationPage() {
             <input
               name="internetCompany"
               type="text"
+              list="internetCompany-options"
               value={formData.internetCompany}
               onChange={handleChange}
               className={inputClass}
             />
+            <datalist id="internetCompany-options">
+              <option value="تورك تيليكوم" />
+              <option value="تورك نت" />
+              <option value="غوك نت" />
+            </datalist>
           </div>
 
           <div>
@@ -796,7 +802,7 @@ export default function EditApplicationPage() {
                   </div>
                 ))}
                 
-                {formData.invoiceFiles.map((file, idx) => (
+                {formData.invoiceFiles.map((_file, idx) => (
                   <div key={`new-${idx}`} className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between">
                     <img src={blobUrls[idx]} alt={`New ${idx}`} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

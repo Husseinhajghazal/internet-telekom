@@ -8,7 +8,7 @@ import {
   FaInstagram,
   FaTiktok,
   FaHeart,
-  FaPhoneAlt
+  FaPhoneAlt,
 } from "react-icons/fa";
 
 const Footer = () => {
@@ -16,39 +16,23 @@ const Footer = () => {
 
   return (
     <footer className="relative overflow-hidden" dir="rtl">
-      {/* wave top */}
-      <div className="w-full">
-        <svg
-          viewBox="0 0 1440 100"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto block"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0 40C360 100 720 0 1080 40C1260 60 1380 80 1440 40V100H0V40Z"
-            fill="#1B2B3A"
-          />
-        </svg>
-      </div>
-
-      <div className="bg-[#1B2B3A] pb-8 -mt-1">
+      <div className="bg-linear-to-br from-white to-[#c5e1ee] py-8 -mt-1">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 pb-10 border-b border-white/10">
             {/* logo & about */}
             <div className="md:col-span-1">
               <Link href="/" className="inline-block mb-4">
-                  <div className="relative w-[160px] h-[44px]">
-                    <Image
-                      src="/full-logo.png"
-                      alt="إنترنت تيليكوم"
-                      fill
-                      sizes="160px"
-                      className="object-contain"
-                    />
-                  </div>
+                <div className="relative w-[160px] h-[44px]">
+                  <Image
+                    src="/full-logo.png"
+                    alt="إنترنت تيليكوم"
+                    fill
+                    sizes="160px"
+                    className="object-contain"
+                  />
+                </div>
               </Link>
-              <p className="text-[#ebebeb] text-sm leading-relaxed max-w-sm">
+              <p className="text-black text-sm leading-relaxed max-w-sm">
                 منذ 2015 نعمل على توفير أفضل خدمات الإنترنت المنزلي في تركيا
                 للمجتمع العربي. نقدم حلولاً متكاملة بمعايير عالية وأسعار منافسة.
               </p>
@@ -56,7 +40,7 @@ const Footer = () => {
 
             {/* contact info */}
             <div>
-              <h4 className="text-white font-bold text-base mb-5">
+              <h4 className="text-black font-bold text-base mb-5">
                 تواصل معنا
               </h4>
               <ul className="space-y-3">
@@ -65,7 +49,7 @@ const Footer = () => {
                     href="tel:05387345820"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-[#ebebeb] hover:text-[#25d366] transition-colors duration-300 text-sm"
+                    className="flex items-center gap-3 text-black hover:text-[#25d366] transition-colors duration-300 text-sm"
                   >
                     <FaPhoneAlt size={16} />
                     <span dir="ltr">+90 538 734 58 20</span>
@@ -73,8 +57,19 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
+                    href="tel:02126112122"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 text-black hover:text-[#25d366] transition-colors duration-300 text-sm"
+                  >
+                    <FaPhoneAlt size={16} />
+                    <span dir="ltr">0212 611 21 22</span>
+                  </a>
+                </li>
+                <li>
+                  <a
                     href="mailto:internet.telekom.merkez@gmail.com"
-                    className="flex items-center gap-3 text-[#ebebeb] hover:text-[#18a2e3] transition-colors duration-300 text-sm"
+                    className="flex items-center gap-3 text-black hover:text-[#18a2e3] transition-colors duration-300 text-sm"
                   >
                     <FaEnvelope size={14} />
                     <span>internet.telekom.merkez@gmail.com</span>
@@ -85,9 +80,7 @@ const Footer = () => {
 
             {/* social */}
             <div>
-              <h4 className="text-white font-bold text-base mb-5">
-                تابعنا
-              </h4>
+              <h4 className="text-black font-bold text-base mb-5">تابعنا</h4>
               <div className="flex items-center gap-3">
                 <a
                   href="https://www.facebook.com/internettelekom.net.tr"
@@ -126,12 +119,9 @@ const Footer = () => {
           </div>
 
           {/* bottom copyright */}
-          <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
-            <p className="text-[#ebebeb] text-xs">
+          <div className="pt-6 flex flex-col md:flex-row items-center justify-center gap-3">
+            <p className="text-black text-xs">
               © {currentYear} إنترنت تيليكوم. جميع الحقوق محفوظة.
-            </p>
-            <p className="text-[#ebebeb] text-xs flex items-center gap-1">
-              صُنع بـ <FaHeart size={10} className="text-red-500/60" /> في إسطنبول
             </p>
           </div>
         </div>

@@ -9,7 +9,7 @@ import TurkeyMap from "./TurkeyMap";
 /* ── slide data ── */
 const slides = [
   {
-    image: "/man-2.png",
+    image: "/man-112.png",
     title: "إنترنت فائق السرعة يصل إلى 1000 ميفابت بالثانية",
     subtitle:
       "باقات متنوعة تناسب جميع الاحتياجات وبأسعار منافسة، مع سرعات فائقة تضمن لك أفضل تجربة. كما نوفر لك دعماً مباشراً عبر فريق من الموظفين العرب لتقديم خدمة مميزة وسريعة.",
@@ -58,7 +58,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section id="hero" className="relative min-h-screen overflow-hidden">
+    <section id="hero" className="relative min-h-svh overflow-hidden">
       {/* ── background layers ── */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-bl from-[#050d1a] via-[#0c2240] to-[#0f3a6e]" />
@@ -88,7 +88,7 @@ const HeroSection = () => {
       <HeroBackground />
 
       {/* ── slides ── */}
-      <div className="relative z-10 min-h-[130vh] md:min-h-screen flex items-center">
+      <div className="relative z-10 min-h-svh pt-28 flex items-center">
         {slides.map((slide, i) => {
           const isActive = i === active;
           return (
@@ -101,13 +101,13 @@ const HeroSection = () => {
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col md:flex-row items-center gap-6 md:gap-10 lg:gap-16 pt-24 pb-28 md:pt-20 md:pb-24">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-10 lg:gap-16 pt-24 pb-0 md:pt-32 md:pb-20">
                 {/* ── text side (first in DOM → RIGHT in RTL) ── */}
                 <div className="flex-1 text-center md:text-right min-w-0">
                   {isActive && (
                     <div>
                       <span className="inline-block font-extrabold text-lg sm:text-xl md:text-2xl mb-3 md:mb-4 bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent tracking-wide animate-hero-text-in hero-delay-1">
-                        شركة إنترنت تليكوم
+                        شركة إنترنت تيليكوم
                       </span>
 
                       <h1 className="text-[1.55rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5 animate-hero-text-in hero-delay-2">
@@ -162,7 +162,7 @@ const HeroSection = () => {
                           alt=""
                           width={1000}
                           height={1000}
-                          className="object-contain w-auto drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]"
+                          className="object-contain w-auto max-h-[38vh] sm:max-h-[44vh] md:max-h-none drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]"
                           priority={i === 0}
                         />
                       )}

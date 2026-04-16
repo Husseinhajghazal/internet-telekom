@@ -4,7 +4,11 @@ import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { HiMiniWifi, HiMiniWrenchScrewdriver, HiMiniLightBulb } from "react-icons/hi2";
+import {
+  HiMiniWifi,
+  HiMiniWrenchScrewdriver,
+  HiMiniLightBulb,
+} from "react-icons/hi2";
 
 const services = [
   {
@@ -13,7 +17,7 @@ const services = [
     description:
       "احصل على خط إنترنت جديد بسرعات تصل حتى 1000 ميجابت. خيارات مرنة بعقد أو بدون عقد مع أفضل الأسعار وتركيب خلال 48 ساعة.",
     link: "/internet-basvuru-formu",
-    linkText: "قدّم الآن",
+    linkText: "سجل الآن طلبك مجاناً",
     label: "خدمة جديدة",
     bgColor: "bg-[#fffbf5]", // soft cream
     icon: HiMiniWifi,
@@ -24,7 +28,7 @@ const services = [
     description:
       "نقل الخط، تجميد الاشتراك، تغيير الملكية، تجديد العقد، وحل كافة المشكلات الفنية. فريقنا المتخصص جاهز لمساعدتك.",
     link: "/internet-basvuru-formu",
-    linkText: "اطلب الخدمة",
+    linkText: "اطلب الخدمة مجاناً",
     label: "دعم فني",
     bgColor: "bg-[#f4f9fd]", // soft blue
     icon: HiMiniWrenchScrewdriver,
@@ -35,7 +39,7 @@ const services = [
     description:
       "استشارة مجانية حول أفضل باقة تناسب احتياجاتك، فحص البنية التحتية في منطقتك، ومقارنة العروض المتاحة مع دعم كامل بالعربية.",
     link: "/internet-basvuru-formu",
-    linkText: "استشرنا مجاناً",
+    linkText: "استشرنا الان مجاناً",
     label: "استشارة مجانية 100%",
     bgColor: "bg-[#fcf5f5]", // soft pink/red
     icon: HiMiniLightBulb,
@@ -45,19 +49,21 @@ const services = [
 /* ── Wide Card Component ── */
 const WideServiceCard = ({ service }) => {
   return (
-    <div className="w-full h-full flex flex-col md:flex-row rounded-[2rem] md:rounded-[3rem] overflow-hidden group transition-transform duration-500 hover:shadow-2xl hover:shadow-[#18a2e3]/10 border border-gray-100/50 bg-white shadow-xl shadow-black/5">
+    <div className="w-full h-full flex flex-col-reverse md:flex-row rounded-[2rem] md:rounded-[3rem] overflow-hidden group transition-transform duration-500 hover:shadow-2xl hover:shadow-[#18a2e3]/10 border border-gray-100/50 bg-white shadow-xl shadow-black/5">
       {/* ── Text Side ── */}
       <div
         className={`w-full md:w-1/2 p-8 sm:p-10 lg:p-14 flex flex-col justify-center ${service.bgColor}`}
       >
         {/* Label */}
-        <div className="flex items-center gap-2 text-black font-bold mb-4 sm:mb-6">
-          <service.icon className="text-xl" />
+        <div className="text-black font-bold mb-4 sm:mb-6">
           <span className="text-sm tracking-wide">{service.label}</span>
         </div>
 
         {/* Title */}
-        <h3 className={`text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-4 leading-snug text-[#18a2e3]`}>
+        <h3
+          className={`flex items-center gap-2 text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-4 leading-snug text-[#18a2e3]`}
+        >
+          <service.icon className="text-2xl" />
           {service.title}
         </h3>
 
@@ -120,12 +126,12 @@ const ServicesSnapCarousel = ({ items }) => {
         // Calculate dynamic offset relative to viewport so we don't jump vertically
         const trackRect = track.getBoundingClientRect();
         const childRect = child.getBoundingClientRect();
-        
+
         const trackCenter = trackRect.left + trackRect.width / 2;
         const childCenter = childRect.left + childRect.width / 2;
-        
+
         const scrollDelta = childCenter - trackCenter;
-        
+
         if (Math.abs(scrollDelta) > 1) {
           track.scrollBy({ left: scrollDelta, behavior: "smooth" });
         }
@@ -164,7 +170,7 @@ const ServicesSnapCarousel = ({ items }) => {
         if (closestIndex !== activeIndex) {
           setActiveIndex(closestIndex);
         }
-        
+
         // Wait a tiny bit before trusting programmatic scroll again
         setTimeout(() => {
           isScrollingRef.current = false;
@@ -187,10 +193,14 @@ const ServicesSnapCarousel = ({ items }) => {
       onTouchStart={() => setIsHovered(true)}
       onTouchEnd={() => setIsHovered(false)}
     >
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}} />
+      `,
+        }}
+      />
 
       {/* Track */}
       <div
@@ -250,9 +260,6 @@ const ServicesSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-10 md:mb-16 px-4"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-[#18a2e3]/10 text-[#18a2e3] text-sm font-semibold mb-4">
-            خدماتنا
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
             الخدمات التي{" "}
             <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">

@@ -13,7 +13,7 @@ const contractPackages = [
     iconBg: "bg-emerald-100 text-emerald-600",
     badgeBg: "bg-emerald-500",
     textGradient: "from-emerald-600 to-teal-500",
-    backGradient: "bg-gradient-to-br from-emerald-600 to-teal-600",
+    backGradient: "bg-linear-to-br from-emerald-600 to-teal-600",
     priceText: "text-emerald-700",
     speeds: [
       { speed: "24", price: "650", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل الخامس"] },
@@ -28,7 +28,7 @@ const contractPackages = [
     iconBg: "bg-blue-100 text-blue-600",
     badgeBg: "bg-blue-500",
     textGradient: "from-blue-600 to-cyan-500",
-    backGradient: "bg-gradient-to-br from-blue-600 to-cyan-600",
+    backGradient: "bg-linear-to-br from-blue-600 to-cyan-600",
     priceText: "text-blue-700",
     speeds: [
       { speed: "200", price: "800", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل السادس"] },

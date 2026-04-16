@@ -3,18 +3,15 @@
 import React, { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { FaGlobeAmericas } from "react-icons/fa";
-import {
-  HiCalendarDays,
-  HiBuildingOffice2,
-} from "react-icons/hi2";
-import { FcManager } from "react-icons/fc";
+import { HiCalendarDays, HiBuildingOffice2 } from "react-icons/hi2";
+import { FaUserTie, FaYoutube } from "react-icons/fa";
 import { SiTurkishairlines } from "react-icons/si";
 
 const highlights = [
   { icon: HiCalendarDays, label: "تأسست عام", value: "01/05/2015" },
   { icon: HiBuildingOffice2, label: "المقر الرئيسي", value: "إسطنبول" },
   { icon: SiTurkishairlines, label: "التغطية", value: "كامل تركيا" },
-  { icon: FcManager, label: "المدير العام", value: "أ. مهند التاجر" },
+  { icon: FaUserTie, label: "المدير العام", value: "أ. مهند التاجر" },
 ];
 
 const AboutSection = () => {
@@ -27,7 +24,8 @@ const AboutSection = () => {
       id="about"
       className="py-20 md:py-28 relative overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, #f8fbff 0%, #eef5fb 50%, #f0f7fc 100%)",
+        background:
+          "linear-gradient(135deg, #f8fbff 0%, #eef5fb 50%, #f0f7fc 100%)",
       }}
     >
       {/* decorative */}
@@ -54,16 +52,20 @@ const AboutSection = () => {
           >
             <div className="relative">
               {/* main logo card */}
+              <p className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-4">
+                <FaYoutube className="text-2xl text-red-500" />
+                شاهد الفيديو أدناه للمزيد من التفاصيب
+              </p>
               <div className="bg-white rounded-3xl shadow-xl shadow-black/[0.04] border border-gray-100/80">
                 <div className="relative w-full h-[300px] md:h-[350px]">
                   {!playVideo ? (
-                    <div 
+                    <div
                       className="absolute inset-0 bg-gray-200 rounded-3xl cursor-pointer group flex items-center justify-center overflow-hidden"
                       onClick={() => setPlayVideo(true)}
                     >
-                      <img 
-                        src="https://img.youtube.com/vi/lyav1Uz9DVI/maxresdefault.jpg" 
-                        alt="تعرف علينا" 
+                      <img
+                        src="https://img.youtube.com/vi/lyav1Uz9DVI/maxresdefault.jpg"
+                        alt="تعرف علينا"
                         loading="lazy"
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -93,10 +95,6 @@ const AboutSection = () => {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="order-1 lg:order-2"
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#18a2e3]/10 text-[#18a2e3] text-sm font-semibold mb-4">
-              من نحن
-            </span>
-
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 leading-tight">
               أولى الشركات العربية
               <br />
@@ -107,13 +105,21 @@ const AboutSection = () => {
 
             <div className="space-y-4 text-gray-500 leading-relaxed text-[15px] mb-8">
               <p>
-                تأسست إنترنت تيليكوم في عام 2015 لتكون الجسر الموثوق والآمن الذي يربطكم إرثٌ من الثقة والريادة.. نُسخره لخدمتكم المنزلي في تركيا. على مدار أكثر من عقد من الزمان، نجحنا في ترسيخ مكانتنا كشركة معتمدة تقدم حلولاً متكاملة تجمع بين الجودة والسعر المنافس.
+                تأسست إنترنت تيليكوم في عام 2015 لتكون الجسر الموثوق والآمن الذي
+                يربطكم إرثٌ من الثقة والريادة.. نُسخره لخدمتكم المنزلي في تركيا.
+                على مدار أكثر من عقد من الزمان، نجحنا في ترسيخ مكانتنا كشركة
+                معتمدة تقدم حلولاً متكاملة تجمع بين الجودة والسعر المنافس.
               </p>
               <p>
-                يتمركز مقرنا الرئيسي في مدينة إسطنبول، ومنها انطلقنا لنوسع نطاق خدماتنا حتى شملت فروعنا كافة الولايات التركية، لضمان وصول الإنترنت عالي السرعة لكل بيت بجودة واحترافية لا تُضاهى.
+                يتمركز مقرنا الرئيسي في مدينة إسطنبول، ومنها انطلقنا لنوسع نطاق
+                خدماتنا حتى شملت فروعنا كافة الولايات التركية، لضمان وصول
+                الإنترنت عالي السرعة لكل بيت بجودة واحترافية لا تُضاهى.
               </p>
               <p>
-                نحن لا نقدم مجرد اشتراك إنترنت، بل نوفر تجربة مستخدم متكاملة تبدأ من الاستشارة المجانية والتركيب السريع، وصولاً إلى خيارات تعاقد مرنة مع دعم فني واستشاري متواصل باللغة العربية على مدار الساعة.
+                نحن لا نقدم مجرد اشتراك إنترنت، بل نوفر تجربة مستخدم متكاملة
+                تبدأ من الاستشارة المجانية والتركيب السريع، وصولاً إلى خيارات
+                تعاقد مرنة مع دعم فني واستشاري متواصل باللغة العربية على مدار
+                الساعة.
               </p>
             </div>
 
