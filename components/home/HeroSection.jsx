@@ -9,7 +9,7 @@ import TurkeyMap from "./TurkeyMap";
 /* ── slide data ── */
 const slides = [
   {
-    image: "/man-112.png",
+    image: "/man-113.png",
     title: "إنترنت فائق السرعة يصل إلى 1000 ميفابت بالثانية",
     subtitle:
       "باقات متنوعة تناسب جميع الاحتياجات وبأسعار منافسة، مع سرعات فائقة تضمن لك أفضل تجربة. كما نوفر لك دعماً مباشراً عبر فريق من الموظفين العرب لتقديم خدمة مميزة وسريعة.",
@@ -153,8 +153,11 @@ const HeroSection = () => {
                   {isActive && (
                     <div className="relative z-10 animate-hero-image-in w-full flex justify-center">
                       {slide.useMap ? (
-                        <div className="w-[120%] sm:w-full drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]">
+                        <div className="relative w-[120%] sm:w-full drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]">
                           <TurkeyMap />
+                          <p className="absolute inset-0 flex items-center justify-center text-white/10 font-black text-5xl sm:text-6xl md:text-7xl tracking-widest select-none pointer-events-none">
+                            Türkiye
+                          </p>
                         </div>
                       ) : (
                         <Image

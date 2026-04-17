@@ -1,9 +1,79 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { FaCrown, FaGem } from "react-icons/fa";
+import React, { useRef, useEffect } from "react";
+import { FaCrown, FaGem, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import FlippingCard from "./FlippingCard";
+
+function InfiniteScrollRow({ speeds, group }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollLeft = el.scrollWidth / 3;
+
+    const onScroll = () => {
+      const third = el.scrollWidth / 3;
+      if (el.scrollLeft < 10) el.scrollLeft += third;
+      else if (el.scrollLeft > third * 2 - 10) el.scrollLeft -= third;
+    };
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scroll = (dir) => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * 280, behavior: "smooth" });
+  };
+
+  const tripled = [...speeds, ...speeds, ...speeds];
+
+  return (
+    <div className="relative">
+      {/* left arrow */}
+      <button
+        onClick={() => scroll(-1)}
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 -translate-x-1 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-600 hover:text-gray-900 hover:shadow-lg transition-all"
+        aria-label="السابق"
+      >
+        <FaChevronLeft size={14} />
+      </button>
+
+      <div
+        ref={ref}
+        className="flex gap-5 overflow-x-auto pb-4 px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      >
+        {tripled.map((item, i) => (
+          <div key={i} className="shrink-0 w-65">
+            <FlippingCard
+              speed={item.speed}
+              price={item.price}
+              title={`عقد ${item.duration}`}
+              features={item.features}
+              palette={{
+                iconBg: group.iconBg,
+                badgeBg: group.badgeBg,
+                textGradient: group.textGradient,
+                backGradient: group.backGradient,
+                priceText: group.priceText,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* right arrow */}
+      <button
+        onClick={() => scroll(1)}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 translate-x-1 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-600 hover:text-gray-900 hover:shadow-lg transition-all"
+        aria-label="التالي"
+      >
+        <FaChevronRight size={14} />
+      </button>
+    </div>
+  );
+}
 
 const contractPackages = [
   {
@@ -16,9 +86,42 @@ const contractPackages = [
     backGradient: "bg-linear-to-br from-emerald-600 to-teal-600",
     priceText: "text-emerald-700",
     speeds: [
-      { speed: "24", price: "650", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل الخامس"] },
-      { speed: "50", price: "675", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل الخامس"] },
-      { speed: "100", price: "700", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل الخامس"] },
+      {
+        speed: "24",
+        price: "650",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل الخامس",
+        ],
+      },
+      {
+        speed: "50",
+        price: "675",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل الخامس",
+        ],
+      },
+      {
+        speed: "100",
+        price: "700",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل الخامس",
+        ],
+      },
     ],
   },
   {
@@ -31,9 +134,90 @@ const contractPackages = [
     backGradient: "bg-linear-to-br from-blue-600 to-cyan-600",
     priceText: "text-blue-700",
     speeds: [
-      { speed: "200", price: "800", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل السادس"] },
-      { speed: "500", price: "900", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل السادس"] },
-      { speed: "1000", price: "1000", duration: "18 شهر", features: ["الفاتورة حقيقية وثابتة", "التحميل غير محدود", "التسجيل مجاني تماماً", "التركيب خلال 48 ساعة", "راوتر بتقنية الجيل السادس"] },
+      {
+        speed: "16",
+        price: "710",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "24",
+        price: "710",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "50",
+        price: "760",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "100",
+        price: "760",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "200",
+        price: "810",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "500",
+        price: "910",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "1000",
+        price: "1010",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
     ],
   },
 ];
@@ -44,48 +228,28 @@ const WithContractCards = () => (
       <div key={gi}>
         {/* section header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className={`w-10 h-10 rounded-xl ${group.iconBg.split(" ")[0]} flex items-center justify-center`}>
+          <div
+            className={`w-10 h-10 rounded-xl ${group.iconBg.split(" ")[0]} flex items-center justify-center`}
+          >
             <group.icon size={18} className={group.iconBg.split(" ")[1]} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">{group.category}</h3>
+            <h3 className="text-xl font-bold text-gray-900">
+              {group.category}
+            </h3>
             <p className="text-sm text-gray-400">{group.subtitle}</p>
           </div>
         </div>
 
-        {/* speed cards grid */}
-        <div className="flex sm:grid sm:grid-cols-3 gap-5 overflow-x-auto pb-4 sm:pb-0 sm:overflow-visible snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {group.speeds.map((item, i) => (
-            <motion.div
-              key={`${gi}-${item.speed}`}
-              className="flex-shrink-0 w-[75vw] md:w-[85vw] max-w-[320px] md:w-auto md:max-w-none snap-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 * i }}
-            >
-              <FlippingCard
-                speed={item.speed}
-                price={item.price}
-                title={`عقد ${item.duration}`}
-                features={item.features}
-                palette={{
-                  iconBg: group.iconBg,
-                  badgeBg: group.badgeBg,
-                  textGradient: group.textGradient,
-                  backGradient: group.backGradient,
-                  priceText: group.priceText,
-                }}
-              />
-            </motion.div>
-          ))}
-        </div>
+        <InfiniteScrollRow speeds={group.speeds} group={group} />
       </div>
     ))}
 
     {/* disclaimer */}
     <div className="bg-[#18a2e3]/5 rounded-2xl p-5 border border-[#18a2e3]/10 text-center">
       <p className="text-sm text-gray-600 leading-relaxed">
-        الأسعار تختلف حسب مدة العقد والسرعة المختارة. تواصل معنا للحصول على أفضل عرض يناسب احتياجاتك مع استشارة مجانية.
+        الأسعار تختلف حسب مدة العقد والسرعة المختارة. تواصل معنا للحصول على أفضل
+        عرض يناسب احتياجاتك مع استشارة مجانية.
       </p>
     </div>
   </div>

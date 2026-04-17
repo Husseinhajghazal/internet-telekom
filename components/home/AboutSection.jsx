@@ -54,7 +54,7 @@ const AboutSection = () => {
               {/* main logo card */}
               <p className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-4">
                 <FaYoutube className="text-2xl text-red-500" />
-                شاهد الفيديو أدناه للمزيد من التفاصيب
+                شاهد الفيديو أدناه للمزيد من التفاصيل
               </p>
               <div className="bg-white rounded-3xl shadow-xl shadow-black/[0.04] border border-gray-100/80">
                 <div className="relative w-full h-[300px] md:h-[350px]">

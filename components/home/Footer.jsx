@@ -22,12 +22,12 @@ const Footer = () => {
             {/* logo & about */}
             <div className="md:col-span-1">
               <Link href="/" className="inline-block mb-4">
-                <div className="relative w-[160px] h-[44px]">
+                <div className="relative w-[170px] h-[80px]">
                   <Image
                     src="/full-logo.png"
                     alt="إنترنت تيليكوم"
                     fill
-                    sizes="160px"
+                    sizes="170px"
                     className="object-contain"
                   />
                 </div>
@@ -40,9 +40,7 @@ const Footer = () => {
 
             {/* contact info */}
             <div>
-              <h4 className="text-black font-bold text-base mb-5">
-                تواصل معنا
-              </h4>
+              <h4 className="text-black font-bold text-base mb-5">اتصل بنا</h4>
               <ul className="space-y-3">
                 <li>
                   <a
@@ -63,7 +61,7 @@ const Footer = () => {
                     className="flex items-center gap-3 text-black hover:text-[#25d366] transition-colors duration-300 text-sm"
                   >
                     <FaPhoneAlt size={16} />
-                    <span dir="ltr">0212 611 21 22</span>
+                    <span dir="ltr">+90 212 611 21 22</span>
                   </a>
                 </li>
                 <li>
@@ -80,13 +78,15 @@ const Footer = () => {
 
             {/* social */}
             <div>
-              <h4 className="text-black font-bold text-base mb-5">تابعنا</h4>
+              <h4 className="text-black font-bold text-base mb-5">
+                تابعنا على مواقع التواصل الاجتماعي
+              </h4>
               <div className="flex items-center gap-3">
                 <a
                   href="https://www.facebook.com/internettelekom.net.tr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-[#1877f2] transition-all duration-300"
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[#1877f2] text-white transition-all duration-300"
                 >
                   <FaFacebookF size={20} />
                 </a>
@@ -94,7 +94,7 @@ const Footer = () => {
                   href="https://www.instagram.com/internettelekom.net.tr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-pink-500 transition-all duration-300"
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-pink-500 text-white transition-all duration-300"
                 >
                   <FaInstagram size={20} />
                 </a>
@@ -102,7 +102,7 @@ const Footer = () => {
                   href="https://www.tiktok.com/@internettelekom.net.tr"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-black transition-all duration-300"
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-black text-white transition-all duration-300"
                 >
                   <FaTiktok size={20} />
                 </a>
@@ -110,7 +110,7 @@ const Footer = () => {
                   href="https://wa.me/902126112122"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#ebebeb] text-[#25d366] transition-all duration-300"
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
                 >
                   <FaWhatsapp size={20} />
                 </a>

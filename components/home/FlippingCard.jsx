@@ -183,7 +183,7 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
                 className="mt-1 w-full bg-white rounded-2xl px-4 py-3.5 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200"
               >
                 <span className={`font-extrabold text-sm ${palette.priceText}`}>
-                  سجّل الآن واشترك
+                  إشترك الٱن مجاناً
                 </span>
                 <HiArrowLeft className={`w-4 h-4 ${palette.priceText}`} />
               </Link>

@@ -118,7 +118,7 @@ export default function StartPage() {
 
           <div className="relative z-10 animate-hero-image-in w-full flex justify-center">
             <Image
-              src="/man-112.png"
+              src="/man-113.png"
               alt="رجل باستخدام الإنترنت"
               width={620}
               height={620}

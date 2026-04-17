@@ -18,7 +18,6 @@ const services = [
       "احصل على خط إنترنت جديد بسرعات تصل حتى 1000 ميجابت. خيارات مرنة بعقد أو بدون عقد مع أفضل الأسعار وتركيب خلال 48 ساعة.",
     link: "/internet-basvuru-formu",
     linkText: "سجل الآن طلبك مجاناً",
-    label: "خدمة جديدة",
     bgColor: "bg-[#fffbf5]", // soft cream
     icon: HiMiniWifi,
   },
@@ -29,7 +28,6 @@ const services = [
       "نقل الخط، تجميد الاشتراك، تغيير الملكية، تجديد العقد، وحل كافة المشكلات الفنية. فريقنا المتخصص جاهز لمساعدتك.",
     link: "/internet-basvuru-formu",
     linkText: "اطلب الخدمة مجاناً",
-    label: "دعم فني",
     bgColor: "bg-[#f4f9fd]", // soft blue
     icon: HiMiniWrenchScrewdriver,
   },
@@ -40,7 +38,6 @@ const services = [
       "استشارة مجانية حول أفضل باقة تناسب احتياجاتك، فحص البنية التحتية في منطقتك، ومقارنة العروض المتاحة مع دعم كامل بالعربية.",
     link: "/internet-basvuru-formu",
     linkText: "استشرنا الان مجاناً",
-    label: "استشارة مجانية 100%",
     bgColor: "bg-[#fcf5f5]", // soft pink/red
     icon: HiMiniLightBulb,
   },
@@ -54,11 +51,6 @@ const WideServiceCard = ({ service }) => {
       <div
         className={`w-full md:w-1/2 p-8 sm:p-10 lg:p-14 flex flex-col justify-center ${service.bgColor}`}
       >
-        {/* Label */}
-        <div className="text-black font-bold mb-4 sm:mb-6">
-          <span className="text-sm tracking-wide">{service.label}</span>
-        </div>
-
         {/* Title */}
         <h3
           className={`flex items-center gap-2 text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-4 leading-snug text-[#18a2e3]`}
