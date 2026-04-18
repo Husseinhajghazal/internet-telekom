@@ -58,15 +58,15 @@ const TurkeyMap = () => {
                 geography={geo}
                 fill="rgba(24, 162, 227, 0.12)"
                 stroke="#18a2e3"
-                strokeWidth={0.4}
+                strokeWidth={1.5}
                 strokeOpacity={0.35}
                 style={{
                   default: { outline: "none" },
                   hover: {
-                    fill: "rgba(24, 162, 227, 0.28)",
-                    stroke: "#18a2e3",
-                    strokeWidth: 0.6,
-                    strokeOpacity: 0.6,
+                    fill: "rgba(227, 139, 24, 0.28)",
+                    stroke: "#e38e18ff",
+                    strokeWidth: 1.5,
+                    strokeOpacity: 1,
                     outline: "none",
                   },
                   pressed: { outline: "none" },

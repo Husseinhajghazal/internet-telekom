@@ -12,7 +12,7 @@ export default function StartPage() {
       className="relative flex flex-col items-center justify-center min-h-svh overflow-hidden font-sans"
     >
       {/* ── Background gradient ── */}
-      <div className="absolute inset-0 bg-gradient-to-bl from-[#050d1a] via-[#0c2240] to-[#0f3a6e]" />
+      <div className="absolute inset-0 bg-gradient-to-bl from-white to-[#c5e1ee]" />
 
       {/* ── Radial accent glows ── */}
       <div
@@ -59,21 +59,21 @@ export default function StartPage() {
           </div>
 
           {/* Brand badge */}
-          <div className="animate-hero-text-in hero-delay-1 mb-5 flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/80 text-sm font-semibold tracking-wide backdrop-blur-md">
+          <div className="animate-hero-text-in hero-delay-1 mb-5 flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/5 border border-black/10 text-black/80 text-sm font-semibold tracking-wide backdrop-blur-md">
             <FiGlobe className="text-[#18a2e3] shrink-0" />
             <span>نغطي كافة الولايات التركية</span>
           </div>
 
           {/* Headline */}
-          <h1 className="animate-hero-text-in hero-delay-2 text-[1.75rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5">
+          <h1 className="animate-hero-text-in hero-delay-2 text-[1.75rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-black md:leading-snug mb-4 md:mb-5">
             أهلاً وسهلاً بك في{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-l from-[#f36802] to-[#ffb245]">
+            <span className="bg-clip-text text-transparent bg-gradient-to-l from-[#18a2e3] to-[#0077b6]">
               إنترنت تيليكوم
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="animate-hero-text-in hero-delay-3 text-white/60 text-sm sm:text-base md:text-[1.05rem] leading-relaxed mb-8 max-w-xl">
+          <p className="animate-hero-text-in hero-delay-3 text-black/60 text-sm sm:text-base md:text-[1.05rem] leading-relaxed mb-8 max-w-xl">
             استمتع بإنترنت منزلي فائق السرعة، بكل حرية وبلا قيود. باقات وعروض
             تلبي جميع احتياجاتك في جميع أنحاء تركيا.
           </p>
@@ -82,7 +82,7 @@ export default function StartPage() {
           <div className="animate-hero-text-in hero-delay-4 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link
               href="/internet-basvuru-formu"
-              className="group relative flex items-center justify-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-l from-[#f36802] to-[#ffb245] text-white font-bold text-base shadow-lg shadow-[#f36802]/25 hover:shadow-xl hover:shadow-[#f36802]/40 hover:scale-[1.04] active:scale-[0.98] transition-all duration-300 overflow-hidden"
+              className="group relative flex items-center justify-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-l from-[#18a2e3] to-[#0077b6] text-white font-bold text-base shadow-lg shadow-[#f36802]/25 hover:shadow-xl hover:shadow-[#f36802]/40 hover:scale-[1.04] active:scale-[0.98] transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10">تقديم طلب الآن</span>
               <FiArrowLeft className="relative z-10 text-xl transition-transform group-hover:-translate-x-1" />
@@ -91,7 +91,7 @@ export default function StartPage() {
 
             <Link
               href="/inquiry"
-              className="flex items-center justify-center gap-3 px-8 py-3.5 rounded-full border-2 border-white/25 text-white font-bold text-base hover:bg-white/10 hover:border-white/50 active:scale-[0.98] transition-all duration-300 backdrop-blur-sm"
+              className="flex items-center justify-center gap-3 px-8 py-3.5 rounded-full border-2 border-black/25 text-black font-bold text-base hover:bg-black/10 hover:border-white/50 active:scale-[0.98] transition-all duration-300 backdrop-blur-sm"
             >
               <span>استعلم عن طلبك</span>
               <FiSearch className="text-lg" />

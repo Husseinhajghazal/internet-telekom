@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* ── Global font — Cairo everywhere ── */
+*,
+*::before,
+*::after {
+  font-family: var(--font-cairo), 'Cairo', sans-serif;
+}
+
 /* Custom animations */
 @keyframes fade-in {
   from { opacity: 0; }

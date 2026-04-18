@@ -16,7 +16,7 @@ const PackagesSection = () => {
   return (
     <section
       id="packages"
-      className="py-20 md:py-28 bg-white relative overflow-hidden"
+      className="py-12 md:py-20 bg-white relative overflow-hidden"
     >
       {/* bg decorations */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#18a2e3]/[0.03] rounded-full blur-[150px]" />

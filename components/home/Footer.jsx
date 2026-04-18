@@ -7,7 +7,6 @@ import {
   FaEnvelope,
   FaInstagram,
   FaTiktok,
-  FaHeart,
   FaPhoneAlt,
 } from "react-icons/fa";
 
@@ -40,7 +39,7 @@ const Footer = () => {
 
             {/* contact info */}
             <div>
-              <h4 className="text-black font-bold text-base mb-5">اتصل بنا</h4>
+              <h4 className="text-black font-bold text-base mb-5">اتصل بنا :</h4>
               <ul className="space-y-3">
                 <li>
                   <a
@@ -66,11 +65,11 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="mailto:internet.telekom.merkez@gmail.com"
+                    href="mailto:info@internettelekom.net.tr"
                     className="flex items-center gap-3 text-black hover:text-[#18a2e3] transition-colors duration-300 text-sm"
                   >
                     <FaEnvelope size={14} />
-                    <span>internet.telekom.merkez@gmail.com</span>
+                    <span>info@internettelekom.net.tr</span>
                   </a>
                 </li>
               </ul>
@@ -108,6 +107,14 @@ const Footer = () => {
                 </a>
                 <a
                   href="https://wa.me/902126112122"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
+                >
+                  <FaWhatsapp size={20} />
+                </a>
+                <a
+                  href="https://wa.me/905387345820"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"

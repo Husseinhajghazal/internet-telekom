@@ -67,7 +67,7 @@ const Header = () => {
       id="main-header"
       className="absolute inset-x-0 top-0 z-50 md:top-4 md:px-4 lg:px-8"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px] bg-[#ebebeb] rounded-b-4xl md:rounded-full">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-[72px] bg-linear-to-br from-[#c5e1ee] to-white rounded-b-4xl md:rounded-full">
         {/* ── logo ── */}
         <Link href="/" className="flex-shrink-0 relative">
           <Image

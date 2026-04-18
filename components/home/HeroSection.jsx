@@ -10,27 +10,31 @@ import TurkeyMap from "./TurkeyMap";
 const slides = [
   {
     image: "/man-113.png",
-    title: "إنترنت فائق السرعة يصل إلى 1000 ميفابت بالثانية",
+    title: "إنترنت فائق السرعة يصل إلى ",
+    titleHighlight: "1000 ميفابت بالثانية",
     subtitle:
-      "باقات متنوعة تناسب جميع الاحتياجات وبأسعار منافسة، مع سرعات فائقة تضمن لك أفضل تجربة. كما نوفر لك دعماً مباشراً عبر فريق من الموظفين العرب لتقديم خدمة مميزة وسريعة.",
+      "باقات متنوعة تناسب جميع الاحتياجات بأسعار منافسة وسرعات فائقة تضمن لك أفضل تجربة تصفح وبث. كما نوفر لك دعماً مباشراً على مدار الساعة عبر فريق من الموظفين العرب لتقديم خدمة مميزة وسريعة.",
   },
   {
-    image: "/man-1.png",
-    title: "خدماتنا بين يديك على بعد ضغطة زر واحدة",
+    image: "/man-201.png",
+    title: "خدماتنا بين يديك دائما ",
+    titleHighlight: "على بعد ضغطة زر واحدة",
     subtitle:
-      "تشمل خدماتنا إلغاء الاشتراك، نقل خدمة الإنترنت، تجميد الخط، بالإضافة إلى إمكانية تحويل الإشتراك إلى باقة بدون خط بكل سهولة.",
+      "تشمل خدماتنا إلغاء الاشتراك، نقل خدمة الإنترنت إلى عنوان جديد، تجميد الخط مؤقتاً، بالإضافة إلى إمكانية تحويل اشتراكك إلى باقة بدون خط بكل سهولة وسرعة ودون أي تعقيدات.",
   },
   {
-    image: "/man-4.png",
-    title: "إنترنت بدون عقد! اشترك الآن وتمتع بحرية مطلقة",
+    image: "/man-202.png",
+    title: "إنترنت بدون عقد! اشترك الآن ",
+    titleHighlight: "وتمتع بحرية مطلقة",
     subtitle:
-      "استمتع بخدمة إنترنت بدون أي عقد أو التزامات طويلة الأمد! اشترك بسهولة وابدأ باستخدام الإنترنت فورًا، مع حرية كاملة في التحكم باشتراكك في أي وقت. لا قيود، لا شروط معقدة",
+      "استمتع بخدمة إنترنت بدون أي عقد أو التزامات طويلة الأمد. اشترك بسهولة وابدأ باستخدام الإنترنت فوراً، مع حرية كاملة في التحكم باشتراكك وتغييره أو إلغائه في أي وقت تشاء.",
   },
   {
     useMap: true,
-    title: "خدماتنا تغطي كل مناطق تركيا",
+    title: "خدماتنا ومراكزنا تغطي ",
+    titleHighlight: "كامل المناطق التركية",
     subtitle:
-      "نغطي جميع مناطق تركيا لنوصلك أينما كنت بخدمة إنترنت موثوقة وسريعة.",
+      "بفضل بنيتنا التحتية القوية وشراكاتنا مع أكبر شبكات الاتصال في تركيا، نوفر لك تغطية شاملة في جميع المدن والمناطق التركية لنضمن لك اتصالاً مستقراً وسرعات عالية أينما كنت.",
   },
 ];
 
@@ -88,7 +92,7 @@ const HeroSection = () => {
       <HeroBackground />
 
       {/* ── slides ── */}
-      <div className="relative z-10 min-h-svh pt-28 flex items-center">
+      <div className="relative z-10 min-h-svh md:min-h-[725px] pt-28 flex items-center">
         {slides.map((slide, i) => {
           const isActive = i === active;
           return (
@@ -110,8 +114,13 @@ const HeroSection = () => {
                         شركة إنترنت تيليكوم
                       </span>
 
-                      <h1 className="text-[1.55rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5 animate-hero-text-in hero-delay-2">
+                      <h1 className="text-[1.55rem] px-4 md:px-0 leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5 animate-hero-text-in hero-delay-2">
                         {slide.title}
+                        {slide.titleHighlight && (
+                          <span className="bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent">
+                            {slide.titleHighlight}
+                          </span>
+                        )}
                       </h1>
 
                       <p className="text-white/65 text-sm sm:text-base md:text-[1.05rem] leading-relaxed mb-6 md:mb-8 max-w-xl mx-auto md:mx-0 animate-hero-text-in hero-delay-3">

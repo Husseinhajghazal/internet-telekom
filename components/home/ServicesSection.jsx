@@ -238,7 +238,7 @@ const ServicesSection = () => {
   return (
     <section
       id="services"
-      className="py-16 md:py-28 bg-white relative overflow-hidden"
+      className="py-12 md:py-20 bg-white relative overflow-hidden"
     >
       {/* subtle bg decoration */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-[#18a2e3]/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />

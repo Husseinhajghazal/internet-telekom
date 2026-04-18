@@ -157,7 +157,7 @@ const FeaturesSection = () => {
   return (
     <section
       id="features"
-      className="py-20 md:py-28 relative overflow-hidden"
+      className="py-12 md:py-20 relative overflow-hidden"
       style={{
         background:
           "linear-gradient(135deg, #f8fbff 0%, #eef5fb 50%, #f0f7fc 100%)",

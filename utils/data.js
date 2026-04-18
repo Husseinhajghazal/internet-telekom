@@ -124,13 +124,12 @@ const SIDEBAR_CONTENT = {
     Icon: MdCheckCircleOutline,
   },
   step6_inquiry: {
-    image: "/thinking.jpg",
+    image: "/service-3.png",
     title: "تأكيد الاستشارة",
     description: "راجع بيانات طلبك حتى نتمكن من التواصل معك وتقديم الاستشارة التي تحتاجها في أقرب وقت.",
     Icon: MdCheckCircleOutline,
   },
 };
-
 
 const STATUS_LABELS = {
   NOT_COMPLETED: "غير مكتمل",

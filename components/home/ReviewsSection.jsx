@@ -51,7 +51,7 @@ const ReviewsSection = () => {
   return (
     <section
       id="reviews"
-      className="py-20 md:py-28 bg-white relative overflow-hidden"
+      className="py-12 md:py-20 bg-white relative overflow-hidden"
     >
       {/* bg */}
       <div className="absolute top-0 right-0 w-80 h-80 bg-[#18a2e3]/[0.03] rounded-full blur-[100px]" />
