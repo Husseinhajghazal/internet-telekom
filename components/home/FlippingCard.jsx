@@ -110,6 +110,12 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
           <div
             className={`rounded-3xl overflow-hidden shadow-2xl ${palette.backGradient} relative`}
           >
+            {/* background image */}
+            <div
+              className="absolute w-48 inset-0 opacity-[0.15] bg-contain bg-no-repeat bg-top-center mt-5 mr-15 pointer-events-none"
+              style={{ backgroundImage: "url('/internet-meter-3.png')" }}
+            />
+
             {/* subtle dot-grid texture */}
             <div
               className="absolute inset-0 opacity-[0.08]"

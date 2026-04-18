@@ -111,7 +111,7 @@ const PackageSpeedGrid = ({
               >
                 {/* Background Shadow Icon */}
                 <div className="absolute -right-12 -bottom-6 pointer-events-none transform -rotate-12 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 z-0">
-                  <SpeedIcon className="w-56 h-56 text-blue-100" />
+                  <SpeedIcon className="w-56 h-56 text-gray-100/80" />
                 </div>
                 {/* Subtle Glowing Blob */}
                 <div
@@ -167,63 +167,93 @@ const PackageSpeedGrid = ({
                 </div>
               </div>
 
-              {/* === BACK FACE (Dark Premium & Neon) === */}
+              {/* === BACK FACE (Colorful Premium) === */}
               <div
-                className={`col-start-1 row-start-1 relative flex flex-col h-full rounded-3xl bg-[#0B1120] [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-hidden shadow-2xl transition-all duration-300
+                className={`col-start-1 row-start-1 relative flex flex-col h-full rounded-3xl [backface-visibility:hidden] [transform:rotateY(180deg)] overflow-hidden shadow-2xl transition-all duration-300
+                ${palette.backGradient}
                 ${
                   isSelected
                     ? `border-2 ${palette.activeBorder} ring-4 ${palette.activeRing}`
-                    : "border border-gray-800"
+                    : "border border-white/20"
                 }`}
               >
-                {/* Subtle colored glow from top */}
-                <div className={`absolute top-0 left-0 w-full h-1/2 opacity-20 bg-gradient-to-b ${palette.backGradient.replace('bg-gradient-to-br ', '') || palette.backGradient} blur-3xl pointer-events-none`} />
+                {/* background image */}
+                <div
+                  className="absolute w-48 inset-0 opacity-[0.15] bg-contain bg-no-repeat bg-top-center mt-5 mr-15 pointer-events-none"
+                  style={{ backgroundImage: "url('/internet-meter-3.png')" }}
+                />
 
-                {/* Large wireframe/opacity icon in center */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-[0.03]">
-                  <SpeedIcon className="w-80 h-80 text-white" />
-                </div>
+                {/* subtle dot-grid texture */}
+                <div
+                  className="absolute inset-0 opacity-[0.08]"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle, white 1px, transparent 1px)",
+                    backgroundSize: "20px 20px",
+                  }}
+                />
 
-                {/* Premium Header */}
-                <div className="px-6 pt-10 pb-4 relative z-10 text-center flex flex-col items-center">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center bg-gray-900 border border-gray-700/50 mb-5 shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)] relative transition-transform duration-500 ${isSelected ? "scale-105" : "scale-95 group-hover:scale-100"}`}>
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${palette.textGradient} opacity-20 blur-md`} />
-                    <SpeedIcon className="text-3xl text-white relative z-10" />
+                {/* top-right glow orb */}
+                <div className="absolute -top-12 -right-12 w-40 h-40 bg-white/25 rounded-full blur-3xl pointer-events-none" />
+                {/* bottom-left glow orb */}
+                <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-black/20 rounded-full blur-2xl pointer-events-none" />
+
+                <div className="relative z-10 p-6 flex flex-col gap-4 flex-1">
+                  {/* speed + icon row */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-white/50 text-[10px] font-bold uppercase tracking-[0.15em]">
+                        السرعة
+                      </span>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-white font-black text-5xl tracking-tight leading-none">
+                          {speed}
+                        </span>
+                        <span className="text-white/50 text-sm font-bold self-end mb-0.5">
+                          Mbps
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-13 h-13 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center p-3 backdrop-blur-sm">
+                      <SpeedIcon className="text-3xl text-white" />
+                    </div>
                   </div>
-                  
-                  <h4 className="text-white font-black text-5xl tracking-tighter mb-1 relative flex items-baseline gap-1.5">
-                    {speed} 
-                    <span className="text-sm text-gray-500 uppercase tracking-widest font-bold">Mbps</span>
-                  </h4>
-                  
-                  <div className="flex items-center justify-center gap-1.5 mt-2">
-                    <span className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${palette.textGradient}`}>
-                      {displayPrice} 
+
+                  {/* price chip */}
+                  <div className="flex items-center justify-between bg-black/20 border border-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm">
+                    <span className="text-white/60 text-xs font-semibold">
+                      الاشتراك الشهري
                     </span>
-                    <span className="text-gray-500 text-xs">TL / شهرياً</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-white font-black text-2xl tracking-tight">
+                        {displayPrice}
+                      </span>
+                      <span className="text-white/50 text-xs font-bold">TL</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Features */}
-                <div className="px-6 pb-6 relative z-10 flex-1 flex flex-col justify-start">
-                  <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-700 to-transparent mb-5 opacity-50" />
-                  
-                  <ul className="space-y-4 flex-1 mt-1">
+                  {/* divider */}
+                  <div className="h-px w-full bg-white/15" />
+
+                  {/* features */}
+                  <ul className="space-y-2.5 flex-1">
                     {features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-4 group/feature">
-                        <div className={`mt-0.5 rounded-full w-5 h-5 flex items-center justify-center shrink-0 bg-gradient-to-br ${palette.textGradient} shadow-[0_0_10px_rgba(255,255,255,0.1)] group-hover/feature:scale-110 transition-transform duration-300`}>
+                      <li key={i} className="flex items-center gap-3">
+                        <div className="w-5 h-5 rounded-full bg-white/20 border border-white/30 flex items-center justify-center shrink-0">
                           <MdCheckCircle className="text-white text-xs" />
                         </div>
-                        <span className="text-gray-400 text-sm font-medium group-hover/feature:text-gray-200 transition-colors leading-snug">{feature}</span>
+                        <span className="text-white/85 text-sm font-medium leading-snug">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
-                </div>
 
-                {/* Bottom Radio indicator */}
-                <div className="p-5 mt-auto bg-gradient-to-t from-[#0B1120] to-transparent relative z-10 w-full flex justify-center">
-                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${isSelected ? `border-transparent bg-gradient-to-br ${palette.textGradient} shadow-[0_0_15px_-3px_rgba(255,255,255,0.3)]` : "border-gray-700 bg-gray-900"}`}>
-                    <div className={`w-3 h-3 rounded-full bg-white transition-all duration-300 ${isSelected ? "scale-100 opacity-100" : "scale-0 opacity-0"}`} />
+                  {/* Bottom Radio indicator */}
+                  <div className="w-full flex justify-center mt-auto pt-2">
+                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${isSelected ? "border-transparent bg-white shadow-lg" : "border-white/30 bg-white/10"}`}>
+                      <div className={`w-3 h-3 rounded-full transition-all duration-300 ${isSelected ? `scale-100 opacity-100 bg-gradient-to-br ${palette.textGradient}` : "scale-0 opacity-0 bg-white"}`} />
+                    </div>
                   </div>
                 </div>
               </div>

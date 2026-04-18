@@ -34,7 +34,7 @@ function InfiniteScrollRow({ speeds, group }) {
       {/* left arrow */}
       <button
         onClick={() => scroll(-1)}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 -translate-x-1 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-600 hover:text-gray-900 hover:shadow-lg transition-all"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-30 -translate-x-1 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-600 hover:text-gray-900 hover:shadow-lg transition-all"
         aria-label="السابق"
       >
         <FaChevronLeft size={14} />
@@ -42,10 +42,11 @@ function InfiniteScrollRow({ speeds, group }) {
 
       <div
         ref={ref}
+        dir="ltr"
         className="flex gap-5 overflow-x-auto pb-4 px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {tripled.map((item, i) => (
-          <div key={i} className="shrink-0 w-65">
+          <div key={i} dir="rtl" className="shrink-0 w-65">
             <FlippingCard
               speed={item.speed}
               price={item.price}
@@ -66,7 +67,7 @@ function InfiniteScrollRow({ speeds, group }) {
       {/* right arrow */}
       <button
         onClick={() => scroll(1)}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 translate-x-1 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-600 hover:text-gray-900 hover:shadow-lg transition-all"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-30 translate-x-1 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-600 hover:text-gray-900 hover:shadow-lg transition-all"
         aria-label="التالي"
       >
         <FaChevronRight size={14} />
@@ -209,6 +210,90 @@ const contractPackages = [
       {
         speed: "1000",
         price: "1010",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "16",
+        price: "700",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "24",
+        price: "700",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "50",
+        price: "750",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "100",
+        price: "750",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "200",
+        price: "800",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "500",
+        price: "900",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "1000",
+        price: "1000",
         duration: "12 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
