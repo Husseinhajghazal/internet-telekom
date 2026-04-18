@@ -62,7 +62,7 @@ const PackagesSection = () => {
                 <HiLightningBolt className="w-4 h-4 text-white" />
               </div>
               <span className="text-base font-bold bg-linear-to-l from-purple-600 to-fuchsia-500 bg-clip-text text-transparent whitespace-nowrap">
-                بدون عقد
+                بدون عقد إشتراك
               </span>
             </div>
             <div className="flex-1 h-px bg-linear-to-r from-fuchsia-200 to-transparent" />

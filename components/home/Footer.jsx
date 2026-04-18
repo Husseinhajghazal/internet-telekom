@@ -8,6 +8,7 @@ import {
   FaInstagram,
   FaTiktok,
   FaPhoneAlt,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 
 const Footer = () => {
@@ -31,10 +32,53 @@ const Footer = () => {
                   />
                 </div>
               </Link>
-              <p className="text-black text-sm leading-relaxed max-w-sm">
-                منذ 2015 نعمل على توفير أفضل خدمات الإنترنت المنزلي في تركيا
-                للمجتمع العربي. نقدم حلولاً متكاملة بمعايير عالية وأسعار منافسة.
-              </p>
+              <div>
+                <h4 className="text-black font-bold text-base mb-5">
+                  تابعنا على مواقع التواصل الاجتماعي
+                </h4>
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://www.facebook.com/internettelekom.net.tr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-[#1877f2] text-white transition-all duration-300"
+                  >
+                    <FaFacebookF size={20} />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/internettelekom.net.tr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-pink-500 text-white transition-all duration-300"
+                  >
+                    <FaInstagram size={20} />
+                  </a>
+                  <a
+                    href="https://www.tiktok.com/@internettelekom.net.tr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-black text-white transition-all duration-300"
+                  >
+                    <FaTiktok size={20} />
+                  </a>
+                  <a
+                    href="https://wa.me/902126112122"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
+                  >
+                    <FaWhatsapp size={20} />
+                  </a>
+                  <a
+                    href="https://wa.me/905387345820"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
+                  >
+                    <FaWhatsapp size={20} />
+                  </a>
+                </div>
+              </div>
             </div>
 
             {/* contact info */}
@@ -75,60 +119,43 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* social */}
+            {/* map */}
             <div>
-              <h4 className="text-black font-bold text-base mb-5">
-                تابعنا على مواقع التواصل الاجتماعي
-              </h4>
-              <div className="flex items-center gap-3">
-                <a
-                  href="https://www.facebook.com/internettelekom.net.tr"
-                  target="_blank"
+              <h4 className="text-black font-bold text-base mb-5">تفضل بزيارة مكتبنا :</h4>
+              <div className="rounded-2xl overflow-hidden relative group transition-all duration-400 hover:shadow-[0_12px_40px_rgba(24,162,227,0.15)] hover:-translate-y-1 bg-white">
+                <a 
+                  href="https://maps.google.com/?q=41.0381827,28.8824575" 
+                  target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[#1877f2] text-white transition-all duration-300"
+                  className="absolute inset-0 z-20 flex items-center justify-center bg-black/0 group-hover:bg-black/10 backdrop-blur-[0px] group-hover:backdrop-blur-sm transition-all duration-500"
+                  aria-label="فتح في خرائط جوجل"
                 >
-                  <FaFacebookF size={20} />
+                  <div className="opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75 bg-white text-black px-6 py-2.5 rounded-full font-bold flex items-center gap-3 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                    <FaMapMarkerAlt size={18} className="text-[#18a2e3]" />
+                    <span className="text-sm">عرض على الخريطة</span>
+                  </div>
                 </a>
-                <a
-                  href="https://www.instagram.com/internettelekom.net.tr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-pink-500 text-white transition-all duration-300"
-                >
-                  <FaInstagram size={20} />
-                </a>
-                <a
-                  href="https://www.tiktok.com/@internettelekom.net.tr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-black text-white transition-all duration-300"
-                >
-                  <FaTiktok size={20} />
-                </a>
-                <a
-                  href="https://wa.me/902126112122"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
-                >
-                  <FaWhatsapp size={20} />
-                </a>
-                <a
-                  href="https://wa.me/905387345820"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
-                >
-                  <FaWhatsapp size={20} />
-                </a>
+                <div className="relative w-full h-[200px] overflow-hidden">
+                  <iframe
+                    src="https://maps.google.com/maps?q=41.0381827,28.8824575&z=17&hl=ar&output=embed"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="موقع إنترنت تيليكوم"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* bottom copyright */}
           <div className="pt-6 flex flex-col md:flex-row items-center justify-center gap-3">
-            <p className="text-black text-xs">
-              © {currentYear} إنترنت تيليكوم. جميع الحقوق محفوظة.
+            <p className="text-black text-sm">
+              © {currentYear} إنترنت تيليكوم - جميع الحقوق محفوظة
             </p>
           </div>
         </div>
