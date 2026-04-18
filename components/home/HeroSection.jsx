@@ -105,11 +105,11 @@ const HeroSection = () => {
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-10 lg:gap-16 pt-24 pb-0 md:pt-32 md:pb-20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-10 lg:gap-16 pb-0 md:pb-20">
                 {/* ── text side (first in DOM → RIGHT in RTL) ── */}
                 <div className="flex-1 text-center md:text-right min-w-0">
                   {isActive && (
-                    <div>
+                    <div className="pt-24 md:pt-0">
                       <span className="inline-block font-extrabold text-lg sm:text-xl md:text-2xl mb-3 md:mb-4 bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent tracking-wide animate-hero-text-in hero-delay-1">
                         شركة إنترنت تيليكوم
                       </span>
@@ -149,7 +149,7 @@ const HeroSection = () => {
                 </div>
 
                 {/* ── image side (second in DOM → LEFT in RTL) ── */}
-                <div className="flex-1 relative flex items-end justify-center min-w-0">
+                <div className={`flex-1 relative flex items-end justify-center min-w-0 ${slide.useMap ? "" : "pt-24 md:pt-32"} `}>
                   {/* primary glow */}
                   <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] rounded-full bg-[#18a2e3]/20 blur-[70px] md:blur-[100px] animate-hero-glow" />
                   {/* warm accent glow */}

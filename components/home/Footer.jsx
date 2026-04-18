@@ -121,7 +121,7 @@ const Footer = () => {
 
             {/* map */}
             <div>
-              <h4 className="text-black font-bold text-base mb-5">تفضل بزيارة مكتبنا :</h4>
+              <h4 className="text-black font-bold text-base mb-5 text-center">تفضل بزيارة شركتنا</h4>
               <div className="rounded-2xl overflow-hidden relative group transition-all duration-400 hover:shadow-[0_12px_40px_rgba(24,162,227,0.15)] hover:-translate-y-1 bg-white">
                 <a 
                   href="https://maps.google.com/?q=41.0381827,28.8824575" 

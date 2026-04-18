@@ -4,29 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { FiArrowLeft, FiSearch, FiGlobe } from "react-icons/fi";
 import HeroBackground from "@/components/home/HeroBackground";
+import { FaWifi } from "react-icons/fa";
 
 export default function StartPage() {
   return (
     <div
       dir="rtl"
-      className="relative flex flex-col items-center justify-center min-h-svh overflow-hidden font-sans"
+      className="relative bg-[#fdfeff] flex flex-col items-center justify-center min-h-svh overflow-hidden font-sans"
     >
-      {/* ── Background gradient ── */}
-      <div className="absolute inset-0 bg-gradient-to-bl from-white to-[#c5e1ee]" />
-
-      {/* ── Radial accent glows ── */}
-      <div
-        className="absolute inset-0 opacity-30 pointer-events-none"
-        style={{
-          backgroundImage: `
-            radial-gradient(ellipse 600px 400px at 20% 50%, rgba(24,162,227,0.25), transparent),
-            radial-gradient(ellipse 500px 500px at 80% 30%, rgba(88,152,183,0.2), transparent),
-            radial-gradient(ellipse 400px 300px at 60% 80%, rgba(24,162,227,0.15), transparent),
-            radial-gradient(ellipse 350px 250px at 90% 70%, rgba(243,104,2,0.1), transparent)
-          `,
-        }}
-      />
-
       {/* ── Subtle grid overlay ── */}
       <div
         className="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -65,15 +50,15 @@ export default function StartPage() {
           </div>
 
           {/* Headline */}
-          <h1 className="animate-hero-text-in hero-delay-2 text-[1.75rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-black md:leading-snug mb-4 md:mb-5">
-            أهلاً وسهلاً بك في{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-l from-[#18a2e3] to-[#0077b6]">
+          <h1 className="animate-hero-text-in hero-delay-2 text-[1.65rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-black md:leading-snug mb-4 md:mb-5">
+            أهلاً وسهلاً بك{" "} <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-l from-[#f36802] to-[#ffb245] text-[2rem]">
               إنترنت تيليكوم
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="animate-hero-text-in hero-delay-3 text-black/60 text-sm sm:text-base md:text-[1.05rem] leading-relaxed mb-8 max-w-xl">
+          <p className="animate-hero-text-in hero-delay-3 text-black/60 text-sm sm:text-base md:text-[1.05rem] leading-relaxed mb-8 max-w-xl px-4">
             استمتع بإنترنت منزلي فائق السرعة، بكل حرية وبلا قيود. باقات وعروض
             تلبي جميع احتياجاتك في جميع أنحاء تركيا.
           </p>
@@ -82,7 +67,7 @@ export default function StartPage() {
           <div className="animate-hero-text-in hero-delay-4 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link
               href="/internet-basvuru-formu"
-              className="group relative flex items-center justify-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-l from-[#18a2e3] to-[#0077b6] text-white font-bold text-base shadow-lg shadow-[#f36802]/25 hover:shadow-xl hover:shadow-[#f36802]/40 hover:scale-[1.04] active:scale-[0.98] transition-all duration-300 overflow-hidden"
+              className="group relative flex items-center justify-center gap-3 px-8 py-3.5 rounded-full bg-gradient-to-l from-[#f36802] to-[#ffb245] text-white font-bold text-base shadow-lg shadow-[#f36802]/25 hover:scale-[1.04] active:scale-[0.98] transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10">تقديم طلب الآن</span>
               <FiArrowLeft className="relative z-10 text-xl transition-transform group-hover:-translate-x-1" />
@@ -91,7 +76,7 @@ export default function StartPage() {
 
             <Link
               href="/inquiry"
-              className="flex items-center justify-center gap-3 px-8 py-3.5 rounded-full border-2 border-black/25 text-black font-bold text-base hover:bg-black/10 hover:border-white/50 active:scale-[0.98] transition-all duration-300 backdrop-blur-sm"
+              className="flex items-center justify-center gap-3 px-8 py-3.5 rounded-full text-white font-bold text-base bg-gradient-to-l from-[#18a2e3] to-[#0077b6] active:scale-[0.98] transition-all duration-300 backdrop-blur-sm"
             >
               <span>استعلم عن طلبك</span>
               <FiSearch className="text-lg" />
@@ -103,44 +88,20 @@ export default function StartPage() {
             الحرية في التواصل&nbsp;|&nbsp;© 2026 إنترنت تيليكوم
           </p>
         </div>
-
-        {/* ── Image side (left in RTL) ── */}
-        <div className="flex-1 relative flex items-center justify-center min-w-0 w-full md:max-w-[50%]">
-          {/* Primary glow */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] md:w-[450px] md:h-[450px] rounded-full bg-[#18a2e3]/20 blur-[80px] md:blur-[110px] animate-hero-glow" />
-          </div>
-          {/* Warm accent glow */}
-          <div
-            className="absolute bottom-[20%] left-[38%] w-[160px] h-[160px] md:w-[220px] md:h-[220px] rounded-full bg-[#f36802]/10 blur-[60px] md:blur-[80px] animate-hero-glow pointer-events-none"
-            style={{ animationDelay: "2s" }}
-          />
-
-          <div className="relative z-10 animate-hero-image-in w-full flex justify-center">
-            <Image
-              src="/man-113.png"
-              alt="رجل باستخدام الإنترنت"
-              width={620}
-              height={620}
-              className="object-contain w-auto max-h-[40vh] sm:max-h-[50vh] md:max-h-[70vh] drop-shadow-[0_20px_60px_rgba(24,162,227,0.35)] rounded-3xl"
-              priority
-            />
-          </div>
-        </div>
       </div>
 
       {/* ── Bottom wave ── */}
-      <div className="absolute -bottom-1 left-0 right-0 z-20 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none">
         <svg
           viewBox="0 0 1440 80"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto"
+          className="w-full h-20 sm:h-24 md:h-28 lg:h-auto"
           preserveAspectRatio="none"
         >
           <path
             d="M0 40C240 80 480 0 720 40C960 80 1200 0 1440 40V80H0V40Z"
-            fill="rgba(24,162,227,0.07)"
+            fill="rgba(24,162,227,1)"
           />
         </svg>
       </div>
