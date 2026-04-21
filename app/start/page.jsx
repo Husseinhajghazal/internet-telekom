@@ -4,7 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { FiArrowLeft, FiSearch, FiGlobe } from "react-icons/fi";
 import HeroBackground from "@/components/home/HeroBackground";
-import { FaWifi } from "react-icons/fa";
+import { FaWifi, FaUsers, FaMapMarkedAlt, FaStar, FaHeadset } from "react-icons/fa";
+
+const stats = [
+  { value: "50", suffix: "K+", suffixColor: "text-[#f36802]", label: "ألف عميل سعيد", icon: FaUsers },
+  { value: "81", suffix: "+", suffixColor: "text-[#f36802]", label: "ولاية مغطاة", icon: FaMapMarkedAlt },
+  { value: "10", suffix: "Y+", suffixColor: "text-[#f36802]", label: "سنوات من الخبرة", icon: FaStar },
+  { value: "24", suffix: "/7", suffixColor: "text-[#f36802]", label: "دعم فني بالعربية", icon: FaHeadset },
+];
 
 export default function StartPage() {
   return (
@@ -28,7 +35,7 @@ export default function StartPage() {
       <HeroBackground />
 
       {/* ── Main content ── */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-10 lg:gap-16 pt-16 md:py-0 min-h-svh">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-10 lg:gap-16 pt-8 md:py-0 min-h-svh">
         {/* ── Text side (right in RTL) ── */}
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-right min-w-0">
           {/* Logo */}
@@ -83,10 +90,63 @@ export default function StartPage() {
             </Link>
           </div>
 
-          {/* Footer note */}
-          <p className="animate-hero-text-in hero-delay-4 mt-10 text-white/30 text-xs font-medium tracking-wide">
-            الحرية في التواصل&nbsp;|&nbsp;© 2026 إنترنت تيليكوم
-          </p>
+          {/* Stats below buttons */}
+          <div className="animate-hero-text-in hero-delay-5 mt-8 md:mt-10 w-full sm:w-auto grid md:hidden grid-cols-4 gap-1.5 sm:gap-4 md:gap-6 bg-black/[0.02] border border-black/[0.05] rounded-[2rem] p-3 sm:p-5">
+            {stats.map((stat, idx) => (
+              <div key={idx} className="flex flex-col items-center text-center">
+                <div className="flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#0c2240]/5 mb-1.5 sm:mb-2">
+                  <stat.icon className="text-[11px] sm:text-base text-[#f36802]" />
+                </div>
+                <div className="text-[13px] sm:text-xl lg:text-2xl font-black text-[#0c2240] tracking-tight sm:tracking-wider sm:mb-0.5" dir="ltr">
+                  {stat.value}
+                  {stat.suffix && (
+                    <span className={stat.suffixColor}>{stat.suffix}</span>
+                  )}
+                </div>
+                <div className="text-[#0c2240]/80 text-[8.5px] sm:text-xs md:text-sm font-semibold tracking-tight leading-[1.3] sm:leading-normal mt-0.5 sm:mt-0">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Image side (left in RTL) ── */}
+        <div className="flex-1 hidden md:flex items-center justify-center w-full max-w-md md:max-w-none mt-8 md:mt-0">
+          <div className="relative w-full max-w-sm sm:max-w-md">
+            {/* Floating tech icons */}
+            <HeroBackground />
+
+            {/* Main image container */}
+            <div className="relative animate-hero-image-in">
+              {/* Decorative background blob */}
+              <div className="absolute -inset-10 bg-gradient-to-br from-[#f36802]/10 to-[#ffb245]/10 rounded-full blur-3xl -z-10" />
+
+              {/* Image with glow */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#f36802] to-[#ffb245] rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-700" />
+                <Image
+                  src="/man-113.png"
+                  alt="إنترنت تيليكوم"
+                  width={600}
+                  height={600}
+                  className="relative w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                  priority
+                />
+              </div>
+
+              {/* Floating badge with subtle glow */}
+              <div className="absolute -bottom-6 -left-6 animate-hero-image-in hero-delay-2 w-48 sm:w-56 bg-white/90 backdrop-blur-md border border-white/60 rounded-2xl p-4 shadow-xl flex items-center gap-3 hover:scale-110 transition-transform duration-500">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f36802] to-[#ffb245] flex items-center justify-center text-white shadow-lg">
+                  <FaWifi className="text-lg" />
+                </div>
+                <div>
+                  <div className="text-black/80 text-xs font-semibold tracking-wide">إنترنت فائق السرعة</div>
+                  <div className="text-[#f36802] text-sm font-bold">1000 Mbps</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

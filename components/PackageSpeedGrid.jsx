@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { Field } from "formik";
 import { MdSpeed, MdCheckCircle, MdWifi, MdFlashOn, MdElectricBolt, MdRocketLaunch } from "react-icons/md";
+import { HiArrowLeft } from "react-icons/hi";
 import { BsFillAirplaneFill } from "react-icons/bs";
-import { FaFireAlt } from "react-icons/fa";
+import { FaFireAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { PRICES_TL, PACKAGE_FEATURES } from "@/utils/data"
 
 const palettes = {
@@ -54,6 +55,13 @@ const PackageSpeedGrid = ({
   selectedPackage,
 }) => {
   const palette = palettes[theme] || palettes.blue;
+  const scrollRef = useRef(null);
+
+  const scroll = (dir) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: dir * 320, behavior: "smooth" });
+    }
+  };
 
   const getStaticPriceTl = (speed) => {
     const price = PRICES_TL?.[kind]?.[String(duration)]?.[String(speed)];
@@ -72,7 +80,23 @@ const PackageSpeedGrid = ({
   };
 
   return (
-    <div className="flex lg:grid flex-nowrap lg:grid-cols-2 xl:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-3 lg:px-2 w-full scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="relative w-full">
+      {/* Left Arrow */}
+      {speeds.length > 2 && (
+        <button
+          type="button"
+          onClick={() => scroll(-1)}
+          className="lg:flex hidden absolute left-0 top-1/2 -translate-y-1/2 z-30 -translate-x-4 w-9 h-9 items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all opacity-100"
+          aria-label="السابق"
+        >
+          <FaChevronLeft size={14} />
+        </button>
+      )}
+
+      <div
+        ref={scrollRef}
+        className="flex flex-nowrap gap-5 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-10 pt-4 px-3 w-full scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      >
       {speeds.map((speed) => {
         const valueKey = duration
           ? `${kind}-${duration}-${speed}`
@@ -86,7 +110,7 @@ const PackageSpeedGrid = ({
         return (
           <label
             key={valueKey}
-            className="group relative cursor-pointer shrink-0 w-[75vw] sm:w-[320px] lg:w-auto snap-center [perspective:2000px] transition-transform duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] rounded-3xl"
+            className="group relative cursor-pointer shrink-0 w-[75vw] sm:w-[320px] snap-center block [perspective:2000px] transition-transform duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] rounded-3xl"
           >
             <Field
               type="radio"
@@ -249,10 +273,13 @@ const PackageSpeedGrid = ({
                     ))}
                   </ul>
 
-                  {/* Bottom Radio indicator */}
-                  <div className="w-full flex justify-center mt-auto pt-2">
-                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${isSelected ? "border-transparent bg-white shadow-lg" : "border-white/30 bg-white/10"}`}>
-                      <div className={`w-3 h-3 rounded-full transition-all duration-300 ${isSelected ? `scale-100 opacity-100 bg-gradient-to-br ${palette.textGradient}` : "scale-0 opacity-0 bg-white"}`} />
+                  {/* Visual CTA Button */}
+                  <div className="mt-auto pt-2 w-full">
+                    <div className="w-full bg-white rounded-2xl px-4 py-3.5 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
+                      <span className={`font-extrabold text-sm ${palette.priceText}`}>
+                        إشترك الٱن مجاناً
+                      </span>
+                      <HiArrowLeft className={`w-4 h-4 ${palette.priceText}`} />
                     </div>
                   </div>
                 </div>
@@ -262,6 +289,19 @@ const PackageSpeedGrid = ({
           </label>
         );
       })}
+      </div>
+
+      {/* Right Arrow */}
+      {speeds.length > 2 && (
+        <button
+          type="button"
+          onClick={() => scroll(1)}
+          className="lg:flex hidden absolute right-0 top-1/2 -translate-y-1/2 z-30 translate-x-4 w-9 h-9 items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-gray-500 hover:text-gray-900 hover:shadow-lg transition-all opacity-100"
+          aria-label="التالي"
+        >
+          <FaChevronRight size={14} />
+        </button>
+      )}
     </div>
   );
 };

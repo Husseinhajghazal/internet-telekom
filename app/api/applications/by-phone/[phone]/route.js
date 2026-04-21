@@ -28,6 +28,7 @@ const applicationSelect = {
   lastInvoiceAmount: true,
   selectedInquiry: true,
   adminNote: true,
+  adminNoteViewed: true,
   createdAt: true,
   updatedAt: true,
 };

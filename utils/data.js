@@ -93,7 +93,7 @@ const SIDEBAR_CONTENT = {
       Icon: FaFileContract,
     },
     inquiry: {
-      image: "/consulting.jpg",
+      image: "/service-6.png",
       title: "استشارة مجانية",
       description: "نحن هنا للإجابة على كافة استفساراتك وتوجيهك نحو الاختيار الأمثل لك.",
       Icon: MdOutlineContactSupport,
@@ -118,7 +118,7 @@ const SIDEBAR_CONTENT = {
     Icon: TfiWorld,
   },
   step6: {
-    image: "/map.jpg",
+    image: "/approve.jpg",
     title: "تأكيد الطلب",
     description: "يرجى مراجعة وتأكيد بيانات طلبك النهائية لضمان تفعيل خدمتكم بشكل صحيح وسريع.",
     Icon: MdCheckCircleOutline,
@@ -139,6 +139,8 @@ const STATUS_LABELS = {
   DELAYED: "مؤجل",
   REJECTED: "ملغى",
   COMPLETED: "مكتمل",
+  TECHNICAL_PROBLEM: "مشكلة تقنية",
+  TRYING_TO_PERSUADE: "محاولة إقناع",
 };
 
 export { USER_AGREEMENT_TEXT, PRICES_TL, PACKAGE_FEATURES, SIDEBAR_CONTENT, STATUS_LABELS };

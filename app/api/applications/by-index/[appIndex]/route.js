@@ -31,6 +31,7 @@ const applicationSelect = {
   newAddress: true,
   newPhone: true,
   adminNote: true,
+  adminNoteViewed: true,
   createdAt: true,
   updatedAt: true,
 };

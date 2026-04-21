@@ -320,6 +320,10 @@ const statusBadgeClass = (status) => {
       return "bg-orange-100 text-orange-900 ring-1 ring-orange-200/60";
     case "NOT_COMPLETED":
       return "bg-slate-100 text-slate-700 ring-1 ring-slate-200/60";
+    case "TECHNICAL_PROBLEM":
+      return "bg-rose-100 text-rose-900 ring-1 ring-rose-200/60";
+    case "TRYING_TO_PERSUADE":
+      return "bg-fuchsia-100 text-fuchsia-900 ring-1 ring-fuchsia-200/60";
     default:
       return "bg-gray-100 text-gray-800";
   }

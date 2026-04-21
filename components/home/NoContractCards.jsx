@@ -12,6 +12,7 @@ const noContractPackages = [
     price: 699,
     popular: false,
     features: [
+      "الفاتورة حقيقية وثابتة",
       "التسجيل مجاني تماماً",
       "التحميل غير محدود",
       "التركيب خلال 48 ساعة",
@@ -25,6 +26,7 @@ const noContractPackages = [
     price: 699,
     popular: true,
     features: [
+      "الفاتورة حقيقية وثابتة",
       "التسجيل مجاني تماماً",
       "التحميل غير محدود",
       "التركيب خلال 48 ساعة",
@@ -38,6 +40,7 @@ const noContractPackages = [
     price: 699,
     popular: false,
     features: [
+      "الفاتورة حقيقية وثابتة",
       "التسجيل مجاني تماماً",
       "التحميل غير محدود",
       "التركيب خلال 48 ساعة",

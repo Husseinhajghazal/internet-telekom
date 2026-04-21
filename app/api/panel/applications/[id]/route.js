@@ -10,6 +10,8 @@ const ALLOWED_STATUSES = [
   "DELAYED",
   "REJECTED",
   "COMPLETED",
+  "TECHNICAL_PROBLEM",
+  "TRYING_TO_PERSUADE",
 ];
 
 export async function PATCH(request, { params }) {
@@ -27,6 +29,14 @@ export async function PATCH(request, { params }) {
 
     const body = await request.json();
     const data = {};
+
+    let existingAppForPatch = null;
+    if (body.adminNote !== undefined) {
+      existingAppForPatch = await prisma.application.findUnique({
+        where: { id },
+        select: { adminNote: true },
+      });
+    }
 
     if (body.status !== undefined) {
       if (!ALLOWED_STATUSES.includes(body.status)) {
@@ -52,6 +62,9 @@ export async function PATCH(request, { params }) {
 
     if (body.adminNote !== undefined) {
       data.adminNote = body.adminNote;
+      if (existingAppForPatch && existingAppForPatch.adminNote !== body.adminNote) {
+        data.adminNoteViewed = false;
+      }
     }
 
     if (body.isDeleted !== undefined) {
@@ -198,6 +211,15 @@ export async function PUT(request, { params }) {
 
     if (invoiceFileUrl !== undefined && contentType.includes("multipart/form-data")) {
       data.invoiceFileUrl = invoiceFileUrl;
+    }
+
+    const existingAppForPut = await prisma.application.findUnique({
+      where: { id },
+      select: { adminNote: true },
+    });
+
+    if (existingAppForPut && existingAppForPut.adminNote !== body.adminNote && body.adminNote !== undefined) {
+      data.adminNoteViewed = false;
     }
 
     // Remove undefined values

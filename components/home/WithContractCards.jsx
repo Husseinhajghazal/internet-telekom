@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { FaCrown, FaGem, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaInfoCircle } from "react-icons/fa";
 import FlippingCard from "./FlippingCard";
 
 function InfiniteScrollRow({ speeds, group }) {
@@ -294,7 +295,7 @@ const contractPackages = [
       {
         speed: "24",
         price: "700",
-        duration: "12 شهر",
+        duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
           "التحميل غير محدود",
@@ -306,7 +307,7 @@ const contractPackages = [
       {
         speed: "50",
         price: "750",
-        duration: "12 شهر",
+        duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
           "التحميل غير محدود",
@@ -318,7 +319,7 @@ const contractPackages = [
       {
         speed: "100",
         price: "750",
-        duration: "12 شهر",
+        duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
           "التحميل غير محدود",
@@ -330,7 +331,7 @@ const contractPackages = [
       {
         speed: "200",
         price: "800",
-        duration: "12 شهر",
+        duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
           "التحميل غير محدود",
@@ -342,7 +343,7 @@ const contractPackages = [
       {
         speed: "500",
         price: "900",
-        duration: "12 شهر",
+        duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
           "التحميل غير محدود",
@@ -354,7 +355,7 @@ const contractPackages = [
       {
         speed: "1000",
         price: "1000",
-        duration: "12 شهر",
+        duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
           "التحميل غير محدود",
@@ -367,27 +368,96 @@ const contractPackages = [
   },
 ];
 
+const ContractGroup = ({ group }) => {
+  const durations = Array.from(new Set(group.speeds.map((s) => s.duration))).sort();
+  const [selectedDuration, setSelectedDuration] = useState(durations[0]);
+
+  const filteredSpeeds = group.speeds.filter((s) => s.duration === selectedDuration);
+  const isGreen = group.category.includes("العائلي");
+  const switcherBorderClass = isGreen ? "border-emerald-200" : "border-blue-200";
+  const selectedButtonClass = isGreen
+    ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
+    : "bg-blue-500 text-white shadow-md shadow-blue-500/30";
+  const idleButtonClass = "text-gray-600 hover:bg-black/5 hover:text-gray-900";
+
+  return (
+    <div>
+      {/* section header */}
+      <div className="flex items-center gap-3 mb-6">
+        <div
+          className={`w-10 h-10 rounded-xl ${group.iconBg.split(" ")[0]} flex items-center justify-center`}
+        >
+          <group.icon size={18} className={group.iconBg.split(" ")[1]} />
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-gray-900">{group.category}</h3>
+          <p className="text-sm text-gray-400">{group.subtitle}</p>
+        </div>
+      </div>
+
+      {/* Switcher */}
+      {durations.length > 1 && (
+        <div className="flex justify-center mb-6">
+          <div
+            className={`inline-flex rounded-2xl border ${switcherBorderClass} bg-white/70 shadow-sm p-1 gap-1.5`}
+            role="group"
+          >
+            {durations.map((durationOption) => {
+              const isSelected = selectedDuration === durationOption;
+              let displayLabel = durationOption;
+              if (durationOption === "12 شهر") displayLabel = "سنة";
+              if (durationOption === "24 شهر") displayLabel = "سنتين";
+
+              return (
+                <button
+                  key={durationOption}
+                  type="button"
+                  onClick={() => setSelectedDuration(durationOption)}
+                  className={`cursor-pointer px-4 py-2.5 md:px-6 md:py-3 rounded-xl text-sm md:text-lg font-bold transition-all duration-200 ${
+                    isSelected ? selectedButtonClass : idleButtonClass
+                  } border border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                    isGreen ? "focus-visible:ring-emerald-500/40" : "focus-visible:ring-blue-500/40"
+                  }`}
+                >
+                  عقد {displayLabel}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Cards Scroll */}
+      <div className="mt-4">
+          <InfiniteScrollRow speeds={filteredSpeeds} group={group} key={selectedDuration} />
+      </div>
+
+      {/* Information block */}
+      {group.category === "باقات الإنترنت العائلي والاقتصادي" ? (
+        <div className="bg-green-50/50 backdrop-blur-sm border-r-4 border-emerald-400 p-5 rounded-l-2xl text-justify text-emerald-900/80 leading-relaxed text-sm md:text-base mx-4 md:mx-0 shadow-sm mt-6 mb-6">
+          <h4 className="text-lg font-extrabold text-emerald-800 mb-2">
+            <FaInfoCircle className="inline-block ml-2" />
+            التفاصيل والميزات
+          </h4>
+          الشركة الرائدة التي استطاعت منذ تأسيسها عام 2012 أن تثبت كفاءتها كواحدة من أسرع مزودي خدمات الإنترنت نمواً في تركيا. تتميز الشركة بتقديم حلول اقتصادية وذكية تناسب ميزانيات الجميع، مع التركيز العالي على خدمات الألياف الضوئية (Fiber) والإنترنت اللاسلكي عالي السرعة. تقدم الشركة باقات مرنة ومتنوعة تلبي احتياجات الاستخدام المنزلي والتجاري، وتعتمد في نجاحها على بنية تحتية قوية تضمن استقرار الإشارة وسهولة الإجراءات الفنية. ومن خلال شراكتنا معهم، نضمن لكم الوصول إلى أفضل عروض مع ميزة الدعم الفني المتكامل باللغة العربية، لتجربة اشتراك تجمع بين التوفير والجودة في كافة الولايات التركية.
+        </div>
+      ) : (
+        <div className="bg-blue-50/50 backdrop-blur-sm border-r-4 border-blue-400 p-5 rounded-l-2xl text-justify text-blue-900/80 leading-relaxed text-sm md:text-base mx-4 md:mx-0 shadow-sm mt-6 mb-6">
+          <h4 className="text-lg font-extrabold text-blue-800 mb-2">
+            <FaInfoCircle className="inline-block ml-2" />
+            التفاصيل والميزات
+          </h4>
+          الشركة الأم والمشغل الوطني الأول والأكبر في تركيا، والذي يمتلك إرثاً عريقاً يمتد لأكثر من 180 عاماً. تتميز الشركة بامتلاكها لأضخم بنية تحتية للألياف الضوئية (Fiber) تغطي كافة الولايات والقرى التركية، مما يضمن لكم استقراراً فائقاً في الاتصال وتغطية لا تضاهى. تقدم حلولاً متكاملة تشمل الإنترنت المنزلي عالي السرعة، خدمات الهاتف المحمول، والقنوات التلفزيونية الرقمية، مع الالتزام بتطوير التكنولوجيا الرقمية لتناسب احتياجات العصر. ومن خلالنا، نسهل لكم الوصول إلى هذه الخدمات العالمية بمرونة تامة ودعم فني متخصص، لنضمن بقاءكم على اتصال دائم بأعلى معايير الجودة والكفاءة.
+        </div>
+      )}
+    </div>
+  );
+};
+
 const WithContractCards = () => (
   <div className="max-w-5xl mx-auto space-y-12">
     {contractPackages.map((group, gi) => (
-      <div key={gi}>
-        {/* section header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div
-            className={`w-10 h-10 rounded-xl ${group.iconBg.split(" ")[0]} flex items-center justify-center`}
-          >
-            <group.icon size={18} className={group.iconBg.split(" ")[1]} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">
-              {group.category}
-            </h3>
-            <p className="text-sm text-gray-400">{group.subtitle}</p>
-          </div>
-        </div>
-
-        <InfiniteScrollRow speeds={group.speeds} group={group} />
-      </div>
+      <ContractGroup key={gi} group={group} />
     ))}
   </div>
 );

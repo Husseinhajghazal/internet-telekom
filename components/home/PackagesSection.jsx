@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { MdElectricBolt } from "react-icons/md";
 import { FaFileContract } from "react-icons/fa";
 import { HiLightningBolt } from "react-icons/hi";
+import { FaInfoCircle } from "react-icons/fa";
 
 import NoContractCards from "./NoContractCards";
 import WithContractCards from "./WithContractCards";
@@ -68,6 +69,13 @@ const PackagesSection = () => {
             <div className="flex-1 h-px bg-linear-to-r from-fuchsia-200 to-transparent" />
           </div>
           <NoContractCards />
+                  <div className="bg-purple-50/50 backdrop-blur-sm border-r-4 border-purple-400 p-5 rounded-l-2xl text-justify text-purple-900/80 leading-relaxed text-sm md:text-base mx-6 md:mx-0 shadow-sm mt-6 mb-6">
+                    <h4 className="text-lg font-extrabold text-purple-800 mb-2">
+                      <FaInfoCircle className="inline-block ml-2" />
+                      التفاصيل والميزات
+                    </h4>
+                    نحن نضع بين أيديكم أقوى حلول الإنترنت المنزلي في تركيا بسرعات فائقة تصل إلى 1000 ميجابت عبر تقنية الألياف الضوئية (Fiber)، لتستمتعوا بتجربة فريدة للألعاب والبث المباشر بدقة 4K دون انقطاع. نمنحكم الحرية الكاملة في اختيار باقاتكم بدون عقود التزام سنوية أو غرامات فسخ عقد، مع ضمان إنترنت مفتوح بالكامل بدون حصة استخدام أو تناقص في السرعة طوال الشهر. كما نتميز بالشفافية المطلقة في الفواتير مع خيار تثبيت السعر لمدة عام، ونتكفل بكافة إجراءات انتقالكم من شركاتكم الحالية إلينا بكل سلاسة، مدعومين بفريقنا الفني الذي يخدمكم باللغة العربية على مدار الساعة لضمان تجربة تواصل رقمية لا تشوبها شائبة.
+                  </div>
         </motion.div>
 
         {/* With Contract Section */}

@@ -19,11 +19,14 @@ export default function InquiryPage() {
   const [multiApps, setMultiApps] = useState(null);
 
   const handleFetchResult = (data) => {
-    if (data.adminNote) {
+    if (data.adminNote && !data.adminNoteViewed) {
       setAdminNotePopup({
+        id: data.id,
         note: data.adminNote,
         appIndex: data.appIndex,
       });
+      // Mark as viewed in the background
+      fetch(`/api/applications/${data.id}/view-note`, { method: "PATCH" }).catch(() => {});
     } else {
       router.push(`/internet-basvuru-formu/status/${data.appIndex}`);
     }

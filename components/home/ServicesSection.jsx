@@ -76,7 +76,7 @@ const WideServiceCard = ({ service }) => {
       </div>
 
       {/* ── Image Side ── */}
-      <div className="w-full md:w-1/2 h-[250px] sm:h-[300px] md:h-auto relative overflow-hidden bg-gray-50 flex items-center justify-center">
+      <div className="w-full md:w-1/2 h-[230px] sm:h-[300px] md:h-auto relative overflow-hidden bg-gray-50 flex items-center justify-center">
         <Image
           src={service.image}
           alt={service.title}

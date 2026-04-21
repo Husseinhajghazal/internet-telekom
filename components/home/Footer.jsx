@@ -124,7 +124,7 @@ const Footer = () => {
               <h4 className="text-black font-bold text-base mb-5 text-center">تفضل بزيارة شركتنا</h4>
               <div className="rounded-2xl overflow-hidden relative group transition-all duration-400 hover:shadow-[0_12px_40px_rgba(24,162,227,0.15)] hover:-translate-y-1 bg-white">
                 <a 
-                  href="https://maps.google.com/?q=41.0381827,28.8824575" 
+                  href="https://maps.app.goo.gl/vN9GunSEyTgh75sBA" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="absolute inset-0 z-20 flex items-center justify-center bg-black/0 group-hover:bg-black/10 backdrop-blur-[0px] group-hover:backdrop-blur-sm transition-all duration-500"
@@ -137,7 +137,7 @@ const Footer = () => {
                 </a>
                 <div className="relative w-full h-[200px] overflow-hidden">
                   <iframe
-                    src="https://maps.google.com/maps?q=41.0381827,28.8824575&z=17&hl=ar&output=embed"
+                    src="https://maps.google.com/maps?q=G%C3%BCm%C3%BC%C5%9Ftun%C3%A7+%C4%B0%C5%9F+Merkezi,+Fevzi+%C3%87akmak,+At%C4%B1%C5%9Falan%C4%B1+Cd.+D:8,+34225+Esenler%2F%C4%B0stanbul&z=17&hl=ar&output=embed"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}

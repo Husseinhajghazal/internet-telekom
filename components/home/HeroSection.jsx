@@ -92,7 +92,7 @@ const HeroSection = () => {
       <HeroBackground />
 
       {/* ── slides ── */}
-      <div className="relative z-10 min-h-svh md:min-h-[800px] pt-28 flex items-center">
+      <div className="relative z-10 min-h-svh md:min-h-[800px] flex items-center">
         {slides.map((slide, i) => {
           const isActive = i === active;
           return (
@@ -109,12 +109,12 @@ const HeroSection = () => {
                 {/* ── text side (first in DOM → RIGHT in RTL) ── */}
                 <div className="flex-1 text-center md:text-right min-w-0">
                   {isActive && (
-                    <div className="pt-24 md:pt-0">
+                    <div className={slide.useMap ? "" : "pt-24 md:pt-0"}>
                       <span className="inline-block font-extrabold text-lg sm:text-xl md:text-2xl mb-3 md:mb-4 bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent tracking-wide animate-hero-text-in hero-delay-1">
                         شركة إنترنت تيليكوم
                       </span>
 
-                      <h1 className="text-[1.55rem] px-4 md:px-0 leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5 animate-hero-text-in hero-delay-2">
+                      <h1 className="text-[1.55rem] px-6 md:px-0 leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5 animate-hero-text-in hero-delay-2">
                         {slide.title}
                         {slide.titleHighlight && (
                           <span className="bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent">
@@ -149,7 +149,7 @@ const HeroSection = () => {
                 </div>
 
                 {/* ── image side (second in DOM → LEFT in RTL) ── */}
-                <div className={`flex-1 relative flex items-end justify-center min-w-0 ${slide.useMap ? "" : "pt-24 md:pt-32"} `}>
+                <div className={`flex-1 relative flex items-end justify-center min-w-0 ${slide.useMap ? "" : "pt-4 md:pt-32"} `}>
                   {/* primary glow */}
                   <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] rounded-full bg-[#18a2e3]/20 blur-[70px] md:blur-[100px] animate-hero-glow" />
                   {/* warm accent glow */}

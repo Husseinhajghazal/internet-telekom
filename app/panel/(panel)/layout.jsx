@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { verifySessionToken } from "../../../lib/admin-session";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import MobileAdminNav from "../../../components/admin/MobileAdminNav";
+import PreventClose from "../../../components/admin/PreventClose";
 
 export default async function AdminPanelLayout({ children }) {
   const cookieStore = await cookies();
@@ -14,6 +15,7 @@ export default async function AdminPanelLayout({ children }) {
 
   return (
     <div className="flex bg-slate-50 min-h-svh text-right pb-20 lg:pb-0" dir="rtl">
+      <PreventClose />
       {/* Desktop Sidebar */}
       <div className="hidden lg:block shrink-0 z-30">
         <AdminSidebar userRole={sessionUser.role} userName={sessionUser.fullName} />

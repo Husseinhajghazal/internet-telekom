@@ -3,6 +3,7 @@
 import React from "react";
 import { Field } from "formik";
 import { MdSpeed, MdCheckCircle, MdWifi, MdFlashOn, MdElectricBolt, MdRocketLaunch } from "react-icons/md";
+import { HiArrowLeft } from "react-icons/hi";
 
 const palettes = {
   purple: {
@@ -229,10 +230,13 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                     ))}
                   </ul>
 
-                  {/* Bottom Radio indicator */}
-                  <div className="w-full flex justify-center mt-auto pt-2">
-                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${isSelected ? "border-transparent bg-white shadow-lg" : "border-white/30 bg-white/10"}`}>
-                      <div className={`w-3 h-3 rounded-full transition-all duration-300 ${isSelected ? `scale-100 opacity-100 bg-gradient-to-br ${palette.textGradient}` : "scale-0 opacity-0 bg-white"}`} />
+                  {/* Visual CTA Button */}
+                  <div className="mt-auto pt-2 w-full">
+                    <div className="w-full bg-white rounded-2xl px-4 py-3.5 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
+                      <span className={`font-extrabold text-sm ${palette.priceText}`}>
+                        إشترك الٱن مجاناً
+                      </span>
+                      <HiArrowLeft className={`w-4 h-4 ${palette.priceText}`} />
                     </div>
                   </div>
                 </div>
