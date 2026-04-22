@@ -95,7 +95,7 @@ const SIDEBAR_CONTENT = {
     inquiry: {
       image: "/service-6.png",
       title: "استشارة مجانية",
-      description: "نحن هنا للإجابة على كافة استفساراتك وتوجيهك نحو الاختيار الأمثل لك.",
+      description: "نحن هنا للإجابة على كافة استفساراتك وتوجيهك نحو الاختيار الأمثل.",
       Icon: MdOutlineContactSupport,
     },
     services: {
@@ -135,12 +135,12 @@ const STATUS_LABELS = {
   NOT_COMPLETED: "غير مكتمل",
   NEW: "جديد",
   UNDER_REVIEW: "قيد المراجعة",
+  TECHNICAL_PROBLEM: "مشكلة تقنية",
+  TRYING_TO_PERSUADE: "محاولة إقناع",
   UNDER_OBSERVATION: "قيد المتابعة",
   DELAYED: "مؤجل",
   REJECTED: "ملغى",
   COMPLETED: "مكتمل",
-  TECHNICAL_PROBLEM: "مشكلة تقنية",
-  TRYING_TO_PERSUADE: "محاولة إقناع",
 };
 
 export { USER_AGREEMENT_TEXT, PRICES_TL, PACKAGE_FEATURES, SIDEBAR_CONTENT, STATUS_LABELS };

@@ -114,10 +114,10 @@ const HeroSection = () => {
                         شركة إنترنت تيليكوم
                       </span>
 
-                      <h1 className="text-[1.55rem] px-6 md:px-0 leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5 animate-hero-text-in hero-delay-2">
-                        {slide.title}
+                      <h1 className="text-[1.55rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-white md:leading-snug mb-4 md:mb-5 animate-hero-text-in hero-delay-2">
+                        {slide.title}{" "}
                         {slide.titleHighlight && (
-                          <span className="bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent">
+                          <span className="block md:inline mt-1 md:mt-0 bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent">
                             {slide.titleHighlight}
                           </span>
                         )}

@@ -57,7 +57,7 @@ export default function StartPage() {
           </div>
 
           {/* Headline */}
-          <h1 className="animate-hero-text-in hero-delay-2 text-[1.65rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-5xl font-black text-black md:leading-snug mb-4 md:mb-5">
+          <h1 className="animate-hero-text-in hero-delay-2 text-[1.65rem] leading-snug sm:text-3xl md:text-4xl lg:text-[2.75rem] xl:text-4xl font-black text-black md:leading-snug mb-4 md:mb-5">
             أهلاً وسهلاً بك{" "} <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-l from-[#f36802] to-[#ffb245] text-[2rem]">
               إنترنت تيليكوم
@@ -91,22 +91,25 @@ export default function StartPage() {
           </div>
 
           {/* Stats below buttons */}
-          <div className="animate-hero-text-in hero-delay-5 mt-8 md:mt-10 w-full sm:w-auto grid md:hidden grid-cols-4 gap-1.5 sm:gap-4 md:gap-6 bg-black/[0.02] border border-black/[0.05] rounded-[2rem] p-3 sm:p-5">
+          <div className="animate-hero-text-in hero-delay-5 mt-8 md:mt-10 w-full sm:w-auto grid md:hidden grid-cols-2 gap-1.5 sm:gap-4 md:gap-6 bg-black/[0.02] border border-black/[0.05] rounded-[2rem] p-3 sm:p-5">
             {stats.map((stat, idx) => (
-              <div key={idx} className="flex flex-col items-center text-center">
-                <div className="flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#0c2240]/5 mb-1.5 sm:mb-2">
-                  <stat.icon className="text-[11px] sm:text-base text-[#f36802]" />
-                </div>
-                <div className="text-[13px] sm:text-xl lg:text-2xl font-black text-[#0c2240] tracking-tight sm:tracking-wider sm:mb-0.5" dir="ltr">
-                  {stat.value}
-                  {stat.suffix && (
-                    <span className={stat.suffixColor}>{stat.suffix}</span>
-                  )}
-                </div>
-                <div className="text-[#0c2240]/80 text-[8.5px] sm:text-xs md:text-sm font-semibold tracking-tight leading-[1.3] sm:leading-normal mt-0.5 sm:mt-0">
-                  {stat.label}
-                </div>
+            <div
+              key={idx}
+              className="flex flex-col items-center text-center"
+            >
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0c2240]/10 mb-3 md:mb-4">
+                <stat.icon className="text-2xl text-[#f36802]" />
               </div>
+              <div className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0c2240] mb-2 md:mb-4 tracking-wider" dir="ltr">
+                {stat.value}
+                {stat.suffix && (
+                  <span className={stat.suffixColor}>{stat.suffix}</span>
+                )}
+              </div>
+              <div className="text-[#0c2240] text-sm sm:text-base md:text-lg font-medium tracking-wide">
+                {stat.label}
+              </div>
+            </div>
             ))}
           </div>
         </div>
@@ -114,23 +117,15 @@ export default function StartPage() {
         {/* ── Image side (left in RTL) ── */}
         <div className="flex-1 hidden md:flex items-center justify-center w-full max-w-md md:max-w-none mt-8 md:mt-0">
           <div className="relative w-full max-w-sm sm:max-w-md">
-            {/* Floating tech icons */}
-            <HeroBackground />
-
             {/* Main image container */}
             <div className="relative animate-hero-image-in">
-              {/* Decorative background blob */}
-              <div className="absolute -inset-10 bg-gradient-to-br from-[#f36802]/10 to-[#ffb245]/10 rounded-full blur-3xl -z-10" />
-
-              {/* Image with glow */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#f36802] to-[#ffb245] rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-700" />
                 <Image
                   src="/man-113.png"
                   alt="إنترنت تيليكوم"
                   width={600}
                   height={600}
-                  className="relative w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                  className="relative w-full h-auto object-contain"
                   priority
                 />
               </div>
