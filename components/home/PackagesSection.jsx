@@ -1,11 +1,15 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, useInView } from "framer-motion";
 import { MdElectricBolt } from "react-icons/md";
 import { FaFileContract } from "react-icons/fa";
 import { HiLightningBolt } from "react-icons/hi";
 import { FaInfoCircle } from "react-icons/fa";
+import {
+  MdRocketLaunch,
+} from "react-icons/md";
 
 import NoContractCards from "./NoContractCards";
 import WithContractCards from "./WithContractCards";
@@ -13,6 +17,7 @@ import WithContractCards from "./WithContractCards";
 const PackagesSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   return (
     <section
@@ -68,14 +73,31 @@ const PackagesSection = () => {
             </div>
             <div className="flex-1 h-px bg-linear-to-r from-fuchsia-200 to-transparent" />
           </div>
+
+          <div className="flex items-center gap-3 mb-6">
+            <div
+              className={`w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center`}
+            >
+              <MdRocketLaunch size={18} className={"text-purple-600"} />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">باقات إنترنت مسبقة الدفع</h3>
+              <p className="text-sm text-gray-400">البنية التحتية لترك نت</p>
+            </div>
+          </div>
+
           <NoContractCards />
-                  <div className="bg-purple-50/50 backdrop-blur-sm border-r-4 border-purple-400 p-5 rounded-l-2xl text-justify text-purple-900/80 leading-relaxed text-sm md:text-base mx-6 md:mx-0 shadow-sm mt-6 mb-6">
-                    <h4 className="text-lg font-extrabold text-purple-800 mb-2">
-                      <FaInfoCircle className="inline-block ml-2" />
-                      التفاصيل والميزات
-                    </h4>
-                    نحن نضع بين أيديكم أقوى حلول الإنترنت المنزلي في تركيا بسرعات فائقة تصل إلى 1000 ميجابت عبر تقنية الألياف الضوئية (Fiber)، لتستمتعوا بتجربة فريدة للألعاب والبث المباشر بدقة 4K دون انقطاع. نمنحكم الحرية الكاملة في اختيار باقاتكم بدون عقود التزام سنوية أو غرامات فسخ عقد، مع ضمان إنترنت مفتوح بالكامل بدون حصة استخدام أو تناقص في السرعة طوال الشهر. كما نتميز بالشفافية المطلقة في الفواتير مع خيار تثبيت السعر لمدة عام، ونتكفل بكافة إجراءات انتقالكم من شركاتكم الحالية إلينا بكل سلاسة، مدعومين بفريقنا الفني الذي يخدمكم باللغة العربية على مدار الساعة لضمان تجربة تواصل رقمية لا تشوبها شائبة.
-                  </div>
+          <div className="flex justify-center mt-6 mb-6">
+            <button
+              type="button"
+              onClick={() => setIsDetailsOpen(true)}
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-purple-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r from-purple-600 via-fuchsia-500 to-purple-600 bg-[length:200%_100%] hover:bg-[position:100%_0]"
+            >
+              <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+              <FaInfoCircle className="relative z-10 h-4 w-4" />
+              <span className="relative z-10">التفاصيل</span>
+            </button>
+          </div>
         </motion.div>
 
         {/* With Contract Section */}
@@ -108,6 +130,47 @@ const PackagesSection = () => {
           className="text-center mt-12"
         ></motion.div>
       </div>
+
+      {isDetailsOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setIsDetailsOpen(false)}
+          >
+            <div
+              className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-purple-100 overflow-hidden"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-5 py-4 border-b border-purple-100 bg-purple-50">
+                <h4 className="text-lg font-extrabold text-purple-800 flex items-center gap-2">
+                  <FaInfoCircle className="w-4 h-4" />
+                  التفاصيل والميزات
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setIsDetailsOpen(false)}
+                  className="text-purple-700 hover:text-purple-900 text-2xl leading-none"
+                  aria-label="إغلاق"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-5 text-justify text-purple-900/80 leading-relaxed text-sm md:text-base">
+                نحن نضع بين أيديكم أقوى حلول الإنترنت المنزلي في تركيا بسرعات فائقة
+                تصل إلى 1000 ميجابت عبر تقنية الألياف الضوئية (Fiber)، لتستمتعوا
+                بتجربة فريدة للألعاب والبث المباشر بدقة 4K دون انقطاع. نمنحكم
+                الحرية الكاملة في اختيار باقاتكم بدون عقود التزام سنوية أو غرامات
+                فسخ عقد، مع ضمان إنترنت مفتوح بالكامل بدون حصة استخدام أو تناقص في
+                السرعة طوال الشهر. كما نتميز بالشفافية المطلقة في الفواتير مع خيار
+                تثبيت السعر لمدة عام، ونتكفل بكافة إجراءات انتقالكم من شركاتكم
+                الحالية إلينا بكل سلاسة، مدعومين بفريقنا الفني الذي يخدمكم باللغة
+                العربية على مدار الساعة لضمان تجربة تواصل رقمية لا تشوبها شائبة.
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 };

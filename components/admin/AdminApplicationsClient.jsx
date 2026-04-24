@@ -30,6 +30,7 @@ import {
   MdOutlineTimer,
   MdAdd,
   MdDelete,
+  MdHistory
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
@@ -47,6 +48,17 @@ import { useRouter } from "next/navigation";
 
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
+
+const formatIsoDateFromDisplay = (value) => {
+  if (!value) return "";
+  const parts = value.split("/");
+  if (parts.length !== 3) return "";
+
+  const [day, month, year] = parts;
+  if (day.length !== 2 || month.length !== 2 || year.length !== 4) return "";
+
+  return `${year}-${month}-${day}`;
+};
 
 const ActionMenu = ({
   app,
@@ -102,7 +114,8 @@ const ActionMenu = ({
   const toggleOpen = () => {
     if (!isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      const dropdownHeight = 190; // Approximate rendered height
+      const dropdownHeight = userRole === "ADMIN" ? 420 : 320;
+      const dropdownWidth = 176;
       const spaceBelow = window.innerHeight - rect.bottom;
 
       let top = rect.bottom + window.scrollY;
@@ -114,7 +127,7 @@ const ActionMenu = ({
 
       setCoords({
         top,
-        left: rect.right + window.scrollX - 50,
+        left: Math.max(10, rect.right + window.scrollX - dropdownWidth),
       });
     }
     setIsOpen(!isOpen);
@@ -135,7 +148,7 @@ const ActionMenu = ({
           <div
             ref={menuRef}
             style={{ top: coords.top, left: coords.left }}
-            className="absolute w-44 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden text-right"
+            className="absolute w-44 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-y-auto max-h-[400px] text-right"
           >
             <button
               onClick={() => {
@@ -254,6 +267,19 @@ const ActionMenu = ({
 
             {userRole === "ADMIN" && (
               <button
+                onClick={() => {
+                  setIsOpen(false);
+                  router.push(`/panel/applications/${app.id}/logs`);
+                }}
+                className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold border-t border-gray-50"
+              >
+                <MdHistory size={18} />
+                سجل التعديلات
+              </button>
+            )}
+
+            {userRole === "ADMIN" && (
+              <button
                 disabled={actionId === app.id}
                 onClick={() => {
                   setIsOpen(false);
@@ -302,7 +328,16 @@ export default function AdminApplicationsClient({
       return;
     }
     const reviewLink = `${window.location.origin}/review?appId=${app.id}`;
-    const text = `أهلاً ${app.newName || app.name}، شكراً لثقتك بنا لتنفيذ خدمة (${app.service || "الإنترنت"}).\nنسعد بتقييمك لتجربتك معنا عبر الرابط التالي:\n${reviewLink}`;
+
+    const text = `مرحبا ${app.newName || app.name} 🌹
+
+شكراً لاختيارك إنترنت تيليكوم 🙏
+
+إذا بتعطينا دقيقة من وقتك، ادخل على الرابط وقيم تجربتك معنا بعدد النجوم، واكتب رأيك بكل صراحة 👇
+
+${reviewLink}
+
+رأيك بيهمنا، وبيساعدنا نطوّر خدمتنا ونكسب ثقة ناس أكتر 🤍`;
 
     let phoneToUse = app.phone || app.phone2 || app.newPhone;
     console.log(phoneToUse);
@@ -420,12 +455,12 @@ export default function AdminApplicationsClient({
           app.appIndex,
           app.name,
           app.phone,
-          app.nationalId,
+          app.nationalNumber,
           app.birthDate,
           app.addressCode,
-          app.company,
-          app.subscriptionNo,
-          app.package,
+          app.internetCompany || "—",
+          app.subscriptionNo || "—",
+          app.selectedPackage || app.noContractTechType || "—",
           app.createdAt ? formatDate(app.createdAt) : "",
           app.completedAt ? formatDate(app.completedAt) : "",
         ]),
@@ -548,7 +583,12 @@ export default function AdminApplicationsClient({
     try {
       const body = { status: newStatus };
       if (newStatus === "DELAYED" && delayedUntil) {
-        body.delayedUntil = delayedUntil;
+        const isoDelayDate = formatIsoDateFromDisplay(delayedUntil);
+        if (!isoDelayDate) {
+          setAlertMsg("يرجى إدخال تاريخ التأجيل بصيغة DD/MM/YYYY");
+          return;
+        }
+        body.delayedUntil = isoDelayDate;
       }
       const res = await fetch(`/api/panel/applications/${statusApp.id}`, {
         method: "PATCH",
@@ -1023,7 +1063,7 @@ export default function AdminApplicationsClient({
                       {!isDeletedMode && (
                         <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                           {app.delayedUntil
-                            ? formatDate(app.delayedUntil)
+                            ? formatDate(app.delayedUntil, "4")
                             : "—"}
                         </td>
                       )}

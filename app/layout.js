@@ -20,7 +20,7 @@ export const metadata = {
     "التقديم على الإنترنت في تركيا",
   ],
   openGraph: {
-    title: "إنترنت تيليكوم | خدمات الإنترنت في تركيا",
+    title: "إنترنت تيليكوم",
     description:
       "احصل على أفضل عروض الإنترنت في تركيا. قدّم الآن على خط جديد بسهولة واستعلم عن خدماتك.",
     url: process.env.website_url,
@@ -32,7 +32,7 @@ export const metadata = {
         url: `${process.env.website_url}/logo.png`,
         width: 1200,
         height: 630,
-        alt: "إنترنت تيليكوم | خدمات الإنترنت في تركيا",
+        alt: "إنترنت تيليكوم",
       },
     ],
   },

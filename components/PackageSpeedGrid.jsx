@@ -277,7 +277,7 @@ const PackageSpeedGrid = ({
                   <div className="mt-auto pt-2 w-full">
                     <div className="w-full bg-white rounded-2xl px-4 py-3.5 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
                       <span className={`font-extrabold text-sm ${palette.priceText}`}>
-                        إشترك الٱن مجاناً
+                        تم الإختيار بنجاح
                       </span>
                       <HiArrowLeft className={`w-4 h-4 ${palette.priceText}`} />
                     </div>

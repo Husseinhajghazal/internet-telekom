@@ -42,6 +42,22 @@ const AboutSection = () => {
       </div>
 
       <div ref={ref} className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8 md:mb-12 px-4"
+        >
+          <h2 className="text-xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+            من هي {" "}
+            <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
+              شركة إنترنت تيليكوم؟
+            </span>
+            <p className="text-gray-500 text-sm md:text-lg max-w-xl mx-auto mt-3 font-semibold">
+              لماذا نحن الخيار الأفضل في تركيا؟
+            </p>
+          </h2>
+        </motion.div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* left - visual */}
           <motion.div
@@ -95,30 +111,15 @@ const AboutSection = () => {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="order-1 lg:order-2"
           >
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 leading-tight">
-              أولى الشركات العربية
-              <br />
-              <span className="mt-2 bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
-                لخدمات الإنترنت في تركيا
-              </span>
-            </h2>
-
             <div className="space-y-4 text-gray-500 leading-relaxed text-[15px] mb-8">
               <p>
-                تأسست إنترنت تيليكوم في عام 2015 لتكون الجسر الموثوق والآمن الذي
-                يربطكم إرثٌ من الثقة والريادة.. نُسخره لخدمتكم المنزلي في تركيا.
-                على مدار أكثر من عقد من الزمان، نجحنا في ترسيخ مكانتنا كشركة
-                معتمدة تقدم حلولاً متكاملة تجمع بين الجودة والسعر المنافس.
+                تأسست شركة إنترنت تيليكوم عام 2015، وهي من أولى الشركات الرائدة في تقديم خدمات الإنترنت المنزلي للجالية العربية في تركيا. نعمل على توفير اتصال مستقر وسريع يلبّي احتياجات الأفراد والعائلات، مع التركيز على الجودة والأسعار المناسبة.
               </p>
               <p>
-                يتمركز مقرنا الرئيسي في مدينة إسطنبول، ومنها انطلقنا لنوسع نطاق
-                خدماتنا حتى شملت فروعنا كافة الولايات التركية، لضمان وصول
-                الإنترنت عالي السرعة لكل بيت بجودة واحترافية لا تُضاهى.
+                يقع مقرنا الرئيسي في إسطنبول، ومنها انطلقنا لتوسيع نطاق خدماتنا لتشمل كامل الولايات التركية، بهدف إيصال الإنترنت عالي السرعة إلى أكبر عدد ممكن من المشتركين بكفاءة وموثوقية.
               </p>
               <p>
-                نحن لا نقدم مجرد اشتراك إنترنت، بل نوفر تجربة مستخدم متكاملة
-                تبدأ من الاستشارة المجانية والتركيب السريع، وصولاً إلى خيارات
-                تعاقد مرنة مع دعم فني واستشاري متواصل باللغة العربية.
+                نحن نؤمن أن خدمة الإنترنت ليست مجرد اشتراك، بل تجربة متكاملة تبدأ من تقديم الإستشارة المجانية المناسبة، مرورًا بعملية التركيب السريعة، وصولًا إلى دعم فني مستمر باللغة العربية وخيارات تعاقد مرنة تناسب جميع احتياجات عملائنا.
               </p>
             </div>
 

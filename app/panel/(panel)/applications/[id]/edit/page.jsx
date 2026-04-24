@@ -75,6 +75,22 @@ const generatePackageOptions = () => {
 
 const PACKAGE_OPTIONS = generatePackageOptions();
 
+const formatDisplayDateFromIso = (value) => {
+  if (!value) return "";
+  return value.includes("-") ? value.split("-").reverse().join("/") : value;
+};
+
+const formatIsoDateFromDisplay = (value) => {
+  if (!value) return "";
+  const parts = value.split("/");
+  if (parts.length !== 3) return "";
+
+  const [day, month, year] = parts;
+  if (day.length !== 2 || month.length !== 2 || year.length !== 4) return "";
+
+  return `${year}-${month}-${day}`;
+};
+
 export default function EditApplicationPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -116,7 +132,15 @@ export default function EditApplicationPage() {
     newOriginalAddressText: "",
     invoiceFileUrls: [],
     invoiceFiles: [],
+    electronicApproval: false,
+    approvalViaShipping: false,
+    paidByUserName: false,
+    paidByName: "",
+    discountCount: "",
+    createdBy: "",
   });
+
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -152,7 +176,7 @@ export default function EditApplicationPage() {
           note: data.note || "",
           adminNote: data.adminNote || "",
           delayedUntil: data.delayedUntil
-            ? data.delayedUntil.split("T")[0]
+            ? formatDisplayDateFromIso(data.delayedUntil.split("T")[0])
             : "",
           phone2: data.phone2 || "",
           nationalNumber: data.nationalNumber || "",
@@ -166,6 +190,12 @@ export default function EditApplicationPage() {
             ? data.invoiceFileUrl.split(",").filter(Boolean)
             : [],
           invoiceFiles: [],
+          electronicApproval: data.electronicApproval ?? false,
+          approvalViaShipping: data.approvalViaShipping ?? false,
+          paidByUserName: data.paidByUserName ?? false,
+          paidByName: data.paidByName || "",
+          discountCount: data.discountCount || "",
+          createdBy: data.createdBy || "",
         });
       } catch (err) {
         setError(err.message);
@@ -174,6 +204,19 @@ export default function EditApplicationPage() {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch("/api/panel/users");
+        if (res.ok) {
+          const data = await res.json();
+          setUsers(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users", err);
+      }
+    };
+
+    fetchUsers();
     if (id === "new") {
       setLoading(false);
     } else if (id) {
@@ -204,6 +247,9 @@ export default function EditApplicationPage() {
     if (name === "birthDate") {
       finalValue = formatBirthDate(finalValue);
     }
+    if (name === "delayedUntil") {
+      finalValue = formatBirthDate(finalValue);
+    }
 
     if (name === "nationalNumber" || name === "newNationalNumber") {
       finalValue = finalValue.replace(/\D/g, "").substring(0, 11);
@@ -219,6 +265,7 @@ export default function EditApplicationPage() {
 
   const handleSave = async (e) => {
     e.preventDefault();
+
     if (
       (formData.nationalNumber.length === 11 &&
         !validateTC(formData.nationalNumber)) ||
@@ -229,6 +276,25 @@ export default function EditApplicationPage() {
         "يرجى التأكد من الرقم الوطني (TC) قبل الحفظ. الرقم الحالي غير صالح.",
       );
       return;
+    }
+
+    const showCommercialFields =
+      (formData.serviceType === "services" &&
+        formData.selectedService === "upgrade") ||
+      (formData.serviceType === "newline" &&
+        formData.contractPreference === "without");
+
+    if (showCommercialFields) {
+      if (!formData.discountCount) {
+        alert("يرجى إدخال عدد الخصومات");
+        setSaving(false);
+        return;
+      }
+      if (!formData.paidByUserName && !formData.paidByName) {
+        alert("يرجى إدخال إسم الشخص الدافع");
+        setSaving(false);
+        return;
+      }
     }
 
     setSaving(true);
@@ -253,8 +319,14 @@ export default function EditApplicationPage() {
         ),
         delayedUntil:
           formData.status === "DELAYED" && formData.delayedUntil
-            ? formData.delayedUntil
+            ? formatIsoDateFromDisplay(formData.delayedUntil)
             : null,
+        electronicApproval: formData.electronicApproval,
+        approvalViaShipping: formData.approvalViaShipping,
+        paidByUserName: formData.paidByUserName,
+        paidByName: parseEmptyToNull(formData.paidByName),
+        discountCount: parseEmptyToNull(formData.discountCount),
+        createdBy: parseEmptyToNull(formData.createdBy),
       };
 
       // Append all scalar fields to FormData
@@ -356,6 +428,18 @@ export default function EditApplicationPage() {
           </div>
         )}
 
+        {/* Visibility logic for commercial fields */}
+        {(() => {
+          const showCommercialFields =
+            (formData.serviceType === "services" &&
+              formData.selectedService === "upgrade") ||
+            (formData.serviceType === "newline" &&
+              formData.contractPreference === "without");
+          
+          return null; // Just to keep the variable in scope if I wanted to use it in JSX below, 
+          // but I'll use it directly in the return.
+        })()}
+
         <form
           onSubmit={handleSave}
           className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-slate-200/40 p-6 md:p-8 space-y-6 text-right"
@@ -441,6 +525,22 @@ export default function EditApplicationPage() {
               />
             </div>
             <div>
+              <label className={labelClass}>من الذي سجل الطلب</label>
+              <select
+                name="createdBy"
+                value={formData.createdBy}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="">غير محدد</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.fullName}>
+                    {u.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className={labelClass}>حالة الطلب</label>
               <select
                 name="status"
@@ -460,7 +560,9 @@ export default function EditApplicationPage() {
                 <label className={labelClass}>تاريخ التأجيل</label>
                 <input
                   name="delayedUntil"
-                  type="date"
+                  type="text"
+                  placeholder="01/01/2026"
+                  dir="ltr"
                   value={formData.delayedUntil}
                   onChange={handleChange}
                   className={`${inputClass} !border-orange-200 !bg-orange-50/50 focus:!border-orange-400 focus:!ring-orange-500/20`}
@@ -551,25 +653,27 @@ export default function EditApplicationPage() {
                   </select>
                 </div>
               )}
-            {formData.serviceType === "newline" &&
-              formData.contractPreference === "without" && (
-                <div>
-                  <label className={labelClass}>نوع التقنية</label>
-                  <select
-                    name="noContractTechType"
-                    value={formData.noContractTechType}
-                    onChange={handleChange}
-                    className={inputClass}
-                  >
-                    <option value="">غير محدد</option>
-                    {TECH_TYPE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+            {((formData.serviceType === "newline" &&
+              formData.contractPreference === "without") ||
+              (formData.serviceType === "services" &&
+                formData.selectedService === "upgrade")) && (
+              <div>
+                <label className={labelClass}>نوع التقنية</label>
+                <select
+                  name="noContractTechType"
+                  value={formData.noContractTechType}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">غير محدد</option>
+                  {TECH_TYPE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {formData.serviceType === "inquiry" && (
               <div>
@@ -587,6 +691,86 @@ export default function EditApplicationPage() {
                     </option>
                   ))}
                 </select>
+              </div>
+            )}
+
+            {((formData.serviceType === "services" &&
+              formData.selectedService === "upgrade") ||
+              (formData.serviceType === "newline" &&
+                formData.contractPreference === "without")) && (
+              <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex items-center gap-3">
+                  <input
+                    name="electronicApproval"
+                    id="electronicApproval"
+                    type="checkbox"
+                    checked={formData.electronicApproval}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="electronicApproval"
+                    className="text-sm font-semibold text-gray-700 cursor-pointer"
+                  >
+                    موافقة الكترونية
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    name="approvalViaShipping"
+                    id="approvalViaShipping"
+                    type="checkbox"
+                    checked={formData.approvalViaShipping}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="approvalViaShipping"
+                    className="text-sm font-semibold text-gray-700 cursor-pointer"
+                  >
+                    موافقة عبر الشحن
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    name="paidByUserName"
+                    id="paidByUserName"
+                    type="checkbox"
+                    checked={formData.paidByUserName}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="paidByUserName"
+                    className="text-sm font-semibold text-gray-700 cursor-pointer"
+                  >
+                    مدفوع من {formData.name}
+                  </label>
+                </div>
+                {!formData.paidByUserName && (
+                  <div>
+                    <label className={labelClass}>إسم الشخص الذي دفع</label>
+                    <input
+                      name="paidByName"
+                      type="text"
+                      value={formData.paidByName}
+                      onChange={handleChange}
+                      className={inputClass}
+                      placeholder="أدخل إسم الشخص الدافع"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className={labelClass}>عدد الخصومات</label>
+                  <input
+                    name="discountCount"
+                    type="text"
+                    value={formData.discountCount}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="مثال: 3"
+                  />
+                </div>
               </div>
             )}
 

@@ -46,6 +46,11 @@ export async function PATCH(request, { params }) {
         selectedInquiry: formData.get("selectedInquiry"),
         noContractTechType: formData.get("noContractTechType"),
         newNationalNumber: formData.get("newNationalNumber"),
+        electronicApproval: formData.get("electronicApproval"),
+        approvalViaShipping: formData.get("approvalViaShipping"),
+        paidByUserName: formData.get("paidByUserName"),
+        paidByName: formData.get("paidByName"),
+        discountCount: formData.get("discountCount"),
       });
 
       const newInvoiceFiles = formData.getAll("invoiceFiles[]").length > 0 ? formData.getAll("invoiceFiles[]") : formData.getAll("invoiceFiles");

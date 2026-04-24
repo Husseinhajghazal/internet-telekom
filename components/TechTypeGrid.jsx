@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
+import { createPortal } from "react-dom";
 import { Field } from "formik";
 import { MdSpeed, MdCheckCircle, MdWifi, MdFlashOn, MdElectricBolt, MdRocketLaunch } from "react-icons/md";
 import { HiArrowLeft } from "react-icons/hi";
+import { FaInfoCircle } from "react-icons/fa";
 
 const palettes = {
   purple: {
@@ -44,7 +46,8 @@ const palettes = {
   },
 };
 
-const TechTypeGrid = ({ options, selectedTechType }) => {
+const TechTypeGrid = ({ options, selectedTechType, detailsText }) => {
+  const [isDetailsOpen, setIsDetailsOpen] = React.useState(false);
   const getValueIcon = (value) => {
     if (value === "vdsl") return MdElectricBolt;
     if (value === "fiber") return MdFlashOn;
@@ -53,8 +56,9 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
   };
 
   return (
-    <div className="flex lg:grid flex-nowrap lg:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-3 md:px-0 w-full md:max-w-5xl mx-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      {options.map((opt) => {
+    <>
+      <div className="flex lg:grid flex-nowrap lg:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-3 md:px-0 w-full md:max-w-5xl mx-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {options.map((opt) => {
         const valueKey = opt.value;
         const isSelected = selectedTechType === valueKey;
         const palette = palettes[opt.color] || palettes.blue;
@@ -234,7 +238,7 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
                   <div className="mt-auto pt-2 w-full">
                     <div className="w-full bg-white rounded-2xl px-4 py-3.5 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200">
                       <span className={`font-extrabold text-sm ${palette.priceText}`}>
-                        إشترك الٱن مجاناً
+                        تم الإختيار بنجاح
                       </span>
                       <HiArrowLeft className={`w-4 h-4 ${palette.priceText}`} />
                     </div>
@@ -245,8 +249,58 @@ const TechTypeGrid = ({ options, selectedTechType }) => {
             </div>
           </label>
         );
-      })}
-    </div>
+        })}
+      </div>
+
+      {detailsText && (
+        <>
+          <div className="flex justify-center mt-2 mb-6">
+            <button
+              type="button"
+              onClick={() => setIsDetailsOpen(true)}
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-purple-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r from-purple-600 via-fuchsia-500 to-purple-600 bg-[length:200%_100%] hover:bg-[position:100%_0]"
+            >
+              <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+              <FaInfoCircle className="relative z-10 h-4 w-4" />
+              <span className="relative z-10">التفاصيل</span>
+            </button>
+          </div>
+
+          {isDetailsOpen &&
+            typeof document !== "undefined" &&
+            createPortal(
+              <div
+                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4"
+                onClick={() => setIsDetailsOpen(false)}
+              >
+                <div
+                  className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-purple-100 overflow-hidden"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-purple-100 bg-purple-50">
+                    <h4 className="text-lg font-extrabold text-purple-800 flex items-center gap-2">
+                      <FaInfoCircle className="w-4 h-4" />
+                      التفاصيل والميزات
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => setIsDetailsOpen(false)}
+                      className="text-purple-700 hover:text-purple-900 text-2xl leading-none"
+                      aria-label="إغلاق"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="p-5 text-justify text-purple-900/80 leading-relaxed text-sm md:text-base">
+                    {detailsText}
+                  </div>
+                </div>
+              </div>,
+              document.body,
+            )}
+        </>
+      )}
+    </>
   );
 };
 

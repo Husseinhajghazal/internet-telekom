@@ -5,8 +5,8 @@ import { isAdminAuthenticated } from "../../../../lib/admin-api";
 
 export async function GET(request) {
   const sessionUser = await isAdminAuthenticated();
-  if (!sessionUser || sessionUser.role !== "ADMIN") {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+  if (!sessionUser) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
   try {

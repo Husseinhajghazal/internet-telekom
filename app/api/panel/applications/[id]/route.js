@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../lib/prisma";
 import { isAdminAuthenticated } from "../../../../../lib/admin-api";
+import { diffApplication } from "../../../../../lib/application";
 
 const ALLOWED_STATUSES = [
   "NOT_COMPLETED",
@@ -80,10 +81,32 @@ export async function PATCH(request, { params }) {
 
     data.lastUpdatedBy = sessionUser.fullName;
 
+    const existingApp = await prisma.application.findUnique({ where: { id } });
+    if (!existingApp) {
+      return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
+    }
+
+    const changes = diffApplication(existingApp, data);
+
     const updated = await prisma.application.update({
       where: { id },
       data,
     });
+
+    if (changes) {
+      let action = data.status ? "STATUS_CHANGE" : "UPDATE";
+      if (data.isDeleted === false) action = "RESTORE";
+      if (data.isDeleted === true) action = "DELETE";
+
+      await prisma.applicationLog.create({
+        data: {
+          applicationId: id,
+          adminName: sessionUser.fullName,
+          action,
+          changes,
+        },
+      });
+    }
 
     return NextResponse.json(updated);
   } catch (error) {
@@ -206,6 +229,12 @@ export async function PUT(request, { params }) {
       delayedUntil: body.status === "DELAYED" && body.delayedUntil
         ? new Date(body.delayedUntil)
         : null,
+      electronicApproval: body.electronicApproval === "true" || body.electronicApproval === true,
+      approvalViaShipping: body.approvalViaShipping === "true" || body.approvalViaShipping === true,
+      paidByUserName: body.paidByUserName === "true" || body.paidByUserName === true,
+      paidByName: body.paidByName,
+      discountCount: body.discountCount,
+      createdBy: body.createdBy,
       lastUpdatedBy: sessionUser.fullName,
     };
 
@@ -213,22 +242,39 @@ export async function PUT(request, { params }) {
       data.invoiceFileUrl = invoiceFileUrl;
     }
 
-    const existingAppForPut = await prisma.application.findUnique({
-      where: { id },
-      select: { adminNote: true },
-    });
+    const existingApp = await prisma.application.findUnique({ where: { id } });
+    if (!existingApp) {
+      return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
+    }
 
-    if (existingAppForPut && existingAppForPut.adminNote !== body.adminNote && body.adminNote !== undefined) {
+    if (existingApp.adminNote !== body.adminNote && body.adminNote !== undefined) {
       data.adminNoteViewed = false;
     }
 
     // Remove undefined values
     Object.keys(data).forEach(k => data[k] === undefined && delete data[k]);
 
+    const changes = diffApplication(existingApp, data);
+
     const updated = await prisma.application.update({
       where: { id },
       data,
     });
+
+    if (changes) {
+      let action = data.status ? "STATUS_CHANGE" : "UPDATE";
+      if (data.isDeleted === false) action = "RESTORE";
+      if (data.isDeleted === true) action = "DELETE";
+
+      await prisma.applicationLog.create({
+        data: {
+          applicationId: id,
+          adminName: sessionUser.fullName,
+          action,
+          changes,
+        },
+      });
+    }
 
     return NextResponse.json(updated);
   } catch (error) {
@@ -258,10 +304,19 @@ export async function DELETE(request, { params }) {
 
     const updated = await prisma.application.update({
       where: { id },
-      data: { isDeleted: true },
+      data: { isDeleted: true, lastUpdatedBy: sessionUser.fullName },
     });
 
-    return NextResponse.json(updated);
+    await prisma.applicationLog.create({
+      data: {
+        applicationId: id,
+        adminName: sessionUser.fullName,
+        action: "DELETE",
+        changes: null,
+      },
+    });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE error:", error);
     return NextResponse.json({ error: "فشل حذف الطلب" }, { status: 500 });

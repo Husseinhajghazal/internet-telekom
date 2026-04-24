@@ -1,14 +1,22 @@
 "use client";
 
 import { STATUS_LABELS } from "@/utils/data";
+import { formatBirthDate } from "@/utils/general";
 import React, { useState } from "react";
 import { MdClose, MdCalendarMonth } from "react-icons/md";
+
+const formatDisplayDateFromIso = (value) => {
+  if (!value) return "";
+  return value.includes("-") ? value.split("-").reverse().join("/") : value;
+};
 
 export default function AdminStatusModal({ application, onClose, onUpdateStatus, loading }) {
   const [selectedStatus, setSelectedStatus] = useState(application.status || "NEW");
   const [delayDate, setDelayDate] = useState(
     application.delayedUntil
-      ? new Date(application.delayedUntil).toISOString().slice(0, 10)
+      ? formatDisplayDateFromIso(
+          new Date(application.delayedUntil).toISOString().slice(0, 10),
+        )
       : ""
   );
 
@@ -73,9 +81,11 @@ export default function AdminStatusModal({ application, onClose, onUpdateStatus,
                 تاريخ التأجيل
               </label>
               <input
-                type="date"
+                type="text"
+                placeholder="01/01/2026"
+                dir="ltr"
                 value={delayDate}
-                onChange={(e) => setDelayDate(e.target.value)}
+                onChange={(e) => setDelayDate(formatBirthDate(e.target.value))}
                 className="w-full rounded-2xl border border-orange-200 bg-orange-50/50 py-3 px-4 text-sm text-gray-900 font-bold outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/20"
               />
               {!delayDate && (

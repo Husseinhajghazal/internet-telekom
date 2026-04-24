@@ -289,6 +289,12 @@ export async function POST(request) {
         ? new Date(body.delayedUntil)
         : null,
       step: 6,
+      electronicApproval: body.electronicApproval === "true" || body.electronicApproval === true,
+      approvalViaShipping: body.approvalViaShipping === "true" || body.approvalViaShipping === true,
+      paidByUserName: body.paidByUserName === "true" || body.paidByUserName === true,
+      paidByName: body.paidByName,
+      discountCount: body.discountCount,
+      createdBy: body.createdBy || sessionUser.fullName,
       lastUpdatedBy: sessionUser.fullName,
     };
 
@@ -306,8 +312,15 @@ export async function POST(request) {
         data.appIndex = nextAppIndex;
         application = await prisma.application.create({
           data,
-          select: {
-            id: true,
+        });
+
+        // Log the creation
+        await prisma.applicationLog.create({
+          data: {
+            applicationId: application.id,
+            adminName: sessionUser.fullName,
+            action: "CREATE",
+            changes: null,
           },
         });
         break;

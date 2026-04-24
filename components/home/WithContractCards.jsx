@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { FaCrown, FaGem, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaInfoCircle } from "react-icons/fa";
 import FlippingCard from "./FlippingCard";
@@ -371,6 +372,7 @@ const contractPackages = [
 const ContractGroup = ({ group }) => {
   const durations = Array.from(new Set(group.speeds.map((s) => s.duration))).sort();
   const [selectedDuration, setSelectedDuration] = useState(durations[0]);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const filteredSpeeds = group.speeds.filter((s) => s.duration === selectedDuration);
   const isGreen = group.category.includes("العائلي");
@@ -379,6 +381,16 @@ const ContractGroup = ({ group }) => {
     ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
     : "bg-blue-500 text-white shadow-md shadow-blue-500/30";
   const idleButtonClass = "text-gray-600 hover:bg-black/5 hover:text-gray-900";
+  const detailsButtonClass = isGreen
+    ? "from-emerald-600 via-teal-500 to-emerald-600 shadow-emerald-500/30 hover:shadow-emerald-500/40 focus-visible:ring-emerald-400/60"
+    : "from-blue-600 via-cyan-500 to-blue-600 shadow-blue-500/30 hover:shadow-blue-500/40 focus-visible:ring-blue-400/60";
+  const detailsHeaderClass = isGreen
+    ? "text-emerald-800 bg-emerald-50 border-emerald-100"
+    : "text-blue-800 bg-blue-50 border-blue-100";
+  const detailsTextClass = isGreen ? "text-emerald-900/80" : "text-blue-900/80";
+  const detailsText = isGreen
+    ? "الشركة الرائدة التي استطاعت منذ تأسيسها عام 2012 أن تثبت كفاءتها كواحدة من أسرع مزودي خدمات الإنترنت نمواً في تركيا. تتميز الشركة بتقديم حلول اقتصادية وذكية تناسب ميزانيات الجميع، مع التركيز العالي على خدمات الألياف الضوئية (Fiber) والإنترنت اللاسلكي عالي السرعة. تقدم الشركة باقات مرنة ومتنوعة تلبي احتياجات الاستخدام المنزلي والتجاري، وتعتمد في نجاحها على بنية تحتية قوية تضمن استقرار الإشارة وسهولة الإجراءات الفنية. ومن خلال شراكتنا معهم، نضمن لكم الوصول إلى أفضل عروض مع ميزة الدعم الفني المتكامل باللغة العربية، لتجربة اشتراك تجمع بين التوفير والجودة في كافة الولايات التركية."
+    : "الشركة الأم والمشغل الوطني الأول والأكبر في تركيا، والذي يمتلك إرثاً عريقاً يمتد لأكثر من 180 عاماً. تتميز الشركة بامتلاكها لأضخم بنية تحتية للألياف الضوئية (Fiber) تغطي كافة الولايات والقرى التركية، مما يضمن لكم استقراراً فائقاً في الاتصال وتغطية لا تضاهى. تقدم حلولاً متكاملة تشمل الإنترنت المنزلي عالي السرعة، خدمات الهاتف المحمول، والقنوات التلفزيونية الرقمية، مع الالتزام بتطوير التكنولوجيا الرقمية لتناسب احتياجات العصر. ومن خلالنا، نسهل لكم الوصول إلى هذه الخدمات العالمية بمرونة تامة ودعم فني متخصص، لنضمن بقاءكم على اتصال دائم بأعلى معايير الجودة والكفاءة.";
 
   return (
     <div>
@@ -432,24 +444,50 @@ const ContractGroup = ({ group }) => {
           <InfiniteScrollRow speeds={filteredSpeeds} group={group} key={selectedDuration} />
       </div>
 
-      {/* Information block */}
-      {group.category === "باقات الإنترنت العائلي والاقتصادي" ? (
-        <div className="bg-green-50/50 backdrop-blur-sm border-r-4 border-emerald-400 p-5 rounded-l-2xl text-justify text-emerald-900/80 leading-relaxed text-sm md:text-base mx-4 md:mx-0 shadow-sm mt-6 mb-6">
-          <h4 className="text-lg font-extrabold text-emerald-800 mb-2">
-            <FaInfoCircle className="inline-block ml-2" />
-            التفاصيل والميزات
-          </h4>
-          الشركة الرائدة التي استطاعت منذ تأسيسها عام 2012 أن تثبت كفاءتها كواحدة من أسرع مزودي خدمات الإنترنت نمواً في تركيا. تتميز الشركة بتقديم حلول اقتصادية وذكية تناسب ميزانيات الجميع، مع التركيز العالي على خدمات الألياف الضوئية (Fiber) والإنترنت اللاسلكي عالي السرعة. تقدم الشركة باقات مرنة ومتنوعة تلبي احتياجات الاستخدام المنزلي والتجاري، وتعتمد في نجاحها على بنية تحتية قوية تضمن استقرار الإشارة وسهولة الإجراءات الفنية. ومن خلال شراكتنا معهم، نضمن لكم الوصول إلى أفضل عروض مع ميزة الدعم الفني المتكامل باللغة العربية، لتجربة اشتراك تجمع بين التوفير والجودة في كافة الولايات التركية.
-        </div>
-      ) : (
-        <div className="bg-blue-50/50 backdrop-blur-sm border-r-4 border-blue-400 p-5 rounded-l-2xl text-justify text-blue-900/80 leading-relaxed text-sm md:text-base mx-4 md:mx-0 shadow-sm mt-6 mb-6">
-          <h4 className="text-lg font-extrabold text-blue-800 mb-2">
-            <FaInfoCircle className="inline-block ml-2" />
-            التفاصيل والميزات
-          </h4>
-          الشركة الأم والمشغل الوطني الأول والأكبر في تركيا، والذي يمتلك إرثاً عريقاً يمتد لأكثر من 180 عاماً. تتميز الشركة بامتلاكها لأضخم بنية تحتية للألياف الضوئية (Fiber) تغطي كافة الولايات والقرى التركية، مما يضمن لكم استقراراً فائقاً في الاتصال وتغطية لا تضاهى. تقدم حلولاً متكاملة تشمل الإنترنت المنزلي عالي السرعة، خدمات الهاتف المحمول، والقنوات التلفزيونية الرقمية، مع الالتزام بتطوير التكنولوجيا الرقمية لتناسب احتياجات العصر. ومن خلالنا، نسهل لكم الوصول إلى هذه الخدمات العالمية بمرونة تامة ودعم فني متخصص، لنضمن بقاءكم على اتصال دائم بأعلى معايير الجودة والكفاءة.
-        </div>
-      )}
+      <div className="flex justify-center mt-6 mb-6">
+        <button
+          type="button"
+          onClick={() => setIsDetailsOpen(true)}
+          className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r bg-[length:200%_100%] hover:bg-[position:100%_0] ${detailsButtonClass}`}
+        >
+          <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+          <FaInfoCircle className="relative z-10 h-4 w-4" />
+          <span className="relative z-10">التفاصيل</span>
+        </button>
+      </div>
+
+      {isDetailsOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setIsDetailsOpen(false)}
+          >
+            <div
+              className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border overflow-hidden"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className={`flex items-center justify-between px-5 py-4 border-b ${detailsHeaderClass}`}>
+                <h4 className="text-lg font-extrabold flex items-center gap-2">
+                  <FaInfoCircle className="w-4 h-4" />
+                  التفاصيل والميزات
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setIsDetailsOpen(false)}
+                  className="text-2xl leading-none hover:opacity-80"
+                  aria-label="إغلاق"
+                >
+                  ×
+                </button>
+              </div>
+              <div className={`p-5 text-justify leading-relaxed text-sm md:text-base ${detailsTextClass}`}>
+                {detailsText}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

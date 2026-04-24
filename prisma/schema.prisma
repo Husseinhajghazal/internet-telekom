@@ -52,6 +52,11 @@ model Application {
   newOriginalAddressText String?
   newAddressCode      String?
   noContractTechType  String?
+  electronicApproval  Boolean           @default(false)
+  approvalViaShipping Boolean           @default(false)
+  paidByUserName      Boolean           @default(false)
+  paidByName          String?
+  discountCount       String?
   adminNote           String?
   adminNoteViewed     Boolean           @default(false)
   completedAt         DateTime?
@@ -59,9 +64,11 @@ model Application {
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   lastUpdatedBy       String?
+  createdBy           String?
   isDeleted           Boolean           @default(false)
   notes               Note[]
   Review              Review?
+  logs                ApplicationLog[]
 }
 
 model Note {
@@ -95,4 +102,14 @@ model Review {
   Application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   createdAt     DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ApplicationLog {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  adminName     String
+  action        String      // "CREATE", "UPDATE", "STATUS_CHANGE", "DELETE", "RESTORE"
+  changes       Json?       // { field: { old: any, new: any } }
+  createdAt     DateTime    @default(now())
 }

@@ -205,15 +205,16 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                   {describeSelectedPackage(application.selectedPackage)}
                 </Row>
               )}
-            {
-              application.serviceType === "newline" &&
-              application.contractPreference === "without" &&
-              (
-                <Row label="نوع التقنية" icon={<PiSpeedometerFill size={18} />}>
-                  {application.noContractTechType ? describeNoContractTechType(application.noContractTechType) : "—"}
-                </Row>
-              )
-            }
+            {((application.serviceType === "newline" &&
+              application.contractPreference === "without") ||
+              (application.serviceType === "services" &&
+                application.selectedService === "upgrade")) && (
+              <Row label="نوع التقنية" icon={<PiSpeedometerFill size={18} />}>
+                {application.noContractTechType
+                  ? describeNoContractTechType(application.noContractTechType)
+                  : "—"}
+              </Row>
+            )}
             {application.serviceType === "inquiry" && (
               <Row label="الاستفسار" icon={<MdDescription size={18} />}>
                 {describeSelectedInquiry(application.selectedInquiry)}
@@ -286,6 +287,34 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                 {application.note}
               </Row>
             ) : null}
+
+            {((application.serviceType === "services" &&
+              application.selectedService === "upgrade") ||
+              (application.serviceType === "newline" &&
+                application.contractPreference === "without")) && (
+              <>
+                <Row label="موافقة الكترونية" icon={<MdDescription size={18} />}>
+                  {application.electronicApproval ? "نعم" : "لا"}
+                </Row>
+                <Row label="موافقة عبر الشحن" icon={<MdDescription size={18} />}>
+                  {application.approvalViaShipping ? "نعم" : "لا"}
+                </Row>
+                <Row label={`مدفوع من ${application.name}`} icon={<MdDescription size={18} />}>
+                  {application.paidByUserName ? "نعم" : "لا"}
+                </Row>
+                {!application.paidByUserName && (
+                  <Row label="إسم الدافع" icon={<MdPerson size={18} />}>
+                    {application.paidByName || "—"}
+                  </Row>
+                )}
+                <Row
+                  label="عدد الخصومات"
+                  icon={<MdOutlineReceiptLong size={18} />}
+                >
+                  {application.discountCount || "—"}
+                </Row>
+              </>
+            )}
             
             <Row
               label="الصور المرفقة"
@@ -310,6 +339,12 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                 "—"
               )}
             </Row>
+
+            {application.createdBy && (
+              <Row label="من الذي سجل الطلب" icon={<MdPerson size={18} />} className="sm:col-span-2">
+                <span className="font-bold text-indigo-800">{application.createdBy}</span>
+              </Row>
+            )}
 
             {application.lastUpdatedBy && (
               <Row label="أخر تحديث بواسطة" icon={<MdPerson size={18} />} className="sm:col-span-2">
