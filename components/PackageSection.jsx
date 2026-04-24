@@ -15,6 +15,9 @@ const PackageSection = ({
   packageKind,
   selectedPackage,
   detailsText,
+  title,
+  description,
+  icon: Icon = MdRefresh,
 }) => {
   const isGreen = accent === "green";
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -50,7 +53,35 @@ const PackageSection = ({
 
       <div className="relative py-6 md:py-8 space-y-7 md:space-y-8">
         <div className="space-y-6">
-          <div className="text-center">
+          <div className="flex flex-wrap justify-start md:justify-between gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-10 h-10 rounded-xl ${isGreen ? "bg-emerald-100" : "bg-blue-100"} flex items-center justify-center`}
+              >
+                <Icon size={18} className={isGreen ? "text-emerald-600" : "text-blue-600"} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{title || "عقد إشتراك"}</h3>
+                <p className="text-sm text-gray-400">{description}</p>
+              </div>
+            </div>
+
+            {detailsText && (
+              <div className="flex justify-center md:mx-0 mx-auto px-1">
+                <button
+                  type="button"
+                  onClick={() => setIsDetailsOpen(true)}
+                  className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r bg-[length:200%_100%] hover:bg-[position:100%_0] ${detailsButtonClass}`}
+                >
+                  <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+                  <FaInfoCircle className="relative z-10 h-4 w-4" />
+                  <span className="relative z-10">معلومات إضافية</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="text-center mb-6">
             <h4 className="text-lg md:text-2xl font-semibold text-gray-800 inline-flex items-center gap-2 justify-center">
               <MdRefresh className={iconClass} />
               عقد إشتراك
@@ -97,18 +128,6 @@ const PackageSection = ({
 
           {detailsText && (
             <>
-              <div className="flex justify-center mt-6 mb-2">
-                <button
-                  type="button"
-                  onClick={() => setIsDetailsOpen(true)}
-                  className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r bg-[length:200%_100%] hover:bg-[position:100%_0] ${detailsButtonClass}`}
-                >
-                  <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
-                  <FaInfoCircle className="relative z-10 h-4 w-4" />
-                  <span className="relative z-10">التفاصيل</span>
-                </button>
-              </div>
-
               {isDetailsOpen &&
                 typeof document !== "undefined" &&
                 createPortal(

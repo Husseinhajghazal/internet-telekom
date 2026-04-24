@@ -41,14 +41,14 @@ const AboutSection = () => {
         <FaGlobeAmericas className="w-[400px] h-[400px] text-[#18a2e3]/[0.05]" />
       </div>
 
-      <div ref={ref} className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+      <div ref={ref} className="max-w-7xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
           className="text-center mb-8 md:mb-12 px-4"
         >
-          <h2 className="text-xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
             من هي {" "}
             <span className="bg-gradient-to-l from-[#18a2e3] to-[#5898b7] bg-clip-text text-transparent">
               شركة إنترنت تيليكوم؟
@@ -58,7 +58,7 @@ const AboutSection = () => {
             </p>
           </h2>
         </motion.div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 px-4 md:px-8 items-center">
           {/* left - visual */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}

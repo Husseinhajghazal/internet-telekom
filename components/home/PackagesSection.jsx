@@ -74,30 +74,33 @@ const PackagesSection = () => {
             <div className="flex-1 h-px bg-linear-to-r from-fuchsia-200 to-transparent" />
           </div>
 
-          <div className="flex items-center gap-3 mb-6">
-            <div
-              className={`w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center`}
-            >
-              <MdRocketLaunch size={18} className={"text-purple-600"} />
+          <div className="flex flex-wrap justify-start md:justify-between gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center`}
+              >
+                <MdRocketLaunch size={18} className={"text-purple-600"} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">باقات الإنترنت المسبق الدفع</h3>
+                <p className="text-sm text-gray-400">البنية التحتية لترك نت</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900">باقات إنترنت مسبقة الدفع</h3>
-              <p className="text-sm text-gray-400">البنية التحتية لترك نت</p>
+
+            <div className="flex justify-center md:mx-0 mx-auto mb-8 px-1">
+              <button
+                type="button"
+                onClick={() => setIsDetailsOpen(true)}
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-purple-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r from-purple-600 via-fuchsia-500 to-purple-600 bg-[length:200%_100%] hover:bg-[position:100%_0]"
+              >
+                <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+                <FaInfoCircle className="relative z-10 h-4 w-4" />
+                <span className="relative z-10">معلومات إضافية</span>
+              </button>
             </div>
           </div>
 
           <NoContractCards />
-          <div className="flex justify-center mt-6 mb-6">
-            <button
-              type="button"
-              onClick={() => setIsDetailsOpen(true)}
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-purple-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r from-purple-600 via-fuchsia-500 to-purple-600 bg-[length:200%_100%] hover:bg-[position:100%_0]"
-            >
-              <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
-              <FaInfoCircle className="relative z-10 h-4 w-4" />
-              <span className="relative z-10">التفاصيل</span>
-            </button>
-          </div>
         </motion.div>
 
         {/* With Contract Section */}

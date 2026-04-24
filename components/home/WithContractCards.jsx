@@ -395,15 +395,29 @@ const ContractGroup = ({ group }) => {
   return (
     <div>
       {/* section header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div
-          className={`w-10 h-10 rounded-xl ${group.iconBg.split(" ")[0]} flex items-center justify-center`}
-        >
-          <group.icon size={18} className={group.iconBg.split(" ")[1]} />
+      <div className="flex flex-wrap justify-start md:justify-between gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-10 h-10 rounded-xl ${group.iconBg.split(" ")[0]} flex items-center justify-center`}
+          >
+            <group.icon size={18} className={group.iconBg.split(" ")[1]} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">{group.category}</h3>
+            <p className="text-sm text-gray-400">{group.subtitle}</p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-xl font-bold text-gray-900">{group.category}</h3>
-          <p className="text-sm text-gray-400">{group.subtitle}</p>
+
+        <div className="flex justify-center md:mx-0 mx-auto px-1">
+          <button
+            type="button"
+            onClick={() => setIsDetailsOpen(true)}
+            className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r bg-[length:200%_100%] hover:bg-[position:100%_0] ${detailsButtonClass}`}
+          >
+            <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+            <FaInfoCircle className="relative z-10 h-4 w-4" />
+            <span className="relative z-10">معلومات إضافية</span>
+          </button>
         </div>
       </div>
 
@@ -442,18 +456,6 @@ const ContractGroup = ({ group }) => {
       {/* Cards Scroll */}
       <div className="mt-4">
           <InfiniteScrollRow speeds={filteredSpeeds} group={group} key={selectedDuration} />
-      </div>
-
-      <div className="flex justify-center mt-6 mb-6">
-        <button
-          type="button"
-          onClick={() => setIsDetailsOpen(true)}
-          className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r bg-[length:200%_100%] hover:bg-[position:100%_0] ${detailsButtonClass}`}
-        >
-          <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
-          <FaInfoCircle className="relative z-10 h-4 w-4" />
-          <span className="relative z-10">التفاصيل</span>
-        </button>
       </div>
 
       {isDetailsOpen &&

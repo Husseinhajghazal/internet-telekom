@@ -47,7 +47,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "purple",
-      features: ["التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوتر تقسيط مع الفاتورة"],
+      features: ["الفاتورة حقيقية وثابتة", "التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوتر تقسيط مع الفاتورة"],
     },
     {
       value: "fiber",
@@ -55,7 +55,7 @@ const Step5 = ({
       speed: "100",
       price: 699,
       color: "purple",
-      features: ["التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوترات الفايبر مجاناً"],
+      features: ["الفاتورة حقيقية وثابتة", "التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوترات الفايبر مجاناً"],
     },
     {
       value: "gigafiber",
@@ -63,24 +63,13 @@ const Step5 = ({
       speed: "1000",
       price: 699,
       color: "purple",
-      features: ["التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوترات الفايبر مجاناً"],
+      features: ["الفاتورة حقيقية وثابتة", "التسجيل مجاني تماماً", "التحميل غير محدود", "التركيب خلال 48 ساعة", "الراوترات الفايبر مجاناً"],
     },
   ];
 
   if (isWithContract) {
     return (
       <div className="max-w-6xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div
-            className={`w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center`}
-          >
-            <FaCrown size={18} className={"text-emerald-600"} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">باقات الإنترنت العائلي والإقتصادي</h3>
-            <p className="text-sm text-gray-400">البنية التحتية لجوك تيليكوم</p>
-          </div>
-      </div>
         <div className="md:px-6">
           <PackageSection
             accent="green"
@@ -104,19 +93,8 @@ const Step5 = ({
             packageKind="family"
             selectedPackage={values.selectedPackage}
             detailsText="الشركة الرائدة التي استطاعت منذ تأسيسها عام 2012 أن تثبت كفاءتها كواحدة من أسرع مزودي خدمات الإنترنت نمواً في تركيا. تتميز الشركة بتقديم حلول اقتصادية وذكية تناسب ميزانيات الجميع، مع التركيز العالي على خدمات الألياف الضوئية (Fiber) والإنترنت اللاسلكي عالي السرعة. تقدم الشركة باقات مرنة ومتنوعة تلبي احتياجات الاستخدام المنزلي والتجاري، وتعتمد في نجاحها على بنية تحتية قوية تضمن استقرار الإشارة وسهولة الإجراءات الفنية. ومن خلال شراكتنا معهم، نضمن لكم الوصول إلى أفضل عروض مع ميزة الدعم الفني المتكامل باللغة العربية، لتجربة اشتراك تجمع بين التوفير والجودة في كافة الولايات التركية."
+            icon={FaCrown}
           />
-
-                  <div className="flex items-center gap-3 mb-6">
-          <div
-            className={`w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center`}
-          >
-            <FaCrown size={18} className={"text-blue-600"} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">باقات الإنترنت الأقوى والأسرع</h3>
-            <p className="text-sm text-gray-400">البنية التحتية لترك تيليكوم</p>
-          </div>
-      </div>
 
           <PackageSection
             accent="blue"
@@ -140,6 +118,7 @@ const Step5 = ({
             packageKind="vip"
             selectedPackage={values.selectedPackage}
             detailsText="الشركة الأم والمشغل الوطني الأول والأكبر في تركيا، والذي يمتلك إرثاً عريقاً يمتد لأكثر من 180 عاماً. تتميز الشركة بامتلاكها لأضخم بنية تحتية للألياف الضوئية (Fiber) تغطي كافة الولايات والقرى التركية، مما يضمن لكم استقراراً فائقاً في الاتصال وتغطية لا تضاهى. تقدم حلولاً متكاملة تشمل الإنترنت المنزلي عالي السرعة، خدمات الهاتف المحمول، والقنوات التلفزيونية الرقمية، مع الالتزام بتطوير التكنولوجيا الرقمية لتناسب احتياجات العصر. ومن خلالنا، نسهل لكم الوصول إلى هذه الخدمات العالمية بمرونة تامة ودعم فني متخصص، لنضمن بقاءكم على اتصال دائم بأعلى معايير الجودة والكفاءة."
+            icon={FaCrown}
           />
 
           <div className="flex flex-col items-center justify-center w-full mt-6 gap-3">
@@ -178,18 +157,6 @@ const Step5 = ({
       />
 
       <div className="md:px-4">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div
-                      className={`w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center`}
-                    >
-                      <MdRocketLaunch size={18} className={"text-purple-600"} />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">باقات إنترنت مسبقة الدفع</h3>
-                      <p className="text-sm text-gray-400">البنية التحتية لترك نت</p>
-                    </div>
-                  </div>
-
         <TechTypeGrid
           options={techOptions}
           selectedTechType={values.noContractTechType}

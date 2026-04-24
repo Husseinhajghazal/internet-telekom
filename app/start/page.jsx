@@ -8,7 +8,6 @@ import { FaWifi, FaUsers, FaMapMarkedAlt, FaStar, FaHeadset } from "react-icons/
 
 const stats = [
   { value: "50", suffix: "K+", suffixColor: "text-[#f36802]", label: "ألف عميل سعيد", icon: FaUsers },
-  { value: "81", suffix: "+", suffixColor: "text-[#f36802]", label: "ولاية مغطاة", icon: FaMapMarkedAlt },
   { value: "10", suffix: "Y+", suffixColor: "text-[#f36802]", label: "سنوات من الخبرة", icon: FaStar },
   { value: "24", suffix: "/7", suffixColor: "text-[#f36802]", label: "دعم فني بالعربية", icon: FaHeadset },
 ];
@@ -91,22 +90,22 @@ export default function StartPage() {
           </div>
 
           {/* Stats below buttons */}
-          <div className="animate-hero-text-in hero-delay-5 mt-8 md:mt-10 w-full sm:w-auto grid md:hidden grid-cols-2 gap-1.5 sm:gap-4 md:gap-6 bg-black/[0.02] border border-black/[0.05] rounded-[2rem] p-3 sm:p-5">
+          <div className="animate-hero-text-in hero-delay-5 mt-5 md:mt-10 w-full sm:w-auto grid md:hidden grid-cols-3 gap-1.5 sm:gap-4 md:gap-6 bg-black/[0.02] border border-black/[0.05] rounded-[2rem] p-3 sm:p-5">
             {stats.map((stat, idx) => (
             <div
               key={idx}
               className="flex flex-col items-center text-center"
             >
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#0c2240]/10 mb-3 md:mb-4">
-                <stat.icon className="text-2xl text-[#f36802]" />
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0c2240]/10 mb-3 md:mb-4">
+                <stat.icon className="text-lg text-[#f36802]" />
               </div>
-              <div className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#0c2240] mb-2 md:mb-4 tracking-wider" dir="ltr">
+              <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0c2240] mb-2 md:mb-4 tracking-wider" dir="ltr">
                 {stat.value}
                 {stat.suffix && (
                   <span className={stat.suffixColor}>{stat.suffix}</span>
                 )}
               </div>
-              <div className="text-[#0c2240] text-sm sm:text-base md:text-lg font-medium tracking-wide">
+              <div className="text-[#0c2240] text-xs md:text-base font-medium tracking-wide">
                 {stat.label}
               </div>
             </div>
@@ -146,7 +145,7 @@ export default function StartPage() {
       </div>
 
       {/* ── Bottom wave ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
         <svg
           viewBox="0 0 1440 80"
           fill="none"
