@@ -5,12 +5,9 @@ import { createPortal } from "react-dom";
 import { MdRefresh } from "react-icons/md";
 import { FaInfoCircle } from "react-icons/fa";
 import PackageSpeedGrid from "./PackageSpeedGrid";
-import LottieAnimation from "./LottieAnimation";
 
 const PackageSection = ({
   accent = "blue",
-  title,
-  description,
   durations,
   selectedDuration,
   onDurationChange,
@@ -52,30 +49,6 @@ const PackageSection = ({
       />
 
       <div className="relative py-6 md:py-8 space-y-7 md:space-y-8">
-        <div className="text-center space-y-4">
-          {
-            packageKind === 'family' ? (
-              <LottieAnimation
-                path="/animations/Troubleshooting.json"
-                width={250}
-                height={150}
-                className="inline-block"
-                loop={true}
-              />
-            ) : (
-              <LottieAnimation
-              path="/animations/Businessman%20flies%20up%20with%20rocket.json"
-              width={250}
-              height={150}
-              className="inline-block"
-              loop={true}
-            />
-            )
-          }
-          <h3 className={`text-xl md:text-3xl font-bold ${titleClass}`}>{title}</h3>
-          <p className="text-gray-600 md:text-lg max-w-2xl mx-auto">{description}</p>
-        </div>
-
         <div className="space-y-6">
           <div className="text-center">
             <h4 className="text-lg md:text-2xl font-semibold text-gray-800 inline-flex items-center gap-2 justify-center">

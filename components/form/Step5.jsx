@@ -7,6 +7,10 @@ import { ErrorMessage } from "formik";
 import PackageSection from "../PackageSection";
 import TechTypeGrid from "../TechTypeGrid";
 import StepHeader from "../StepHeader";
+import { FaCrown } from "react-icons/fa";
+import {
+  MdRocketLaunch,
+} from "react-icons/md";
 
 const Step5 = ({
   values,
@@ -66,6 +70,17 @@ const Step5 = ({
   if (isWithContract) {
     return (
       <div className="max-w-6xl mx-auto space-y-4 pb-4 pt-0 md:space-y-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div
+            className={`w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center`}
+          >
+            <FaCrown size={18} className={"text-emerald-600"} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">باقات الإنترنت العائلي والإقتصادي</h3>
+            <p className="text-sm text-gray-400">البنية التحتية لجوك تيليكوم</p>
+          </div>
+      </div>
         <div className="md:px-6">
           <PackageSection
             accent="green"
@@ -90,6 +105,18 @@ const Step5 = ({
             selectedPackage={values.selectedPackage}
             detailsText="الشركة الرائدة التي استطاعت منذ تأسيسها عام 2012 أن تثبت كفاءتها كواحدة من أسرع مزودي خدمات الإنترنت نمواً في تركيا. تتميز الشركة بتقديم حلول اقتصادية وذكية تناسب ميزانيات الجميع، مع التركيز العالي على خدمات الألياف الضوئية (Fiber) والإنترنت اللاسلكي عالي السرعة. تقدم الشركة باقات مرنة ومتنوعة تلبي احتياجات الاستخدام المنزلي والتجاري، وتعتمد في نجاحها على بنية تحتية قوية تضمن استقرار الإشارة وسهولة الإجراءات الفنية. ومن خلال شراكتنا معهم، نضمن لكم الوصول إلى أفضل عروض مع ميزة الدعم الفني المتكامل باللغة العربية، لتجربة اشتراك تجمع بين التوفير والجودة في كافة الولايات التركية."
           />
+
+                  <div className="flex items-center gap-3 mb-6">
+          <div
+            className={`w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center`}
+          >
+            <FaCrown size={18} className={"text-blue-600"} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">باقات الإنترنت الأقوى والأسرع</h3>
+            <p className="text-sm text-gray-400">البنية التحتية لترك تيليكوم</p>
+          </div>
+      </div>
 
           <PackageSection
             accent="blue"
@@ -151,6 +178,18 @@ const Step5 = ({
       />
 
       <div className="md:px-4">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div
+                      className={`w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center`}
+                    >
+                      <MdRocketLaunch size={18} className={"text-purple-600"} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">باقات إنترنت مسبقة الدفع</h3>
+                      <p className="text-sm text-gray-400">البنية التحتية لترك نت</p>
+                    </div>
+                  </div>
+
         <TechTypeGrid
           options={techOptions}
           selectedTechType={values.noContractTechType}
