@@ -63,7 +63,7 @@ export default function AdminEmployeesClient() {
           const res = await fetch(url, {
               method,
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(formData)
+              body: JSON.stringify({ ...formData, email: formData.email.trim().toLowerCase() })
           });
           if(res.ok) {
               setModalOpen(false);

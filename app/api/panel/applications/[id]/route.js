@@ -13,6 +13,7 @@ const ALLOWED_STATUSES = [
   "COMPLETED",
   "TECHNICAL_PROBLEM",
   "TRYING_TO_PERSUADE",
+  "ACTIVATED",
 ];
 
 export async function PATCH(request, { params }) {
@@ -47,7 +48,8 @@ export async function PATCH(request, { params }) {
         );
       }
       data.status = body.status;
-      if (body.status === "COMPLETED") {
+      // completedAt now tracks the activation date ("تاريخ التفعيل").
+      if (body.status === "ACTIVATED") {
         data.completedAt = new Date();
         data.delayedUntil = null;
       } else if (body.status === "DELAYED") {

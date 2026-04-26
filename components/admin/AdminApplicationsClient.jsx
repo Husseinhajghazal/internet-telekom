@@ -30,7 +30,8 @@ import {
   MdOutlineTimer,
   MdAdd,
   MdDelete,
-  MdHistory
+  MdHistory,
+  MdSend
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
@@ -69,8 +70,10 @@ const ActionMenu = ({
   openStatusModal,
   openCustomerNoteModal,
   isDeletedMode,
+  isAddedMode,
   userRole,
   handleSendReviewLink,
+  handleOpenWhatsApp,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
@@ -173,7 +176,20 @@ const ActionMenu = ({
               </button>
             )}
 
-            {!isDeletedMode && (
+            {!isDeletedMode && isAddedMode && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  handleOpenWhatsApp(app);
+                }}
+                className="w-full px-4 py-2.5 text-sm text-[#25D366] hover:bg-[#25D366]/10 transition flex items-center gap-2.5 font-bold border-t border-gray-50"
+              >
+                <FaWhatsapp size={18} />
+                أضافة لواتساب
+              </button>
+            )}
+
+            {!isDeletedMode && !isAddedMode && (
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -204,61 +220,83 @@ const ActionMenu = ({
             )}
 
             {!isDeletedMode && (
-              <>
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    openStatusModal(app);
-                  }}
-                  className="w-full px-4 py-2.5 text-sm text-violet-600 hover:bg-violet-50 transition flex items-center gap-2.5 font-bold"
-                >
-                  <MdSwapHoriz size={18} />
-                  تحديث الحالة
-                </button>
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  openStatusModal(app);
+                }}
+                className="w-full px-4 py-2.5 text-sm text-violet-600 hover:bg-violet-50 transition flex items-center gap-2.5 font-bold"
+              >
+                <MdSwapHoriz size={18} />
+                تحديث الحالة
+              </button>
+            )}
 
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    openCustomerNoteModal(app);
-                  }}
-                  className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
-                >
-                  <MdOutlineSpeakerNotes size={18} />
-                  ملاحظة للمشترك
-                </button>
+            {!isDeletedMode && !isAddedMode && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  openCustomerNoteModal(app);
+                }}
+                className="w-full px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-2.5 font-bold"
+              >
+                <MdOutlineSpeakerNotes size={18} />
+                ملاحظة للمشترك
+              </button>
+            )}
 
-                <button
-                  disabled={!canChangeStatus(app.status) || actionId === app.id}
-                  onClick={() => {
-                    setIsOpen(false);
-                    setConfirm({
-                      kind: "reject",
-                      appId: app.id,
-                      appIndex: app.appIndex,
-                    });
-                  }}
-                  className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <MdClose size={18} />
-                  إلغاء
-                </button>
+            {!isDeletedMode && (
+              <button
+                disabled={!canChangeStatus(app.status) || actionId === app.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  setConfirm({
+                    kind: "reject",
+                    appId: app.id,
+                    appIndex: app.appIndex,
+                  });
+                }}
+                className="w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <MdClose size={18} />
+                إلغاء
+              </button>
+            )}
 
-                <button
-                  disabled={!canChangeStatus(app.status) || actionId === app.id}
-                  onClick={() => {
-                    setIsOpen(false);
-                    setConfirm({
-                      kind: "complete",
-                      appId: app.id,
-                      appIndex: app.appIndex,
-                    });
-                  }}
-                  className="w-full px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <MdDone size={18} />
-                  إكمال
-                </button>
-              </>
+            {!isDeletedMode && isAddedMode && (
+              <button
+                disabled={actionId === app.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  setConfirm({
+                    kind: "promote",
+                    appId: app.id,
+                    appIndex: app.appIndex,
+                  });
+                }}
+                className="w-full px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <MdSend size={18} />
+                طلب جديد
+              </button>
+            )}
+
+            {!isDeletedMode && !isAddedMode && (
+              <button
+                disabled={!canChangeStatus(app.status) || actionId === app.id}
+                onClick={() => {
+                  setIsOpen(false);
+                  setConfirm({
+                    kind: "activate",
+                    appId: app.id,
+                    appIndex: app.appIndex,
+                  });
+                }}
+                className="w-full px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <MdDone size={18} />
+                تفعيل
+              </button>
             )}
 
             <div className="my-1 border-t border-gray-100" />
@@ -304,6 +342,7 @@ const ActionMenu = ({
 
 export default function AdminApplicationsClient({
   isDeletedMode = false,
+  isAddedMode = false,
   userRole = "ADMIN",
 }) {
   const router = useRouter();
@@ -350,6 +389,16 @@ ${reviewLink}
     }
   };
 
+  const handleOpenWhatsApp = (app) => {
+    const phoneToUse = app.phone || app.phone2 || app.newPhone || "";
+    const digits = phoneToUse.replace(/\D/g, "").replace(/^0/, "");
+    if (!digits) {
+      setAlertMsg("لا يوجد رقم هاتف متاح.");
+      return;
+    }
+    window.open(`https://wa.me/90${digits}`, "_blank");
+  };
+
   const [searchInput, setSearchInput] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -377,15 +426,18 @@ ${reviewLink}
     (p) => {
       const params = new URLSearchParams({ page: String(p) });
       if (isDeletedMode) params.set("deleted", "true");
+      else if (isAddedMode) params.set("view", "added");
       if (debouncedQ) params.set("q", debouncedQ);
       if (statusFilter) params.set("status", statusFilter);
-      if (dateField && dateField !== "createdAt")
-        params.set("dateField", dateField);
-      if (dateFrom) params.set("dateFrom", dateFrom);
-      if (dateTo) params.set("dateTo", dateTo);
+      if (!debouncedQ) {
+        if (dateField && dateField !== "createdAt")
+          params.set("dateField", dateField);
+        if (dateFrom) params.set("dateFrom", dateFrom);
+        if (dateTo) params.set("dateTo", dateTo);
+      }
       return params.toString();
     },
-    [debouncedQ, statusFilter, dateField, dateFrom, dateTo],
+    [isDeletedMode, isAddedMode, debouncedQ, statusFilter, dateField, dateFrom, dateTo],
   );
 
   const load = useCallback(
@@ -449,7 +501,7 @@ ${reviewLink}
           "رقم الإشتراك",
           "الباقة",
           "تاريخ الأنشاء",
-          "تاريخ الإكتمال",
+          "تاريخ التفعيل",
         ],
         ...allApplications.map((app) => [
           app.appIndex,
@@ -577,6 +629,39 @@ ${reviewLink}
     }));
   };
 
+  const handleNoteUpdated = (updated) => {
+    const patchNotes = (notes) =>
+      (notes || []).map((n) => (n.id === updated.id ? updated : n));
+    setData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        applications: prev.applications.map((app) =>
+          app.id === notesApp?.id
+            ? { ...app, notes: patchNotes(app.notes) }
+            : app,
+        ),
+      };
+    });
+    setNotesApp((prev) => prev ? { ...prev, notes: patchNotes(prev.notes) } : prev);
+  };
+
+  const handleNoteDeleted = (noteId) => {
+    const filterNotes = (notes) => (notes || []).filter((n) => n.id !== noteId);
+    setData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        applications: prev.applications.map((app) =>
+          app.id === notesApp?.id
+            ? { ...app, notes: filterNotes(app.notes) }
+            : app,
+        ),
+      };
+    });
+    setNotesApp((prev) => prev ? { ...prev, notes: filterNotes(prev.notes) } : prev);
+  };
+
   const handleStatusUpdate = async (newStatus, delayedUntil) => {
     if (!statusApp) return;
     setActionId(statusApp.id);
@@ -653,8 +738,15 @@ ${reviewLink}
   const isDupName = (name) => dupNames.has((name || "").trim().toLowerCase());
   const isDupPhone = (phone) => dupPhones.has((phone || "").replace(/\D/g, ""));
 
+  const isDueDelayed = (app) => {
+    if (app.status !== "DELAYED" || !app.delayedUntil) return false;
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    return new Date(app.delayedUntil) <= todayEnd;
+  };
+
   const canChangeStatus = (status) =>
-    status !== "REJECTED" && status !== "COMPLETED";
+    status !== "REJECTED" && status !== "ACTIVATED";
 
   const clearFilters = () => {
     setSearchInput("");
@@ -696,7 +788,11 @@ ${reviewLink}
             </span>
             <div>
               <h2 className="text-xl md:text-2xl font-extrabold text-gray-900 tracking-tight">
-                {isDeletedMode ? "الطلبات المحذوفة" : "الطلبات"}
+                {isDeletedMode
+                  ? "الطلبات المحذوفة"
+                  : isAddedMode
+                    ? "الطلبات المضافة"
+                    : "الطلبات"}
               </h2>
               <p className="text-sm text-gray-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="inline-flex items-center gap-1">
@@ -716,7 +812,7 @@ ${reviewLink}
             </div>
           </div>
           <div className="flex flex-col md:flex-row gap-3">
-            {!isDeletedMode && (
+            {!isDeletedMode && !isAddedMode && (
               <button
                 type="button"
                 onClick={handleCreateBlankApp}
@@ -809,11 +905,17 @@ ${reviewLink}
                 className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
               >
                 <option value="">كل الحالات</option>
-                {Object.entries(STATUS_LABELS).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
+                {Object.entries(STATUS_LABELS)
+                  .filter(([key]) =>
+                    isAddedMode
+                      ? key === "NOT_COMPLETED" || key === "COMPLETED"
+                      : key !== "NOT_COMPLETED" && key !== "COMPLETED",
+                  )
+                  .map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  ))}
               </select>
             </div>
           )}
@@ -831,10 +933,10 @@ ${reviewLink}
             >
               <option value="createdAt">تاريخ الإنشاء</option>
               {isDeletedMode && <option value="updatedAt">تاريخ الحذف</option>}
-              {!isDeletedMode && (
-                <option value="completedAt">تاريخ الإكتمال</option>
+              {!isDeletedMode && !isAddedMode && (
+                <option value="completedAt">تاريخ التفعيل</option>
               )}
-              {!isDeletedMode && (
+              {!isDeletedMode && !isAddedMode && (
                 <option value="delayedUntil">تاريخ التأجيل</option>
               )}
             </select>
@@ -947,15 +1049,15 @@ ${reviewLink}
                       </span>
                     </th>
                   )}
-                  {!isDeletedMode && (
+                  {!isDeletedMode && !isAddedMode && (
                     <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                       <span className="inline-flex items-center gap-1.5">
                         <MdDoneAll size={18} />
-                        تاريخ الإكتمال
+                        تاريخ التفعيل
                       </span>
                     </th>
                   )}
-                  {!isDeletedMode && (
+                  {!isDeletedMode && !isAddedMode && (
                     <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                       <span className="inline-flex items-center gap-1.5">
                         <MdOutlineTimer size={18} />
@@ -993,12 +1095,14 @@ ${reviewLink}
                     </td>
                   </tr>
                 ) : (
-                  applications.map((app, idx) => (
+                  applications.map((app, idx) => {
+                    const dueDelayed = isDueDelayed(app);
+                    return (
                     <tr
                       key={app.id}
-                      className={`border-b border-gray-100 transition-colors hover:bg-cyan-50/40 ${
+                      className={`border-b transition-colors hover:bg-cyan-50/40 ${
                         idx % 2 === 0 ? "bg-white" : "bg-slate-50/40"
-                      }`}
+                      } ${dueDelayed ? "ring-2 ring-inset ring-orange-500 z-10 relative bg-orange-50/30 border-none" : "border-gray-100"}`}
                     >
                       <td
                         className="px-3 py-3.5 text-center font-mono font-bold tabular-nums"
@@ -1055,12 +1159,12 @@ ${reviewLink}
                           {app.updatedAt ? formatDate(app.updatedAt) : "—"}
                         </td>
                       )}
-                      {!isDeletedMode && (
+                      {!isDeletedMode && !isAddedMode && (
                         <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                           {app.completedAt ? formatDate(app.completedAt) : "—"}
                         </td>
                       )}
-                      {!isDeletedMode && (
+                      {!isDeletedMode && !isAddedMode && (
                         <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                           {app.delayedUntil
                             ? formatDate(app.delayedUntil, "4")
@@ -1093,12 +1197,14 @@ ${reviewLink}
                           openStatusModal={setStatusApp}
                           openCustomerNoteModal={setCustomerNoteApp}
                           isDeletedMode={isDeletedMode}
+                          isAddedMode={isAddedMode}
                           userRole={userRole}
                           handleSendReviewLink={handleSendReviewLink}
+                          handleOpenWhatsApp={handleOpenWhatsApp}
                         />
                       </td>
                     </tr>
-                  ))
+                  )})
                 )}
               </tbody>
             </table>
@@ -1151,6 +1257,8 @@ ${reviewLink}
           application={notesApp}
           onClose={() => setNotesApp(null)}
           onNoteAdded={handleNoteAdded}
+          onNoteUpdated={handleNoteUpdated}
+          onNoteDeleted={handleNoteDeleted}
         />
       )}
 
@@ -1182,16 +1290,20 @@ ${reviewLink}
               ? "حذف الطلب نهائياً؟"
               : confirm?.kind === "restore"
                 ? "إستعادة الطلب؟"
-                : "إكمال الطلب؟"
+                : confirm?.kind === "promote"
+                  ? "تحويل لطلب جديد؟"
+                  : "تفعيل الطلب؟"
         }
         message={
           confirm?.kind === "delete"
             ? `هل أنت متأكد من الحذف النهائي للطلب #${confirm?.appIndex}؟ سيتم فقدان البيانات للأبد.`
             : confirm?.kind === "restore"
               ? `هل تريد إستعادة الطلب #${confirm?.appIndex} ليعود لصفحة الطلبات الأساسية؟`
-              : confirm
-                ? `هل أنت متأكد؟ الطلب #${confirm?.appIndex}`
-                : ""
+              : confirm?.kind === "promote"
+                ? `سيتم نقل الطلب #${confirm?.appIndex} إلى قائمة الطلبات الرئيسية.`
+                : confirm
+                  ? `هل أنت متأكد؟ الطلب #${confirm?.appIndex}`
+                  : ""
         }
         confirmLabel={
           confirm?.kind === "reject"
@@ -1200,7 +1312,9 @@ ${reviewLink}
               ? "نعم، حذف"
               : confirm?.kind === "restore"
                 ? "نعم، إستعادة"
-                : "نعم، إكمال"
+                : confirm?.kind === "promote"
+                  ? "نعم، نقل"
+                  : "نعم، تفعيل"
         }
         cancelLabel="رجوع"
         loading={!!actionId && confirm && actionId === confirm.appId}
@@ -1211,11 +1325,12 @@ ${reviewLink}
             deleteStatus(confirm.appId);
           } else if (confirm.kind === "restore") {
             restoreStatus(confirm.appId);
+          } else if (confirm.kind === "promote") {
+            updateStatus(confirm.appId, "NEW");
+          } else if (confirm.kind === "reject") {
+            updateStatus(confirm.appId, "REJECTED");
           } else {
-            updateStatus(
-              confirm.appId,
-              confirm.kind === "reject" ? "REJECTED" : "COMPLETED",
-            );
+            updateStatus(confirm.appId, "ACTIVATED");
           }
         }}
       />

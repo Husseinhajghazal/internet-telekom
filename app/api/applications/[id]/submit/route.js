@@ -15,7 +15,7 @@ export async function POST(request, { params }) {
     const updated = await prisma.application.update({
       where: { id },
       data: {
-        status: "NEW",
+        status: "COMPLETED",
         step: Number.isInteger(step) && step >= 1 ? step : 6,
       },
     });

@@ -13,7 +13,12 @@ const VALID_STATUSES = [
   "DELAYED",
   "REJECTED",
   "COMPLETED",
+  "TECHNICAL_PROBLEM",
+  "TRYING_TO_PERSUADE",
+  "ACTIVATED",
 ];
+
+const ADDED_VIEW_STATUSES = ["NOT_COMPLETED", "COMPLETED"];
 
 function buildWhere(searchParams) {
   const andConditions = [];
@@ -62,7 +67,23 @@ function buildWhere(searchParams) {
     }
 
     if (Object.keys(dateCondition).length) {
-      andConditions.push({ [targetDateField]: dateCondition });
+      if (targetDateField === "createdAt") {
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+        andConditions.push({
+          OR: [
+            { createdAt: dateCondition },
+            {
+              AND: [
+                { status: "DELAYED" },
+                { delayedUntil: { lte: todayEnd } },
+              ],
+            },
+          ],
+        });
+      } else {
+        andConditions.push({ [targetDateField]: dateCondition });
+      }
     }
   }
 
@@ -147,6 +168,17 @@ function buildWhere(searchParams) {
   const isDeletedParam = searchParams.get("deleted") === "true";
   andConditions.push({ isDeleted: isDeletedParam });
 
+  // Split between the main /panel list and the new /panel/added list.
+  // Deleted view ignores `view` and shows every soft-deleted row regardless of status.
+  if (!isDeletedParam) {
+    const view = searchParams.get("view") === "added" ? "added" : "main";
+    if (view === "added") {
+      andConditions.push({ status: { in: ADDED_VIEW_STATUSES } });
+    } else {
+      andConditions.push({ status: { notIn: ADDED_VIEW_STATUSES } });
+    }
+  }
+
   if (andConditions.length === 0) return {};
   if (andConditions.length === 1) return andConditions[0];
 
@@ -181,19 +213,34 @@ export async function GET(request) {
       }),
     ]);
 
-    // Custom status priority ordering
+    // Custom status priority ordering. Urgent first; new ACTIVATED state pinned at the bottom.
+    // For the added view (which only contains NOT_COMPLETED + COMPLETED) the relative order
+    // 6 < 7 keeps NOT_COMPLETED above COMPLETED.
     const statusPriority = {
       NEW: 0,
       UNDER_REVIEW: 1,
       UNDER_OBSERVATION: 2,
       DELAYED: 3,
-      NOT_COMPLETED: 4,
-      REJECTED: 5,
-      COMPLETED: 6,
+      TECHNICAL_PROBLEM: 4,
+      TRYING_TO_PERSUADE: 5,
+      NOT_COMPLETED: 6,
+      COMPLETED: 7,
+      REJECTED: 8,
+      ACTIVATED: 9,
     };
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    const isDue = (app) => app.status === "DELAYED" && app.delayedUntil && new Date(app.delayedUntil) <= todayEnd;
 
     // Sort by status priority first, then by creation date (newest first)
     allApplications.sort((a, b) => {
+      const aDue = isDue(a);
+      const bDue = isDue(b);
+      
+      if (aDue && !bDue) return -1;
+      if (!aDue && bDue) return 1;
+
       const statusDiff =
         (statusPriority[a.status] ?? 999) - (statusPriority[b.status] ?? 999);
       if (statusDiff !== 0) return statusDiff;

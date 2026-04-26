@@ -53,32 +53,29 @@ const PackageSection = ({
 
       <div className="relative py-6 md:py-8 space-y-7 md:space-y-8">
         <div className="space-y-6">
-          <div className="flex flex-wrap justify-start md:justify-between gap-4 mb-8">
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-10 h-10 rounded-xl ${isGreen ? "bg-emerald-100" : "bg-blue-100"} flex items-center justify-center`}
-              >
-                <Icon size={18} className={isGreen ? "text-emerald-600" : "text-blue-600"} />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">{title || "عقد إشتراك"}</h3>
+          <div className="flex items-center gap-3 mb-8">
+            <div
+              className={`w-14 h-14 rounded-2xl ${isGreen ? "bg-emerald-100" : "bg-blue-100"} flex items-center justify-center`}
+            >
+              <Icon size={24} className={isGreen ? "text-emerald-600" : "text-blue-600"} />
+            </div>
+            <div className="flex items-center flex-col gap-2">
+              <h3 className="text-xl font-bold text-gray-900">{title || "عقد إشتراك"}</h3>
+              <div className="flex items-center gap-1">
                 <p className="text-sm text-gray-400">{description}</p>
+                {detailsText && (
+                  <button
+                    type="button"
+                    onClick={() => setIsDetailsOpen(true)}
+                    className={`group relative inline-flex items-center gap-1.5 overflow-hidden rounded-xl px-3 py-1.5 text-xs font-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r bg-[length:200%_100%] hover:bg-[position:100%_0] shrink-0 ${detailsButtonClass}`}
+                  >
+                    <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+                    <FaInfoCircle className="relative z-10 h-3 w-3" />
+                    <span className="relative z-10">معلومات إضافية</span>
+                  </button>
+                )}
               </div>
             </div>
-
-            {detailsText && (
-              <div className="flex justify-center md:mx-0 mx-auto px-1">
-                <button
-                  type="button"
-                  onClick={() => setIsDetailsOpen(true)}
-                  className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r bg-[length:200%_100%] hover:bg-[position:100%_0] ${detailsButtonClass}`}
-                >
-                  <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
-                  <FaInfoCircle className="relative z-10 h-4 w-4" />
-                  <span className="relative z-10">معلومات إضافية</span>
-                </button>
-              </div>
-            )}
           </div>
 
           <div className="text-center mb-6">

@@ -309,6 +309,8 @@ const statusBadgeClass = (status) => {
     case "NEW":
       return "bg-blue-100 text-blue-800 ring-1 ring-blue-200/60";
     case "COMPLETED":
+      return "bg-sky-100 text-sky-900 ring-1 ring-sky-200/60";
+    case "ACTIVATED":
       return "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200/60";
     case "REJECTED":
       return "bg-red-100 text-red-800 ring-1 ring-red-200/60";

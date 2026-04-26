@@ -17,6 +17,7 @@ enum ApplicationStatus {
   COMPLETED
   TECHNICAL_PROBLEM
   TRYING_TO_PERSUADE
+  ACTIVATED
 }
 
 model Application {

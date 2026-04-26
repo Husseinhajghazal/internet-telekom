@@ -60,6 +60,53 @@ const FIELD_LABELS = {
   createdBy: "من سجل الطلب",
   isDeleted: "حالة الحذف",
   delayedUntil: "تاريخ التأجيل",
+  completedAt: "تاريخ التفعيل",
+};
+
+const VALUE_MAPS = {
+  status: {
+    NEW: "جديد",
+    UNDER_REVIEW: "قيد المراجعة",
+    UNDER_OBSERVATION: "تحت المراقبة",
+    DELAYED: "مؤجل",
+    NOT_COMPLETED: "غير مكتمل",
+    REJECTED: "مرفوض",
+    COMPLETED: "مكتمل",
+    TECHNICAL_PROBLEM: "مشكلة تقنية",
+    TRYING_TO_PERSUADE: "محاولة إقناع",
+    ACTIVATED: "مفعل",
+  },
+  hasInternet: {
+    yes: "نعم",
+    no: "لا",
+  },
+  serviceType: {
+    newline: "خط جديد",
+    services: "خدمات",
+  },
+  contractPreference: {
+    with: "مع عقد إشتراك",
+    without: "بدون عقد إشتراك",
+  },
+  selectedService: {
+    upgrade: "تحويل من عقد لبدون عقد",
+    cancel: "إلغاء الاشتراك",
+    "transfer-name": "نقل ملكية",
+    "transfer-address": "نقل خط الإنترنت لعنوان آخر",
+    renew: "تجديد الاشتراك",
+    freeze: "تجميد الاشتراك",
+    "change-phone": "تغيير رقم الموبايل المثبت",
+  },
+};
+
+const formatLogValue = (key, value) => {
+  if (value === null || value === "" || value === undefined) return "—";
+  if (typeof value === "boolean") return value ? "نعم" : "لا";
+  if (["createdAt", "updatedAt", "completedAt", "delayedUntil"].includes(key)) {
+    return formatDate(value, "4");
+  }
+  if (VALUE_MAPS[key] && VALUE_MAPS[key][value]) return VALUE_MAPS[key][value];
+  return String(value);
 };
 
 export default function ApplicationLogsPage() {
@@ -190,16 +237,16 @@ export default function ApplicationLogsPage() {
               return (
                 <div
                   key={log.id}
-                  className="relative pr-14 md:pr-16 animate-in fade-in slide-in-from-right-4 duration-500"
+                  className="relative md:pr-16 animate-in fade-in slide-in-from-right-4 duration-500"
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
                   <div
-                    className={`absolute right-0 top-0 w-14 md:w-16 h-14 md:h-16 rounded-2xl flex items-center justify-center border-4 border-slate-50 shadow-sm z-10 ${actionInfo.color}`}
+                    className={`absolute right-0 top-0 w-14 md:w-16 h-14 md:h-16 rounded-2xl hidden md:flex items-center justify-center border-4 border-slate-50 shadow-sm z-10 ${actionInfo.color}`}
                   >
                     {React.cloneElement(actionInfo.icon, { size: 24 })}
                   </div>
 
-                  <div className="bg-white mr-4 rounded-3xl border border-gray-100 p-5 md:p-6 shadow-sm hover:shadow-md transition-all">
+                  <div className="bg-white md:mr-4 rounded-3xl border border-gray-100 p-5 md:p-6 shadow-sm hover:shadow-md transition-all">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                       <div className="space-y-1">
                         <h3 className="font-extrabold text-gray-900 flex items-center gap-2">
@@ -249,16 +296,12 @@ export default function ApplicationLogsPage() {
                                   </td>
                                   <td className="p-3 border-b border-slate-100">
                                     <span className="inline-block px-2 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold line-through opacity-70">
-                                      {val.old === null || val.old === ""
-                                        ? "—"
-                                        : String(val.old)}
+                                      {formatLogValue(key, val.old)}
                                     </span>
                                   </td>
                                   <td className="p-3 border-b border-slate-100">
                                     <span className="inline-block px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold">
-                                      {val.new === null || val.new === ""
-                                        ? "—"
-                                        : String(val.new)}
+                                      {formatLogValue(key, val.new)}
                                     </span>
                                   </td>
                                 </tr>

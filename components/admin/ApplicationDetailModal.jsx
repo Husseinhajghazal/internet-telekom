@@ -176,7 +176,7 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
             <Row label="تاريخ الإنشاء" icon={<MdCalendarMonth size={18} />}>
               {createdAtLabel}
             </Row>
-            <Row label="تاريخ الإكتمال" icon={<MdUpdate size={18} />}>
+            <Row label="تاريخ التفعيل" icon={<MdUpdate size={18} />}>
               {completedAtLabel}
             </Row>
             <Row label="هل لديك إنترنت؟" icon={<MdWifi size={18} />}>

@@ -20,7 +20,7 @@ export default function AdminLoginForm() {
       const res = await fetch("/api/panel/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {

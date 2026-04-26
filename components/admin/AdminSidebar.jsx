@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiList, FiChevronRight, FiChevronLeft, FiStar, FiUser } from "react-icons/fi";
+import { FiList, FiChevronRight, FiChevronLeft, FiStar, FiUser, FiInbox } from "react-icons/fi";
 import { MdDelete, MdPerson } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 import { useRouter } from "next/navigation";
@@ -36,13 +36,14 @@ export default function AdminSidebar({ userRole, userName }) {
   };
 
   const navItems = [
-    { name: "جميع الطلبات", href: "/panel", icon: FiList },
+    { name: "مستعرض الطلبات", href: "/panel", icon: FiList },
+    { name: "الطلبات المضافة", href: "/panel/added", icon: FiInbox },
   ];
 
   if (userRole === "ADMIN") {
-    navItems.push({ name: "الطلبات المحذوفة", href: "/panel/deleted", icon: MdDelete });
     navItems.push({ name: "إدارة الموظفين", href: "/panel/employees", icon: MdPerson });
     navItems.push({ name: "التقييمات", href: "/panel/reviews", icon: FiStar });
+    navItems.push({ name: "الطلبات المحذوفة", href: "/panel/deleted", icon: MdDelete });
   }
 
   navItems.push({ name: "الملف الشخصي", href: "/panel/profile", icon: FiUser });

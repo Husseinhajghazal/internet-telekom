@@ -25,12 +25,12 @@ const CONTRACT_PREF_OPTIONS = [
 ];
 
 const SELECTED_SERVICE_OPTIONS = [
+  { value: "upgrade", label: "تحويل من عقد لبدون عقد" },
   { value: "cancel", label: "إلغاء الاشتراك" },
   { value: "transfer-name", label: "نقل ملكية" },
   { value: "transfer-address", label: "نقل خط الإنترنت لعنوان آخر" },
   { value: "renew", label: "تجديد الاشتراك" },
   { value: "freeze", label: "تجميد الاشتراك" },
-  { value: "upgrade", label: "تحويل من عقد لبدون عقد" },
   { value: "change-phone", label: "تغيير رقم الموبايل المثبت" },
 ];
 
@@ -255,10 +255,24 @@ export default function EditApplicationPage() {
       finalValue = finalValue.replace(/\D/g, "").substring(0, 11);
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: finalValue,
-    }));
+    setFormData((prev) => {
+      let updates = { [name]: finalValue };
+
+      if (name === "serviceType") {
+        if (finalValue === "services") {
+          updates.selectedService = "upgrade";
+          updates.internetCompany = "Turknet";
+        } else if (finalValue === "newline" && prev.contractPreference === "without") {
+          updates.internetCompany = "Turknet";
+        }
+      }
+
+      if (name === "contractPreference" && finalValue === "without" && prev.serviceType === "newline") {
+        updates.internetCompany = "Turknet";
+      }
+
+      return { ...prev, ...updates };
+    });
   };
 
   const parseEmptyToNull = (val) => (val === "" ? null : val);
@@ -267,34 +281,10 @@ export default function EditApplicationPage() {
     e.preventDefault();
 
     if (
-      (formData.nationalNumber.length === 11 &&
-        !validateTC(formData.nationalNumber)) ||
-      (formData.newNationalNumber.length === 11 &&
-        !validateTC(formData.newNationalNumber))
+      (formData.nationalNumber.length === 11) ||
+      (formData.newNationalNumber.length === 11)
     ) {
-      alert(
-        "يرجى التأكد من الرقم الوطني (TC) قبل الحفظ. الرقم الحالي غير صالح.",
-      );
       return;
-    }
-
-    const showCommercialFields =
-      (formData.serviceType === "services" &&
-        formData.selectedService === "upgrade") ||
-      (formData.serviceType === "newline" &&
-        formData.contractPreference === "without");
-
-    if (showCommercialFields) {
-      if (!formData.discountCount) {
-        alert("يرجى إدخال عدد الخصومات");
-        setSaving(false);
-        return;
-      }
-      if (!formData.paidByUserName && !formData.paidByName) {
-        alert("يرجى إدخال إسم الشخص الدافع");
-        setSaving(false);
-        return;
-      }
     }
 
     setSaving(true);
@@ -870,7 +860,7 @@ export default function EditApplicationPage() {
               </div>
             )}
 
-            {formData.selectedService === "transfer-address" && (
+            {formData.serviceType === "services" && formData.selectedService === "transfer-address" && (
               <div className="md:col-span-2">
                 <label className={labelClass}>العنوان الجديد</label>
                 <textarea
@@ -885,7 +875,7 @@ export default function EditApplicationPage() {
               </div>
             )}
 
-            {formData.selectedService === "transfer-address" && (
+            {formData.serviceType === "services" && formData.selectedService === "transfer-address" && (
               <>
                 <div>
                   <label className={labelClass}>كود العنوان الجديد (BBK)</label>
@@ -930,7 +920,7 @@ export default function EditApplicationPage() {
               </>
             )}
 
-            {formData.selectedService === "transfer-name" && (
+            {formData.serviceType === "services" && formData.selectedService === "transfer-name" && (
               <>
                 <div>
                   <label className={labelClass}>إسم ولقب المالك الجديد</label>
@@ -964,7 +954,7 @@ export default function EditApplicationPage() {
                 </div>
               </>
             )}
-            {formData.selectedService === "change-phone" && (
+            {formData.serviceType === "services" && formData.selectedService === "change-phone" && (
               <div>
                 <label className={labelClass}>رقم الموبايل الجديد</label>
                 <input
