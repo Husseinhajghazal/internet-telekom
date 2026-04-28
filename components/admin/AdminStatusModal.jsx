@@ -10,14 +10,22 @@ const formatDisplayDateFromIso = (value) => {
   return value.includes("-") ? value.split("-").reverse().join("/") : value;
 };
 
-export default function AdminStatusModal({ application, onClose, onUpdateStatus, loading }) {
-  const [selectedStatus, setSelectedStatus] = useState(application.status || "NEW");
+export default function AdminStatusModal({
+  application,
+  onClose,
+  onUpdateStatus,
+  loading,
+  allowedStatuses,
+}) {
+  const [selectedStatus, setSelectedStatus] = useState(
+    application.status || "NEW",
+  );
   const [delayDate, setDelayDate] = useState(
     application.delayedUntil
       ? formatDisplayDateFromIso(
           new Date(application.delayedUntil).toISOString().slice(0, 10),
         )
-      : ""
+      : "",
   );
 
   const handleSave = (e) => {
@@ -46,9 +54,7 @@ export default function AdminStatusModal({ application, onClose, onUpdateStatus,
       >
         {/* Header */}
         <div className="border-b border-gray-100 bg-gray-50/50 px-6 py-4 flex items-center justify-between">
-          <h3 className="text-xl font-extrabold text-gray-900">
-            تحديث الحالة
-          </h3>
+          <h3 className="text-xl font-extrabold text-gray-900">تحديث الحالة</h3>
           <button
             onClick={onClose}
             className="rounded-full p-2 text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition"
@@ -60,16 +66,21 @@ export default function AdminStatusModal({ application, onClose, onUpdateStatus,
         <form onSubmit={handleSave} className="p-6 space-y-5">
           <div>
             <p className="text-sm font-semibold text-gray-600 mb-3">
-              الرجاء تحديد الحالة الجديدة لطلب رقم <span dir="ltr">#{application.appIndex}</span>
+              الرجاء تحديد الحالة الجديدة لطلب رقم{" "}
+              <span dir="ltr">#{application.appIndex}</span>
             </p>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="w-full rounded-2xl border border-gray-200 bg-slate-50/80 py-3 px-4 text-sm text-gray-900 font-bold outline-none transition focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
             >
-              {Object.entries(STATUS_LABELS).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
-              ))}
+              {Object.entries(STATUS_LABELS)
+                .filter(([key]) => !allowedStatuses || allowedStatuses.includes(key))
+                .map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -107,7 +118,11 @@ export default function AdminStatusModal({ application, onClose, onUpdateStatus,
             </button>
             <button
               type="submit"
-              disabled={loading || (selectedStatus === application.status && !isDelayed) || (isDelayed && !delayDate)}
+              disabled={
+                loading ||
+                (selectedStatus === application.status && !isDelayed) ||
+                (isDelayed && !delayDate)
+              }
               className="rounded-xl px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
               style={{ background: "#18a2e3" }}
             >

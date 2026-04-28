@@ -77,6 +77,10 @@ export async function PATCH(request, { params }) {
       data.isDeleted = body.isDeleted;
     }
 
+    if (body.whatsappStatus !== undefined) {
+      data.whatsappStatus = body.whatsappStatus;
+    }
+
     if (Object.keys(data).length === 0) {
       return NextResponse.json({ error: "لا يوجد بيانات لتحديثها" }, { status: 400 });
     }

@@ -281,8 +281,8 @@ export default function EditApplicationPage() {
     e.preventDefault();
 
     if (
-      (formData.nationalNumber.length === 11) ||
-      (formData.newNationalNumber.length === 11)
+      (formData.nationalNumber.length === 11 && !validateTC(formData.nationalNumber)) ||
+      (formData.newNationalNumber.length === 11 && !validateTC(formData.newNationalNumber))
     ) {
       return;
     }
@@ -378,6 +378,11 @@ export default function EditApplicationPage() {
     "w-full rounded-2xl border border-gray-200 bg-slate-50/50 py-3 px-4 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-500/20";
   const labelClass = "block text-sm font-semibold text-gray-700 mb-2";
 
+  const ADDED_STATUSES = ["NOT_COMPLETED", "COMPLETED"];
+  const editAllowedStatuses = ADDED_STATUSES.includes(formData.status)
+    ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
+    : Object.keys(STATUS_LABELS).filter((s) => !ADDED_STATUSES.includes(s));
+
   return (
     <div className="min-h-svh bg-linear-to-br from-slate-50 via-cyan-50/30 to-white overflow-x-hidden">
       <header className="border-b border-cyan-100/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm shadow-cyan-500/5 mb-8">
@@ -417,18 +422,6 @@ export default function EditApplicationPage() {
             {error}
           </div>
         )}
-
-        {/* Visibility logic for commercial fields */}
-        {(() => {
-          const showCommercialFields =
-            (formData.serviceType === "services" &&
-              formData.selectedService === "upgrade") ||
-            (formData.serviceType === "newline" &&
-              formData.contractPreference === "without");
-          
-          return null; // Just to keep the variable in scope if I wanted to use it in JSX below, 
-          // but I'll use it directly in the return.
-        })()}
 
         <form
           onSubmit={handleSave}
@@ -538,9 +531,9 @@ export default function EditApplicationPage() {
                 onChange={handleChange}
                 className={inputClass}
               >
-                {Object.entries(STATUS_LABELS).map(([key, value]) => (
+                {editAllowedStatuses.map((key) => (
                   <option key={key} value={key}>
-                    {value}
+                    {STATUS_LABELS[key]}
                   </option>
                 ))}
               </select>

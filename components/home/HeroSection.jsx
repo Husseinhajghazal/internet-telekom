@@ -62,7 +62,10 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section id="hero" className="relative min-h-svh overflow-hidden">
+    <section
+      id="hero"
+      className="relative h-187.5 md:h-svh md:min-h-200 overflow-hidden"
+    >
       {/* ── background layers ── */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-bl from-[#050d1a] via-[#0c2240] to-[#0f3a6e]" />
@@ -92,24 +95,24 @@ const HeroSection = () => {
       <HeroBackground />
 
       {/* ── slides ── */}
-      <div className="relative z-10 min-h-svh md:min-h-[800px] flex items-center">
+      <div className="relative z-10 h-full flex items-center">
         {slides.map((slide, i) => {
           const isActive = i === active;
           return (
             <div
               key={i}
               aria-hidden={!isActive}
-              className={`absolute inset-0 flex items-center transition-opacity duration-700 ease-in-out ${
+              className={`absolute inset-0 flex items-start md:items-center transition-opacity duration-700 ease-in-out ${
                 isActive
                   ? "opacity-100 z-10"
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-10 lg:gap-16 pb-0 md:pb-20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-10 lg:gap-16 pt-24 md:pt-0 pb-0 md:pb-20">
                 {/* ── text side (first in DOM → RIGHT in RTL) ── */}
                 <div className="flex-1 text-center md:text-right min-w-0">
                   {isActive && (
-                    <div className={slide.useMap ? "" : "pt-24 md:pt-0"}>
+                    <div className={slide.useMap ? "" : ""}>
                       <span className="inline-block font-extrabold text-lg sm:text-xl md:text-2xl mb-3 md:mb-4 bg-gradient-to-l from-[#f36802] to-[#ffb245] bg-clip-text text-transparent tracking-wide animate-hero-text-in hero-delay-1">
                         شركة إنترنت تيليكوم
                       </span>
@@ -148,47 +151,60 @@ const HeroSection = () => {
                   )}
                 </div>
 
-                {/* ── image side (second in DOM → LEFT in RTL) ── */}
-                <div className={`flex-1 relative flex items-end justify-center min-w-0 ${slide.useMap ? "" : "pt-4 md:pt-32"} `}>
-                  {/* primary glow */}
-                  <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] rounded-full bg-[#18a2e3]/20 blur-[70px] md:blur-[100px] animate-hero-glow" />
-                  {/* warm accent glow */}
-                  <div
-                    className="absolute bottom-[20%] left-[40%] w-[160px] h-[160px] md:w-[220px] md:h-[220px] rounded-full bg-[#f36802]/10 blur-[60px] md:blur-[80px] animate-hero-glow"
-                    style={{ animationDelay: "2s" }}
-                  />
-
-                  {/* dynamic visual content */}
-                  {isActive && (
-                    <div className="relative z-10 animate-hero-image-in w-full flex justify-center">
-                      {slide.useMap ? (
+                {/* ── map side (useMap slides only) / spacer for image slides ── */}
+                {slide.useMap ? (
+                  <div className="flex-1 relative flex items-end justify-center min-w-0">
+                    {/* primary glow */}
+                    <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-55 h-55 sm:w-70 sm:h-70 md:w-87.5 md:h-87.5 lg:w-105 lg:h-105 rounded-full bg-[#18a2e3]/20 blur-[70px] md:blur-[100px] animate-hero-glow" />
+                    <div
+                      className="absolute bottom-[20%] left-[40%] w-40 h-40 md:w-55 md:h-55 rounded-full bg-[#f36802]/10 blur-[60px] md:blur-[80px] animate-hero-glow"
+                      style={{ animationDelay: "2s" }}
+                    />
+                    {isActive && (
+                      <div className="relative z-10 animate-hero-image-in w-full flex justify-center">
                         <div className="relative w-[120%] sm:w-full drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]">
                           <TurkeyMap />
                           <p className="absolute inset-0 flex items-center justify-center text-white/10 font-black text-5xl sm:text-6xl md:text-7xl tracking-widest select-none pointer-events-none">
                             Türkiye
                           </p>
                         </div>
-                      ) : (
-                        <Image
-                          src={slide.image}
-                          alt=""
-                          width={1000}
-                          height={1000}
-                          className="object-contain w-auto max-h-[38vh] sm:max-h-[44vh] md:max-h-none drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]"
-                          priority={i === 0}
-                        />
-                      )}
-                    </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* invisible spacer keeps text on the right half on desktop */
+                  <div className="hidden md:block flex-1" aria-hidden="true" />
+                )}
+              </div>
+
+              {/* ── character image: pinned to section bottom so wave covers feet ── */}
+              {!slide.useMap && (
+                <div className="absolute bottom-0 md:bottom-10 inset-x-0 md:left-0 md:right-1/2 flex justify-center items-end pointer-events-none">
+                  {/* glows */}
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-50 h-50 sm:w-65 sm:h-65 md:w-87.5 md:h-87.5 rounded-full bg-[#18a2e3]/20 blur-[70px] md:blur-[100px] animate-hero-glow" />
+                  <div
+                    className="absolute bottom-0 left-[40%] w-35 h-35 md:w-50 md:h-50 rounded-full bg-[#f36802]/10 blur-[60px] md:blur-[80px] animate-hero-glow"
+                    style={{ animationDelay: "2s" }}
+                  />
+                  {isActive && (
+                    <Image
+                      src={slide.image}
+                      alt=""
+                      width={1000}
+                      height={1000}
+                      className="relative z-10 animate-hero-image-in object-contain w-auto h-90 md:h-[78vh] drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]"
+                      priority={i === 0}
+                    />
                   )}
                 </div>
-              </div>
+              )}
             </div>
           );
         })}
       </div>
 
       {/* ── dot indicators with progress ── */}
-      <div className="absolute bottom-16 md:bottom-20 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+      <div className="absolute bottom-16 md:bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
         {slides.map((_, i) => (
           <button
             key={i}

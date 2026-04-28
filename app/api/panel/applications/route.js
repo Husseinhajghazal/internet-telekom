@@ -98,6 +98,8 @@ function buildWhere(searchParams) {
       { phone: { contains: q, mode: "insensitive" } },
       { phone2: { contains: q, mode: "insensitive" } },
       { newPhone: { contains: q, mode: "insensitive" } },
+      { nationalNumber: { contains: q, mode: "insensitive" } },
+      { newNationalNumber: { contains: q, mode: "insensitive" } },
     ];
 
     // appIndex exact match

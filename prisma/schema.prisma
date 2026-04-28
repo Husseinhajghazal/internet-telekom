@@ -20,6 +20,11 @@ enum ApplicationStatus {
   ACTIVATED
 }
 
+enum WhatsappStatus {
+  NOT_ADDED
+  ADDED
+}
+
 model Application {
   id                  String            @id @default(cuid())
   appIndex            Int               @unique
@@ -67,6 +72,7 @@ model Application {
   lastUpdatedBy       String?
   createdBy           String?
   isDeleted           Boolean           @default(false)
+  whatsappStatus      WhatsappStatus    @default(NOT_ADDED)
   notes               Note[]
   Review              Review?
   logs                ApplicationLog[]

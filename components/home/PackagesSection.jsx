@@ -7,9 +7,7 @@ import { MdElectricBolt } from "react-icons/md";
 import { FaFileContract } from "react-icons/fa";
 import { HiLightningBolt } from "react-icons/hi";
 import { FaInfoCircle } from "react-icons/fa";
-import {
-  MdRocketLaunch,
-} from "react-icons/md";
+import { MdRocketLaunch } from "react-icons/md";
 
 import NoContractCards from "./NoContractCards";
 import WithContractCards from "./WithContractCards";
@@ -74,28 +72,30 @@ const PackagesSection = () => {
             <div className="flex-1 h-px bg-linear-to-r from-fuchsia-200 to-transparent" />
           </div>
 
-            <div className="flex items-center gap-3 mb-8">
-              <div
-                className={`w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center`}
-              >
-                <MdRocketLaunch size={24} className={"text-purple-600"} />
-              </div>
-              <div className="flex items-center flex-col gap-2">
-                <h3 className="text-xl font-bold text-gray-900">باقات الإنترنت المسبق الدفع</h3>
-                <div className="flex items-center gap-1">
-                  <p className="text-sm text-gray-400">البنية التحتية لترك نت</p>
-                  <button
-                    type="button"
-                    onClick={() => setIsDetailsOpen(true)}
-                    className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-xl px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-purple-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r from-purple-600 via-fuchsia-500 to-purple-600 bg-[length:200%_100%] hover:bg-[position:100%_0] shrink-0"
-                  >
-                    <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
-                    <FaInfoCircle className="relative z-10 h-3 w-3" />
-                    <span className="relative z-10">معلومات إضافية</span>
-                  </button>
-                </div>
+          <div className="max-w-5xl mx-auto flex items-center gap-3 mb-8">
+            <div
+              className={`w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center`}
+            >
+              <MdRocketLaunch size={24} className={"text-purple-600"} />
+            </div>
+            <div className="flex items-center flex-col gap-2">
+              <h3 className="text-xl font-bold text-gray-900">
+                باقات الإنترنت المسبق الدفع
+              </h3>
+              <div className="flex items-center gap-1">
+                <p className="text-sm text-gray-400">البنية التحتية لترك نت</p>
+                <button
+                  type="button"
+                  onClick={() => setIsDetailsOpen(true)}
+                  className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-xl px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-purple-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white bg-linear-to-r from-purple-600 via-fuchsia-500 to-purple-600 bg-[length:200%_100%] hover:bg-[position:100%_0] shrink-0"
+                >
+                  <span className="absolute inset-0 -z-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-white/0 via-white/25 to-white/0 translate-x-[-120%] group-hover:translate-x-[120%]" />
+                  <FaInfoCircle className="relative z-10 h-3 w-3" />
+                  <span className="relative z-10">معلومات إضافية</span>
+                </button>
               </div>
             </div>
+          </div>
 
           <NoContractCards />
         </motion.div>
@@ -108,16 +108,16 @@ const PackagesSection = () => {
           className="mt-16"
         >
           <div className="flex items-center gap-4 mb-8">
-            <div className="flex-1 h-px bg-linear-to-l from-blue-200 to-transparent" />
-            <div className="flex items-center gap-3 bg-linear-to-l from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl px-5 py-2.5 shadow-sm">
-              <div className="w-8 h-8 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-md">
+            <div className="flex-1 h-px bg-linear-to-l from-emerald-200 to-transparent" />
+            <div className="flex items-center gap-3 bg-linear-to-l from-emerald-50 to-emerald-50 border border-emerald-100 rounded-2xl px-5 py-2.5 shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-linear-to-br from-emerald-500 to-emerald-500 flex items-center justify-center shadow-md">
                 <FaFileContract className="w-4 h-4 text-white" />
               </div>
-              <span className="text-base font-bold bg-linear-to-l from-blue-600 to-cyan-500 bg-clip-text text-transparent whitespace-nowrap">
+              <span className="text-base font-bold bg-linear-to-l from-emerald-600 to-emerald-500 bg-clip-text text-transparent whitespace-nowrap">
                 مع عقد اشتراك
               </span>
             </div>
-            <div className="flex-1 h-px bg-linear-to-r from-cyan-200 to-transparent" />
+            <div className="flex-1 h-px bg-linear-to-r from-emerald-200 to-transparent" />
           </div>
           <WithContractCards />
         </motion.div>
@@ -157,15 +157,16 @@ const PackagesSection = () => {
                 </button>
               </div>
               <div className="p-5 text-justify text-purple-900/80 leading-relaxed text-sm md:text-base">
-                نحن نضع بين أيديكم أقوى حلول الإنترنت المنزلي في تركيا بسرعات فائقة
-                تصل إلى 1000 ميجابت عبر تقنية الألياف الضوئية (Fiber)، لتستمتعوا
-                بتجربة فريدة للألعاب والبث المباشر بدقة 4K دون انقطاع. نمنحكم
-                الحرية الكاملة في اختيار باقاتكم بدون عقود التزام سنوية أو غرامات
-                فسخ عقد، مع ضمان إنترنت مفتوح بالكامل بدون حصة استخدام أو تناقص في
-                السرعة طوال الشهر. كما نتميز بالشفافية المطلقة في الفواتير مع خيار
-                تثبيت السعر لمدة عام، ونتكفل بكافة إجراءات انتقالكم من شركاتكم
-                الحالية إلينا بكل سلاسة، مدعومين بفريقنا الفني الذي يخدمكم باللغة
-                العربية على مدار الساعة لضمان تجربة تواصل رقمية لا تشوبها شائبة.
+                نحن نضع بين أيديكم أقوى حلول الإنترنت المنزلي في تركيا بسرعات
+                فائقة تصل إلى 1000 ميجابت عبر تقنية الألياف الضوئية (Fiber)،
+                لتستمتعوا بتجربة فريدة للألعاب والبث المباشر بدقة 4K دون انقطاع.
+                نمنحكم الحرية الكاملة في اختيار باقاتكم بدون عقود التزام سنوية
+                أو غرامات فسخ عقد، مع ضمان إنترنت مفتوح بالكامل بدون حصة استخدام
+                أو تناقص في السرعة طوال الشهر. كما نتميز بالشفافية المطلقة في
+                الفواتير مع خيار تثبيت السعر لمدة عام، ونتكفل بكافة إجراءات
+                انتقالكم من شركاتكم الحالية إلينا بكل سلاسة، مدعومين بفريقنا
+                الفني الذي يخدمكم باللغة العربية على مدار الساعة لضمان تجربة
+                تواصل رقمية لا تشوبها شائبة.
               </div>
             </div>
           </div>,

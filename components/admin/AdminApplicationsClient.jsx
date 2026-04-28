@@ -31,7 +31,7 @@ import {
   MdAdd,
   MdDelete,
   MdHistory,
-  MdSend
+  MdSend,
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
@@ -117,7 +117,17 @@ const ActionMenu = ({
   const toggleOpen = () => {
     if (!isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      const dropdownHeight = userRole === "ADMIN" ? 420 : 320;
+      const dropdownHeight = isDeletedMode
+        ? userRole === "ADMIN"
+          ? 200
+          : 120
+        : isAddedMode
+          ? userRole === "ADMIN"
+            ? 380
+            : 280
+          : userRole === "ADMIN"
+            ? 420
+            : 320;
       const dropdownWidth = 176;
       const spaceBelow = window.innerHeight - rect.bottom;
 
@@ -185,7 +195,7 @@ const ActionMenu = ({
                 className="w-full px-4 py-2.5 text-sm text-[#25D366] hover:bg-[#25D366]/10 transition flex items-center gap-2.5 font-bold border-t border-gray-50"
               >
                 <FaWhatsapp size={18} />
-                أضافة لواتساب
+                إضافة لواتساب
               </button>
             )}
 
@@ -301,8 +311,6 @@ const ActionMenu = ({
 
             <div className="my-1 border-t border-gray-100" />
 
-            <div className="my-1 border-t border-gray-100" />
-
             {userRole === "ADMIN" && (
               <button
                 onClick={() => {
@@ -397,6 +405,11 @@ ${reviewLink}
       return;
     }
     window.open(`https://wa.me/90${digits}`, "_blank");
+    fetch(`/api/panel/applications/${app.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ whatsappStatus: "ADDED" }),
+    }).then(() => load(page));
   };
 
   const [searchInput, setSearchInput] = useState("");
@@ -437,7 +450,15 @@ ${reviewLink}
       }
       return params.toString();
     },
-    [isDeletedMode, isAddedMode, debouncedQ, statusFilter, dateField, dateFrom, dateTo],
+    [
+      isDeletedMode,
+      isAddedMode,
+      debouncedQ,
+      statusFilter,
+      dateField,
+      dateFrom,
+      dateTo,
+    ],
   );
 
   const load = useCallback(
@@ -643,7 +664,9 @@ ${reviewLink}
         ),
       };
     });
-    setNotesApp((prev) => prev ? { ...prev, notes: patchNotes(prev.notes) } : prev);
+    setNotesApp((prev) =>
+      prev ? { ...prev, notes: patchNotes(prev.notes) } : prev,
+    );
   };
 
   const handleNoteDeleted = (noteId) => {
@@ -659,7 +682,9 @@ ${reviewLink}
         ),
       };
     });
-    setNotesApp((prev) => prev ? { ...prev, notes: filterNotes(prev.notes) } : prev);
+    setNotesApp((prev) =>
+      prev ? { ...prev, notes: filterNotes(prev.notes) } : prev,
+    );
   };
 
   const handleStatusUpdate = async (newStatus, delayedUntil) => {
@@ -1066,6 +1091,14 @@ ${reviewLink}
                     </th>
                   )}
 
+                  {isAddedMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <FaWhatsapp size={16} />
+                        واتساب
+                      </span>
+                    </th>
+                  )}
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdOutlineSpeakerNotes size={18} />
@@ -1098,113 +1131,141 @@ ${reviewLink}
                   applications.map((app, idx) => {
                     const dueDelayed = isDueDelayed(app);
                     return (
-                    <tr
-                      key={app.id}
-                      className={`border-b transition-colors hover:bg-cyan-50/40 ${
-                        idx % 2 === 0 ? "bg-white" : "bg-slate-50/40"
-                      } ${dueDelayed ? "ring-2 ring-inset ring-orange-500 z-10 relative bg-orange-50/30 border-none" : "border-gray-100"}`}
-                    >
-                      <td
-                        className="px-3 py-3.5 text-center font-mono font-bold tabular-nums"
-                        dir="ltr"
-                        style={{ color: ACCENT }}
+                      <tr
+                        key={app.id}
+                        className={`border-b transition-colors hover:bg-cyan-50/40 ${
+                          idx % 2 === 0 ? "bg-white" : "bg-slate-50/40"
+                        } ${dueDelayed ? "ring-2 ring-inset ring-orange-500 z-10 relative bg-orange-50/30 border-none" : isAddedMode && app.whatsappStatus === "ADDED" ? "ring-2 ring-inset ring-emerald-400 z-10 relative bg-emerald-50/30 border-none" : "border-gray-100"}`}
                       >
-                        {app.appIndex}
-                      </td>
-                      <td
-                        className="px-3 py-3.5 text-gray-800 max-w-40 truncate font-medium"
-                        title={app.name}
-                      >
-                        <span className="inline-flex items-center gap-1.5">
-                          {app.name}
-                          {isDupName(app.name) && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-600 ring-1 ring-orange-200/60 whitespace-nowrap shrink-0">
-                              مكرر
-                            </span>
-                          )}
-                        </span>
-                      </td>
-                      <td
-                        className="px-3 py-3.5 whitespace-nowrap text-blue-700 underline"
-                        dir="ltr"
-                      >
-                        <span className="inline-flex items-center gap-1.5">
-                          <a
-                            href={`whatsapp://send?phone=9${app.phone.replace(/\D/g, "")}`}
-                            target="_blank"
-                          >
-                            {app.phone}
-                          </a>
-                          {isDupPhone(app.phone) && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-600 ring-1 ring-orange-200/60 whitespace-nowrap shrink-0 no-underline">
-                              مكرر
-                            </span>
-                          )}
-                        </span>
-                      </td>
-                      {!isDeletedMode && (
-                        <td className="px-3 py-3.5">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(app.status)}`}
-                          >
-                            {describeStatus(app.status)}
+                        <td
+                          className="px-3 py-3.5 text-center font-mono font-bold tabular-nums"
+                          dir="ltr"
+                          style={{ color: ACCENT }}
+                        >
+                          {app.appIndex}
+                        </td>
+                        <td
+                          className="px-3 py-3.5 text-gray-800 max-w-40 truncate font-medium"
+                          title={app.name}
+                        >
+                          <span className="inline-flex items-center gap-1.5">
+                            {app.name}
+                            {isDupName(app.name) && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-600 ring-1 ring-orange-200/60 whitespace-nowrap shrink-0">
+                                مكرر
+                              </span>
+                            )}
                           </span>
                         </td>
-                      )}
-                      <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                        {app.createdAt ? formatDate(app.createdAt) : "—"}
-                      </td>
-                      {isDeletedMode && (
-                        <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                          {app.updatedAt ? formatDate(app.updatedAt) : "—"}
-                        </td>
-                      )}
-                      {!isDeletedMode && !isAddedMode && (
-                        <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                          {app.completedAt ? formatDate(app.completedAt) : "—"}
-                        </td>
-                      )}
-                      {!isDeletedMode && !isAddedMode && (
-                        <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                          {app.delayedUntil
-                            ? formatDate(app.delayedUntil, "4")
-                            : "—"}
-                        </td>
-                      )}
-                      <td className="px-3 py-3.5 max-w-48">
-                        <button
-                          onClick={() => setNotesApp(app)}
-                          className="text-right w-full text-xs hover:bg-slate-100 p-2 rounded-xl transition group"
+                        <td
+                          className="px-3 py-3.5 whitespace-nowrap text-blue-700 underline"
+                          dir="ltr"
                         >
-                          {app.notes && app.notes.length > 0 ? (
-                            <span className="text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis block max-w-36">
-                              {app.notes[0].text}
+                          <span className="inline-flex items-center gap-1.5">
+                            <a
+                              href={`whatsapp://send?phone=9${app.phone.replace(/\D/g, "")}`}
+                              target="_blank"
+                              onClick={() => {
+                                fetch(`/api/panel/applications/${app.id}`, {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    whatsappStatus: "ADDED",
+                                  }),
+                                }).then(() => load(page));
+                              }}
+                            >
+                              {app.phone}
+                            </a>
+                            {isDupPhone(app.phone) && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-600 ring-1 ring-orange-200/60 whitespace-nowrap shrink-0 no-underline">
+                                مكرر
+                              </span>
+                            )}
+                          </span>
+                        </td>
+                        {!isDeletedMode && (
+                          <td className="px-3 py-3.5">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(app.status)}`}
+                            >
+                              {describeStatus(app.status)}
                             </span>
-                          ) : (
-                            <span className="text-cyan-600 font-bold group-hover:text-cyan-800">
-                              + إضافة ملاحظة
-                            </span>
-                          )}
-                        </button>
-                      </td>
-                      <td className="px-3 py-2.5 text-center">
-                        <ActionMenu
-                          app={app}
-                          openDetail={openDetail}
-                          setConfirm={setConfirm}
-                          canChangeStatus={canChangeStatus}
-                          actionId={actionId}
-                          openStatusModal={setStatusApp}
-                          openCustomerNoteModal={setCustomerNoteApp}
-                          isDeletedMode={isDeletedMode}
-                          isAddedMode={isAddedMode}
-                          userRole={userRole}
-                          handleSendReviewLink={handleSendReviewLink}
-                          handleOpenWhatsApp={handleOpenWhatsApp}
-                        />
-                      </td>
-                    </tr>
-                  )})
+                          </td>
+                        )}
+                        <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                          {app.createdAt ? formatDate(app.createdAt) : "—"}
+                        </td>
+                        {isDeletedMode && (
+                          <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                            {app.updatedAt ? formatDate(app.updatedAt) : "—"}
+                          </td>
+                        )}
+                        {!isDeletedMode && !isAddedMode && (
+                          <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                            {app.completedAt
+                              ? formatDate(app.completedAt)
+                              : "—"}
+                          </td>
+                        )}
+                        {!isDeletedMode && !isAddedMode && (
+                          <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                            {app.delayedUntil
+                              ? formatDate(app.delayedUntil, "4")
+                              : "—"}
+                          </td>
+                        )}
+                        {isAddedMode && (
+                          <td className="px-3 py-3.5 whitespace-nowrap text-center">
+                            {app.whatsappStatus === "ADDED" ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+                                <FaWhatsapp size={12} />
+                                مضاف
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">
+                                غير مضاف
+                              </span>
+                            )}
+                          </td>
+                        )}
+                        <td className="px-3 py-3.5 max-w-48">
+                          <button
+                            onClick={() => setNotesApp(app)}
+                            className="text-right w-full text-xs hover:bg-slate-100 p-2 rounded-xl transition group"
+                          >
+                            {app.notes && app.notes.length > 0 ? (
+                              <span className="text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis block max-w-36">
+                                {app.notes[0].text}
+                              </span>
+                            ) : (
+                              <span className="text-cyan-600 font-bold group-hover:text-cyan-800">
+                                + إضافة ملاحظة
+                              </span>
+                            )}
+                          </button>
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <ActionMenu
+                            app={app}
+                            openDetail={openDetail}
+                            setConfirm={setConfirm}
+                            canChangeStatus={canChangeStatus}
+                            actionId={actionId}
+                            openStatusModal={setStatusApp}
+                            openCustomerNoteModal={setCustomerNoteApp}
+                            isDeletedMode={isDeletedMode}
+                            isAddedMode={isAddedMode}
+                            userRole={userRole}
+                            handleSendReviewLink={handleSendReviewLink}
+                            handleOpenWhatsApp={handleOpenWhatsApp}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -1268,6 +1329,13 @@ ${reviewLink}
           onClose={() => setStatusApp(null)}
           onUpdateStatus={handleStatusUpdate}
           loading={!!actionId && actionId === statusApp.id}
+          allowedStatuses={
+            isAddedMode
+              ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
+              : Object.keys(STATUS_LABELS).filter(
+                  (s) => s !== "NOT_COMPLETED" && s !== "COMPLETED",
+                )
+          }
         />
       )}
 
