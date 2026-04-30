@@ -160,7 +160,7 @@ const Footer = () => {
           {/* bottom copyright */}
           <div className="pt-6 flex flex-col md:flex-row items-center justify-center gap-3">
             <p className="text-black text-sm">
-              © 2010 - {currentYear} إنترنت تيليكوم - جميع الحقوق محفوظة
+              © 2015 - {currentYear} إنترنت تيليكوم - جميع الحقوق محفوظة
             </p>
           </div>
         </div>
