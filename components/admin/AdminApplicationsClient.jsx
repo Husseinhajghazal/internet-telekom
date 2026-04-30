@@ -521,7 +521,7 @@ ${reviewLink}
           "الشركة",
           "رقم الإشتراك",
           "الباقة",
-          "تاريخ الأنشاء",
+          "تاريخ التسجيل",
           "تاريخ التفعيل",
         ],
         ...allApplications.map((app) => [
@@ -956,7 +956,7 @@ ${reviewLink}
               }}
               className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
             >
-              <option value="createdAt">تاريخ الإنشاء</option>
+              <option value="createdAt">تاريخ التسجيل</option>
               {isDeletedMode && <option value="updatedAt">تاريخ الحذف</option>}
               {!isDeletedMode && !isAddedMode && (
                 <option value="completedAt">تاريخ التفعيل</option>
@@ -1063,7 +1063,7 @@ ${reviewLink}
                   <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                     <span className="inline-flex items-center gap-1.5">
                       <MdCalendarMonth size={18} />
-                      تاريخ الإنشاء
+                      تاريخ التسجيل
                     </span>
                   </th>
                   {isDeletedMode && (

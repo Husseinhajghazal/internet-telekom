@@ -12,7 +12,6 @@ import {
   MdSpeed,
   MdCalendarMonth,
   MdOutlineReceiptLong,
-  MdWifi,
 } from "react-icons/md";
 import { PiSpeedometerFill } from "react-icons/pi";
 import { FaBuildingCircleCheck } from "react-icons/fa6";
@@ -122,7 +121,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                   {describeStatus(application.status)}
                 </span>
               </Row>
-              <Row label="تاريخ الإنشاء" icon={<MdCalendarMonth size={18} />}>
+              <Row label="تاريخ التسجيل" icon={<MdCalendarMonth size={18} />}>
                 {createdAtLabel}
               </Row>
               <Row label="نوع الطلب" icon={<MdOutlineDescription size={18} />}>

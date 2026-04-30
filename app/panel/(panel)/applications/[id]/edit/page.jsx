@@ -51,29 +51,24 @@ const TECH_TYPE_OPTIONS = [
   { value: "gigafiber", label: "GigaFiber" },
 ];
 
-// Generates package options automatically
-const generatePackageOptions = () => {
-  const options = [];
-  const familySpeeds = ["16", "24", "50", "100"];
-  familySpeeds.forEach((s) => {
-    options.push({
-      value: `family-18-${s}`,
-      label: `عائلية - 18 شهر - ${s} ميجا`,
-    });
-    options.push({
-      value: `family-24-${s}`,
-      label: `عائلية - سنتين - ${s} ميجا`,
-    });
-  });
-  const vipSpeeds = ["16", "24", "50", "100", "200", "500", "1000"];
-  vipSpeeds.forEach((s) => {
-    options.push({ value: `vip-12-${s}`, label: `VIP - سنة - ${s} ميجا` });
-    options.push({ value: `vip-18-${s}`, label: `VIP - 18 شهر - ${s} ميجا` });
-  });
-  return options;
+const PKG_TYPES = [
+  { value: "family", label: "عائلية" },
+  { value: "vip", label: "VIP" },
+];
+const PKG_DURATIONS = {
+  family: [
+    { value: "18", label: "18 شهر" },
+    { value: "24", label: "سنتين" },
+  ],
+  vip: [
+    { value: "12", label: "سنة" },
+    { value: "18", label: "18 شهر" },
+  ],
 };
-
-const PACKAGE_OPTIONS = generatePackageOptions();
+const PKG_SPEEDS = {
+  family: ["16", "24", "50", "100"],
+  vip: ["16", "24", "50", "100", "200", "500", "1000"],
+};
 
 const formatDisplayDateFromIso = (value) => {
   if (!value) return "";
@@ -98,6 +93,10 @@ export default function EditApplicationPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [pkgType, setPkgType] = useState("");
+  const [pkgDuration, setPkgDuration] = useState("");
+  const [pkgSpeed, setPkgSpeed] = useState("");
 
   const [formData, setFormData] = useState({
     status: "",
@@ -138,6 +137,8 @@ export default function EditApplicationPage() {
     paidByName: "",
     discountCount: "",
     createdBy: "",
+    createdAt: "",
+    completedAt: "",
   });
 
   const [users, setUsers] = useState([]);
@@ -196,7 +197,21 @@ export default function EditApplicationPage() {
           paidByName: data.paidByName || "",
           discountCount: data.discountCount || "",
           createdBy: data.createdBy || "",
+          createdAt: data.createdAt
+            ? formatDisplayDateFromIso(
+                new Date(data.createdAt).toISOString().slice(0, 10),
+              )
+            : "",
+          completedAt: data.completedAt
+            ? formatDisplayDateFromIso(
+                new Date(data.completedAt).toISOString().slice(0, 10),
+              )
+            : "",
         });
+        const pkgParts = (data.selectedPackage || "").split("-");
+        setPkgType(pkgParts[0] || "");
+        setPkgDuration(pkgParts[1] || "");
+        setPkgSpeed(pkgParts[2] || "");
       } catch (err) {
         setError(err.message);
       } finally {
@@ -206,11 +221,12 @@ export default function EditApplicationPage() {
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/panel/users");
-        if (res.ok) {
-          const data = await res.json();
-          setUsers(data);
-        }
+        const [usersRes, meRes] = await Promise.all([
+          fetch("/api/panel/users"),
+          fetch("/api/panel/me"),
+        ]);
+        if (usersRes.ok) setUsers(await usersRes.json());
+        if (meRes.ok) setUserRole((await meRes.json()).role);
       } catch (err) {
         console.error("Failed to fetch users", err);
       }
@@ -244,10 +260,12 @@ export default function EditApplicationPage() {
       finalValue = formatPhoneNumber(finalValue);
     }
 
-    if (name === "birthDate") {
-      finalValue = formatBirthDate(finalValue);
-    }
-    if (name === "delayedUntil") {
+    if (
+      name === "birthDate" ||
+      name === "delayedUntil" ||
+      name === "createdAt" ||
+      name === "completedAt"
+    ) {
       finalValue = formatBirthDate(finalValue);
     }
 
@@ -258,21 +276,43 @@ export default function EditApplicationPage() {
     setFormData((prev) => {
       let updates = { [name]: finalValue };
 
-      if (name === "serviceType") {
-        if (finalValue === "services") {
-          updates.selectedService = "upgrade";
-          updates.internetCompany = "Turknet";
-        } else if (finalValue === "newline" && prev.contractPreference === "without") {
-          updates.internetCompany = "Turknet";
-        }
+      if (name === "serviceType" && finalValue === "services") {
+        updates.selectedService = "upgrade";
       }
 
-      if (name === "contractPreference" && finalValue === "without" && prev.serviceType === "newline") {
+      if (
+        name === "contractPreference" &&
+        finalValue === "without" &&
+        prev.serviceType === "newline"
+      ) {
         updates.internetCompany = "Turknet";
       }
 
       return { ...prev, ...updates };
     });
+  };
+
+  const handlePkgChange = (field, value) => {
+    let newType = pkgType,
+      newDuration = pkgDuration,
+      newSpeed = pkgSpeed;
+    if (field === "type") {
+      newType = value;
+      newDuration = PKG_DURATIONS[value]?.[0]?.value || "";
+      newSpeed = "";
+    } else if (field === "duration") {
+      newDuration = value;
+    } else if (field === "speed") {
+      newSpeed = value;
+    }
+    setPkgType(newType);
+    setPkgDuration(newDuration);
+    setPkgSpeed(newSpeed);
+    const newPkg =
+      newType && newDuration && newSpeed
+        ? `${newType}-${newDuration}-${newSpeed}`
+        : "";
+    setFormData((prev) => ({ ...prev, selectedPackage: newPkg }));
   };
 
   const parseEmptyToNull = (val) => (val === "" ? null : val);
@@ -281,8 +321,10 @@ export default function EditApplicationPage() {
     e.preventDefault();
 
     if (
-      (formData.nationalNumber.length === 11 && !validateTC(formData.nationalNumber)) ||
-      (formData.newNationalNumber.length === 11 && !validateTC(formData.newNationalNumber))
+      (formData.nationalNumber.length === 11 &&
+        !validateTC(formData.nationalNumber)) ||
+      (formData.newNationalNumber.length === 11 &&
+        !validateTC(formData.newNationalNumber))
     ) {
       return;
     }
@@ -317,6 +359,12 @@ export default function EditApplicationPage() {
         paidByName: parseEmptyToNull(formData.paidByName),
         discountCount: parseEmptyToNull(formData.discountCount),
         createdBy: parseEmptyToNull(formData.createdBy),
+        createdAt: formData.createdAt
+          ? formatIsoDateFromDisplay(formData.createdAt)
+          : null,
+        completedAt: formData.completedAt
+          ? formatIsoDateFromDisplay(formData.completedAt)
+          : null,
       };
 
       // Append all scalar fields to FormData
@@ -507,22 +555,52 @@ export default function EditApplicationPage() {
                 className={inputClass}
               />
             </div>
-            <div>
-              <label className={labelClass}>من الذي سجل الطلب</label>
-              <select
-                name="createdBy"
-                value={formData.createdBy}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="">غير محدد</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.fullName}>
-                    {u.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {userRole === "ADMIN" && (
+              <div>
+                <label className={labelClass}>من الذي سجل الطلب</label>
+                <select
+                  name="createdBy"
+                  value={formData.createdBy}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">غير محدد</option>
+                  {users.map((u) => (
+                    <option key={u.id} value={u.fullName}>
+                      {u.fullName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {userRole === "ADMIN" && (
+              <div>
+                <label className={labelClass}>تاريخ التسجيل (DD/MM/YYYY)</label>
+                <input
+                  type="text"
+                  name="createdAt"
+                  placeholder="01/01/2026"
+                  dir="ltr"
+                  value={formData.createdAt}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+            )}
+            {userRole === "ADMIN" && (
+              <div>
+                <label className={labelClass}>تاريخ التفعيل (DD/MM/YYYY)</label>
+                <input
+                  type="text"
+                  name="completedAt"
+                  placeholder="01/01/2026"
+                  dir="ltr"
+                  value={formData.completedAt}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+            )}
             <div>
               <label className={labelClass}>حالة الطلب</label>
               <select
@@ -619,22 +697,61 @@ export default function EditApplicationPage() {
             )}
             {formData.serviceType === "newline" &&
               formData.contractPreference === "with" && (
-                <div>
-                  <label className={labelClass}>الباقة المختارة</label>
-                  <select
-                    name="selectedPackage"
-                    value={formData.selectedPackage}
-                    onChange={handleChange}
-                    className={inputClass}
-                  >
-                    <option value="">غير محدد</option>
-                    {PACKAGE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <>
+                  <div>
+                    <label className={labelClass}>نوع الباقة</label>
+                    <select
+                      value={pkgType}
+                      onChange={(e) => handlePkgChange("type", e.target.value)}
+                      className={inputClass}
+                    >
+                      <option value="">غير محدد</option>
+                      {PKG_TYPES.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {pkgType && (
+                    <div>
+                      <label className={labelClass}>مدة الباقة</label>
+                      <select
+                        value={pkgDuration}
+                        onChange={(e) =>
+                          handlePkgChange("duration", e.target.value)
+                        }
+                        className={inputClass}
+                      >
+                        <option value="">غير محدد</option>
+                        {(PKG_DURATIONS[pkgType] || []).map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {pkgType && pkgDuration && (
+                    <div>
+                      <label className={labelClass}>سرعة الباقة</label>
+                      <select
+                        value={pkgSpeed}
+                        onChange={(e) =>
+                          handlePkgChange("speed", e.target.value)
+                        }
+                        className={inputClass}
+                      >
+                        <option value="">غير محدد</option>
+                        {(PKG_SPEEDS[pkgType] || []).map((s) => (
+                          <option key={s} value={s}>
+                            {s} ميجا
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </>
               )}
             {((formData.serviceType === "newline" &&
               formData.contractPreference === "without") ||
@@ -853,114 +970,122 @@ export default function EditApplicationPage() {
               </div>
             )}
 
-            {formData.serviceType === "services" && formData.selectedService === "transfer-address" && (
-              <div className="md:col-span-2">
-                <label className={labelClass}>العنوان الجديد</label>
-                <textarea
-                  name="newAddress"
-                  rows={2}
-                  value={formData.newAddress}
-                  onChange={handleChange}
-                  className={`${inputClass} border-cyan-200 bg-cyan-50/30`}
-                  dir="ltr"
-                  placeholder="سيظهر هنا العنوان الجديد في حال اختار المستخدم 'نقل العنوان'"
-                />
-              </div>
-            )}
-
-            {formData.serviceType === "services" && formData.selectedService === "transfer-address" && (
-              <>
-                <div>
-                  <label className={labelClass}>كود العنوان الجديد (BBK)</label>
-                  <input
-                    name="newAddressCode"
-                    type="text"
+            {formData.serviceType === "services" &&
+              formData.selectedService === "transfer-address" && (
+                <div className="md:col-span-2">
+                  <label className={labelClass}>العنوان الجديد</label>
+                  <textarea
+                    name="newAddress"
+                    rows={2}
+                    value={formData.newAddress}
+                    onChange={handleChange}
+                    className={`${inputClass} border-cyan-200 bg-cyan-50/30`}
                     dir="ltr"
-                    value={formData.newAddressCode}
-                    onChange={handleChange}
-                    className={inputClass}
+                    placeholder="سيظهر هنا العنوان الجديد في حال اختار المستخدم 'نقل العنوان'"
                   />
                 </div>
-                <div className="flex items-center gap-3 mt-8">
-                  <input
-                    name="newOriginalAddress"
-                    id="newOriginalAddress"
-                    type="checkbox"
-                    checked={formData.newOriginalAddress}
-                    onChange={handleChange}
-                    className="w-5 h-5 text-[#18a2e3] rounded focus:ring-[#18a2e3] cursor-pointer"
-                  />
-                  <label
-                    htmlFor="newOriginalAddress"
-                    className="text-sm font-semibold text-gray-700 cursor-pointer"
-                  >
-                    العنوان الجديد هو العنوان الأساسي؟
-                  </label>
-                </div>
+              )}
 
-                {!formData.newOriginalAddress && (
-                  <div className="md:col-span-2">
-                    <label className={labelClass}>العنوان الأساسي الجديد</label>
+            {formData.serviceType === "services" &&
+              formData.selectedService === "transfer-address" && (
+                <>
+                  <div>
+                    <label className={labelClass}>
+                      كود العنوان الجديد (BBK)
+                    </label>
                     <input
-                      name="newOriginalAddressText"
+                      name="newAddressCode"
                       type="text"
-                      value={formData.newOriginalAddressText}
+                      dir="ltr"
+                      value={formData.newAddressCode}
                       onChange={handleChange}
                       className={inputClass}
                     />
                   </div>
-                )}
-              </>
-            )}
+                  <div className="flex items-center gap-3 mt-8">
+                    <input
+                      name="newOriginalAddress"
+                      id="newOriginalAddress"
+                      type="checkbox"
+                      checked={formData.newOriginalAddress}
+                      onChange={handleChange}
+                      className="w-5 h-5 text-[#18a2e3] rounded focus:ring-[#18a2e3] cursor-pointer"
+                    />
+                    <label
+                      htmlFor="newOriginalAddress"
+                      className="text-sm font-semibold text-gray-700 cursor-pointer"
+                    >
+                      العنوان الجديد هو العنوان الأساسي؟
+                    </label>
+                  </div>
 
-            {formData.serviceType === "services" && formData.selectedService === "transfer-name" && (
-              <>
+                  {!formData.newOriginalAddress && (
+                    <div className="md:col-span-2">
+                      <label className={labelClass}>
+                        العنوان الأساسي الجديد
+                      </label>
+                      <input
+                        name="newOriginalAddressText"
+                        type="text"
+                        value={formData.newOriginalAddressText}
+                        onChange={handleChange}
+                        className={inputClass}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+            {formData.serviceType === "services" &&
+              formData.selectedService === "transfer-name" && (
+                <>
+                  <div>
+                    <label className={labelClass}>إسم ولقب المالك الجديد</label>
+                    <input
+                      name="newName"
+                      type="text"
+                      value={formData.newName}
+                      onChange={handleChange}
+                      className={`${inputClass} border-[#18a2e3]/20 bg-[#18a2e3]/5`}
+                      placeholder=""
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>
+                      الرقم الوطني للمالك الجديد (TC)
+                    </label>
+                    <input
+                      name="newNationalNumber"
+                      type="text"
+                      value={formData.newNationalNumber}
+                      onChange={handleChange}
+                      className={`${inputClass} ${formData.newNationalNumber.length === 11 && !validateTC(formData.newNationalNumber) ? "border-red-500! ring-red-500/30!" : ""}`}
+                      placeholder="اكتب الرقم الوطني (11 خانة)"
+                    />
+                    {formData.newNationalNumber.length === 11 &&
+                      !validateTC(formData.newNationalNumber) && (
+                        <p className="text-red-500 text-[10px] md:text-xs mt-1 font-bold">
+                          ⚠️ رقم TC غير صالح (يرجى التأكد من الأرقام)
+                        </p>
+                      )}
+                  </div>
+                </>
+              )}
+            {formData.serviceType === "services" &&
+              formData.selectedService === "change-phone" && (
                 <div>
-                  <label className={labelClass}>إسم ولقب المالك الجديد</label>
+                  <label className={labelClass}>رقم الموبايل الجديد</label>
                   <input
-                    name="newName"
+                    name="newPhone"
                     type="text"
-                    value={formData.newName}
+                    value={formData.newPhone}
                     onChange={handleChange}
                     className={`${inputClass} border-[#18a2e3]/20 bg-[#18a2e3]/5`}
-                    placeholder=""
+                    dir="ltr"
+                    placeholder="اكتب رقم الموبايل الجديد"
                   />
                 </div>
-                <div>
-                  <label className={labelClass}>
-                    الرقم الوطني للمالك الجديد (TC)
-                  </label>
-                  <input
-                    name="newNationalNumber"
-                    type="text"
-                    value={formData.newNationalNumber}
-                    onChange={handleChange}
-                    className={`${inputClass} ${formData.newNationalNumber.length === 11 && !validateTC(formData.newNationalNumber) ? "border-red-500! ring-red-500/30!" : ""}`}
-                    placeholder="اكتب الرقم الوطني (11 خانة)"
-                  />
-                  {formData.newNationalNumber.length === 11 &&
-                    !validateTC(formData.newNationalNumber) && (
-                      <p className="text-red-500 text-[10px] md:text-xs mt-1 font-bold">
-                        ⚠️ رقم TC غير صالح (يرجى التأكد من الأرقام)
-                      </p>
-                    )}
-                </div>
-              </>
-            )}
-            {formData.serviceType === "services" && formData.selectedService === "change-phone" && (
-              <div>
-                <label className={labelClass}>رقم الموبايل الجديد</label>
-                <input
-                  name="newPhone"
-                  type="text"
-                  value={formData.newPhone}
-                  onChange={handleChange}
-                  className={`${inputClass} border-[#18a2e3]/20 bg-[#18a2e3]/5`}
-                  dir="ltr"
-                  placeholder="اكتب رقم الموبايل الجديد"
-                />
-              </div>
-            )}
+              )}
 
             <div className="md:col-span-2">
               <label className={labelClass}>ملاحظة</label>

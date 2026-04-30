@@ -123,7 +123,7 @@ export async function PATCH(request, { params }) {
   }
 }
 
-export async function GET(request, { params }) {
+export async function GET(_request, { params }) {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
@@ -244,6 +244,11 @@ export async function PUT(request, { params }) {
       lastUpdatedBy: sessionUser.fullName,
     };
 
+    if (sessionUser.role === "ADMIN") {
+      if (body.createdAt) data.createdAt = new Date(body.createdAt);
+      if (body.completedAt) data.completedAt = new Date(body.completedAt);
+    }
+
     if (invoiceFileUrl !== undefined && contentType.includes("multipart/form-data")) {
       data.invoiceFileUrl = invoiceFileUrl;
     }
@@ -308,7 +313,7 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ success: true });
     }
 
-    const updated = await prisma.application.update({
+    await prisma.application.update({
       where: { id },
       data: { isDeleted: true, lastUpdatedBy: sessionUser.fullName },
     });

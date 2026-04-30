@@ -192,7 +192,7 @@ const HeroSection = () => {
                       alt=""
                       width={1000}
                       height={1000}
-                      className="relative z-10 animate-hero-image-in object-contain w-auto h-90 md:h-[78vh] drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]"
+                      className="relative z-10 animate-hero-image-in object-contain w-auto h-90 md:h-[78vh] lg:h-[85vh] drop-shadow-[0_15px_40px_rgba(24,162,227,0.25)]"
                       priority={i === 0}
                     />
                   )}

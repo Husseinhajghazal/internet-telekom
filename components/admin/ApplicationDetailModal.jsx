@@ -27,7 +27,7 @@ import {
   describeServiceType,
   formatDate,
   describeStatus,
-  statusBadgeClass
+  statusBadgeClass,
 } from "../../utils/general";
 
 const ACCENT = "#18a2e3";
@@ -43,13 +43,18 @@ const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
     </div>
     <div
       dir={dir}
-      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap wrap-break-word">
+      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap wrap-break-word"
+    >
       {children}
     </div>
   </div>
 );
 
-export default function ApplicationDetailModal({ application, onClose, isDeletedMode }) {
+export default function ApplicationDetailModal({
+  application,
+  onClose,
+  isDeletedMode,
+}) {
   const router = useRouter();
 
   useEffect(() => {
@@ -114,7 +119,10 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
 
         <div className="overflow-y-auto p-4 md:p-6 space-y-4 bg-linear-to-b from-slate-50/50 to-white">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Row label={application.newName ? "الإسم واللقب القديم" : "الإسم"} icon={<MdPerson size={18} />}>
+            <Row
+              label={application.newName ? "الإسم واللقب القديم" : "الإسم"}
+              icon={<MdPerson size={18} />}
+            >
               {application.name}
             </Row>
 
@@ -124,23 +132,40 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
               </Row>
             )}
 
-            <Row label={application.newName ? "الرقم الوطني القديم (TC)" : "الرقم الوطني (TC)"} icon={<FaIdCard size={18} />}>
+            <Row
+              label={
+                application.newName
+                  ? "الرقم الوطني القديم (TC)"
+                  : "الرقم الوطني (TC)"
+              }
+              icon={<FaIdCard size={18} />}
+            >
               {application.nationalNumber ? application.nationalNumber : "—"}
             </Row>
 
             {application.newNationalNumber && (
-              <Row label="الرقم الوطني الجديد (TC)" icon={<FaIdCard size={18} />}>
+              <Row
+                label="الرقم الوطني الجديد (TC)"
+                icon={<FaIdCard size={18} />}
+              >
                 {application.newNationalNumber}
               </Row>
             )}
 
             <Row label="المواليد" icon={<MdCalendarMonth size={18} />}>
-              {application.birthDate 
-                ? (application.birthDate.includes("-") ? formatDate(application.birthDate, "1").replaceAll(".", "/") : application.birthDate) 
+              {application.birthDate
+                ? application.birthDate.includes("-")
+                  ? formatDate(application.birthDate, "1").replaceAll(".", "/")
+                  : application.birthDate
                 : "—"}
             </Row>
 
-            <Row label={application.newName ? "رقم الموبايل القديم" : "رقم الموبايل"} icon={<MdPhone size={18} />}>
+            <Row
+              label={
+                application.newName ? "رقم الموبايل القديم" : "رقم الموبايل"
+              }
+              icon={<MdPhone size={18} />}
+            >
               <span dir="ltr" className="inline-block">
                 {application.phone}
               </span>
@@ -173,7 +198,7 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                 </span>
               </Row>
             )}
-            <Row label="تاريخ الإنشاء" icon={<MdCalendarMonth size={18} />}>
+            <Row label="تاريخ التسجيل" icon={<MdCalendarMonth size={18} />}>
               {createdAtLabel}
             </Row>
             <Row label="تاريخ التفعيل" icon={<MdUpdate size={18} />}>
@@ -226,10 +251,7 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
             >
               {application.internetCompany ? application.internetCompany : "—"}
             </Row>
-            <Row
-              label="رقم الإشتراك"
-              icon={<MdOutlineReceiptLong size={18} />}
-            >
+            <Row label="رقم الإشتراك" icon={<MdOutlineReceiptLong size={18} />}>
               {application.subscriptionNo ? application.subscriptionNo : "—"}
             </Row>
             {application.serviceType === "services" && (
@@ -237,22 +259,36 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                 label="قيمة أخر فاتورة"
                 icon={<MdOutlineReceiptLong size={18} />}
               >
-                {application.lastInvoiceAmount ? application.lastInvoiceAmount : "—"}
+                {application.lastInvoiceAmount
+                  ? application.lastInvoiceAmount
+                  : "—"}
               </Row>
             )}
-            <Row label={application.selectedService === "transfer-address" ? "كود العنوان الحالي (BBK)" : "كود العنوان (BBK)"} icon={<MdOutlinePinDrop size={18} />}>
+            <Row
+              label={
+                application.selectedService === "transfer-address"
+                  ? "كود العنوان الحالي (BBK)"
+                  : "كود العنوان (BBK)"
+              }
+              icon={<MdOutlinePinDrop size={18} />}
+            >
               {application.addressCode ? application.addressCode : "—"}
             </Row>
             <Row label="نوع العنوان" icon={<MdHome size={18} />}>
               {application.originalAddress ? "الأساسي" : "مجاور"}
             </Row>
-            {!application.originalAddress && application.originalAddressText && (
-              <Row label="العنوان الأساسي" icon={<MdHome size={18} />}>
-                {application.originalAddressText}
-              </Row>
-            )}
+            {!application.originalAddress &&
+              application.originalAddressText && (
+                <Row label="العنوان الأساسي" icon={<MdHome size={18} />}>
+                  {application.originalAddressText}
+                </Row>
+              )}
             <Row
-              label={application.selectedService === "transfer-address" ? "العنوان الحالي" : "العنوان"}
+              label={
+                application.selectedService === "transfer-address"
+                  ? "العنوان الحالي"
+                  : "العنوان"
+              }
               dir="ltr"
               className="sm:col-span-2"
               icon={<MdHome size={18} />}
@@ -262,18 +298,32 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
 
             {application.selectedService === "transfer-address" && (
               <>
-                <Row label="كود العنوان الجديد (BBK)" icon={<MdOutlinePinDrop size={18} />}>
-                  {application.newAddressCode ? application.newAddressCode : "—"}
+                <Row
+                  label="كود العنوان الجديد (BBK)"
+                  icon={<MdOutlinePinDrop size={18} />}
+                >
+                  {application.newAddressCode
+                    ? application.newAddressCode
+                    : "—"}
                 </Row>
                 <Row label="نوع العنوان الجديد" icon={<MdHome size={18} />}>
                   {application.newOriginalAddress ? "الأساسي" : "مجاور"}
                 </Row>
-                {!application.newOriginalAddress && application.newOriginalAddressText && (
-                  <Row label="العنوان الأساسي الجديد" icon={<MdHome size={18} />}>
-                    {application.newOriginalAddressText}
-                  </Row>
-                )}
-                <Row label="العنوان الجديد" dir="ltr" className="sm:col-span-2" icon={<MdHome size={18} />}>
+                {!application.newOriginalAddress &&
+                  application.newOriginalAddressText && (
+                    <Row
+                      label="العنوان الأساسي الجديد"
+                      icon={<MdHome size={18} />}
+                    >
+                      {application.newOriginalAddressText}
+                    </Row>
+                  )}
+                <Row
+                  label="العنوان الجديد"
+                  dir="ltr"
+                  className="sm:col-span-2"
+                  icon={<MdHome size={18} />}
+                >
                   {application.newAddress ? application.newAddress : "—"}
                 </Row>
               </>
@@ -293,13 +343,22 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
               (application.serviceType === "newline" &&
                 application.contractPreference === "without")) && (
               <>
-                <Row label="موافقة الكترونية" icon={<MdDescription size={18} />}>
+                <Row
+                  label="موافقة الكترونية"
+                  icon={<MdDescription size={18} />}
+                >
                   {application.electronicApproval ? "نعم" : "لا"}
                 </Row>
-                <Row label="موافقة عبر الشحن" icon={<MdDescription size={18} />}>
+                <Row
+                  label="موافقة عبر الشحن"
+                  icon={<MdDescription size={18} />}
+                >
                   {application.approvalViaShipping ? "نعم" : "لا"}
                 </Row>
-                <Row label={`مدفوع من ${application.name}`} icon={<MdDescription size={18} />}>
+                <Row
+                  label={`مدفوع من ${application.name}`}
+                  icon={<MdDescription size={18} />}
+                >
                   {application.paidByUserName ? "نعم" : "لا"}
                 </Row>
                 {!application.paidByUserName && (
@@ -315,25 +374,33 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
                 </Row>
               </>
             )}
-            
+
             <Row
               label="الصور المرفقة"
               className="sm:col-span-2"
               icon={<MdOutlineReceiptLong size={18} />}
             >
-              {application.invoiceFileUrl && application.invoiceFileUrl.trim() !== "" ? (
+              {application.invoiceFileUrl &&
+              application.invoiceFileUrl.trim() !== "" ? (
                 <div className="flex flex-wrap gap-3 mt-2">
-                  {application.invoiceFileUrl.split(",").filter(Boolean).map((url, idx) => (
-                    <a
-                      key={idx}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="relative block w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:opacity-80 transition hover:shadow-md ring-2 ring-transparent hover:ring-[#18a2e3]"
-                    >
-                      <img src={url} alt={`مرفق ${idx + 1}`} className="w-full h-full object-cover" />
-                    </a>
-                  ))}
+                  {application.invoiceFileUrl
+                    .split(",")
+                    .filter(Boolean)
+                    .map((url, idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative block w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:opacity-80 transition hover:shadow-md ring-2 ring-transparent hover:ring-[#18a2e3]"
+                      >
+                        <img
+                          src={url}
+                          alt={`مرفق ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </a>
+                    ))}
                 </div>
               ) : (
                 "—"
@@ -341,14 +408,26 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
             </Row>
 
             {application.createdBy && (
-              <Row label="من الذي سجل الطلب" icon={<MdPerson size={18} />} className="sm:col-span-2">
-                <span className="font-bold text-indigo-800">{application.createdBy}</span>
+              <Row
+                label="من الذي سجل الطلب"
+                icon={<MdPerson size={18} />}
+                className="sm:col-span-2"
+              >
+                <span className="font-bold text-indigo-800">
+                  {application.createdBy}
+                </span>
               </Row>
             )}
 
             {application.lastUpdatedBy && (
-              <Row label="أخر تحديث بواسطة" icon={<MdPerson size={18} />} className="sm:col-span-2">
-                <span className="font-bold text-cyan-800">{application.lastUpdatedBy}</span>
+              <Row
+                label="أخر تحديث بواسطة"
+                icon={<MdPerson size={18} />}
+                className="sm:col-span-2"
+              >
+                <span className="font-bold text-cyan-800">
+                  {application.lastUpdatedBy}
+                </span>
               </Row>
             )}
           </div>
@@ -363,14 +442,18 @@ export default function ApplicationDetailModal({ application, onClose, isDeleted
           >
             اغلاق
           </Button>
-          {!isDeletedMode && <Button
-            variant="secondary"
-            type="button"
-            onClick={() => router.push(`/panel/applications/${application.id}/edit`)}
-            className="rounded-xl! min-w-30"
-          >
-            تحرير
-          </Button>}
+          {!isDeletedMode && (
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() =>
+                router.push(`/panel/applications/${application.id}/edit`)
+              }
+              className="rounded-xl! min-w-30"
+            >
+              تحرير
+            </Button>
+          )}
         </div>
       </div>
     </div>

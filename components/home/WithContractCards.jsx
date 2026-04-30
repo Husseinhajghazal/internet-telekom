@@ -199,7 +199,7 @@ const contractPackages = [
     speeds: [
       {
         speed: "16",
-        price: "710",
+        price: "860",
         duration: "12 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
@@ -211,7 +211,7 @@ const contractPackages = [
       },
       {
         speed: "24",
-        price: "710",
+        price: "860",
         duration: "12 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
@@ -223,42 +223,6 @@ const contractPackages = [
       },
       {
         speed: "50",
-        price: "760",
-        duration: "12 شهر",
-        features: [
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل السادس",
-        ],
-      },
-      {
-        speed: "100",
-        price: "760",
-        duration: "12 شهر",
-        features: [
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل السادس",
-        ],
-      },
-      {
-        speed: "200",
-        price: "810",
-        duration: "12 شهر",
-        features: [
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل السادس",
-        ],
-      },
-      {
-        speed: "500",
         price: "910",
         duration: "12 شهر",
         features: [
@@ -270,8 +234,44 @@ const contractPackages = [
         ],
       },
       {
+        speed: "100",
+        price: "910",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "200",
+        price: "960",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "500",
+        price: "1110",
+        duration: "12 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
         speed: "1000",
-        price: "1010",
+        price: "1210",
         duration: "12 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
@@ -283,54 +283,6 @@ const contractPackages = [
       },
       {
         speed: "16",
-        price: "700",
-        duration: "18 شهر",
-        features: [
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل السادس",
-        ],
-      },
-      {
-        speed: "24",
-        price: "700",
-        duration: "18 شهر",
-        features: [
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل السادس",
-        ],
-      },
-      {
-        speed: "50",
-        price: "750",
-        duration: "18 شهر",
-        features: [
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل السادس",
-        ],
-      },
-      {
-        speed: "100",
-        price: "750",
-        duration: "18 شهر",
-        features: [
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل السادس",
-        ],
-      },
-      {
-        speed: "200",
         price: "800",
         duration: "18 شهر",
         features: [
@@ -342,8 +294,56 @@ const contractPackages = [
         ],
       },
       {
+        speed: "24",
+        price: "800",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "50",
+        price: "850",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "100",
+        price: "850",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
+        speed: "200",
+        price: "1000",
+        duration: "18 شهر",
+        features: [
+          "الفاتورة حقيقية وثابتة",
+          "التحميل غير محدود",
+          "التسجيل مجاني تماماً",
+          "التركيب خلال 48 ساعة",
+          "راوتر بتقنية الجيل السادس",
+        ],
+      },
+      {
         speed: "500",
-        price: "900",
+        price: "1050",
         duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
@@ -355,7 +355,7 @@ const contractPackages = [
       },
       {
         speed: "1000",
-        price: "1000",
+        price: "1150",
         duration: "18 شهر",
         features: [
           "الفاتورة حقيقية وثابتة",
@@ -370,13 +370,19 @@ const contractPackages = [
 ];
 
 const ContractGroup = ({ group }) => {
-  const durations = Array.from(new Set(group.speeds.map((s) => s.duration))).sort();
+  const durations = Array.from(
+    new Set(group.speeds.map((s) => s.duration)),
+  ).sort();
   const [selectedDuration, setSelectedDuration] = useState(durations[0]);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  const filteredSpeeds = group.speeds.filter((s) => s.duration === selectedDuration);
+  const filteredSpeeds = group.speeds.filter(
+    (s) => s.duration === selectedDuration,
+  );
   const isGreen = group.category.includes("العائلي");
-  const switcherBorderClass = isGreen ? "border-emerald-200" : "border-blue-200";
+  const switcherBorderClass = isGreen
+    ? "border-emerald-200"
+    : "border-blue-200";
   const selectedButtonClass = isGreen
     ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
     : "bg-blue-500 text-white shadow-md shadow-blue-500/30";
@@ -439,7 +445,9 @@ const ContractGroup = ({ group }) => {
                   className={`cursor-pointer px-4 py-2.5 md:px-6 md:py-3 rounded-xl text-sm md:text-lg font-bold transition-all duration-200 ${
                     isSelected ? selectedButtonClass : idleButtonClass
                   } border border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                    isGreen ? "focus-visible:ring-emerald-500/40" : "focus-visible:ring-blue-500/40"
+                    isGreen
+                      ? "focus-visible:ring-emerald-500/40"
+                      : "focus-visible:ring-blue-500/40"
                   }`}
                 >
                   عقد {displayLabel}
@@ -452,7 +460,11 @@ const ContractGroup = ({ group }) => {
 
       {/* Cards Scroll */}
       <div className="mt-4">
-          <InfiniteScrollRow speeds={filteredSpeeds} group={group} key={selectedDuration} />
+        <InfiniteScrollRow
+          speeds={filteredSpeeds}
+          group={group}
+          key={selectedDuration}
+        />
       </div>
 
       {isDetailsOpen &&
@@ -466,7 +478,9 @@ const ContractGroup = ({ group }) => {
               className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border overflow-hidden"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className={`flex items-center justify-between px-5 py-4 border-b ${detailsHeaderClass}`}>
+              <div
+                className={`flex items-center justify-between px-5 py-4 border-b ${detailsHeaderClass}`}
+              >
                 <h4 className="text-lg font-extrabold flex items-center gap-2">
                   <FaInfoCircle className="w-4 h-4" />
                   التفاصيل والميزات
@@ -480,7 +494,9 @@ const ContractGroup = ({ group }) => {
                   ×
                 </button>
               </div>
-              <div className={`p-5 text-justify leading-relaxed text-sm md:text-base ${detailsTextClass}`}>
+              <div
+                className={`p-5 text-justify leading-relaxed text-sm md:text-base ${detailsTextClass}`}
+              >
                 {detailsText}
               </div>
             </div>

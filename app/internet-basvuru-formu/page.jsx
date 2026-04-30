@@ -97,6 +97,10 @@ const ApplyPage = () => {
                 <UserAgreementPopup
                   agreementText={agreementText}
                   handleCancel={closeUserAgreement}
+                  handleAgree={() => {
+                    setFieldValue("userAgreementAccepted", true);
+                    closeUserAgreement();
+                  }}
                 />
               )}
               <ProgressBar step={step} />

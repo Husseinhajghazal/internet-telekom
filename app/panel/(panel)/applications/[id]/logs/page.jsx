@@ -12,21 +12,40 @@ import {
   MdSwapHoriz,
   MdDelete,
   MdRefresh,
-  MdInfoOutline
+  MdInfoOutline,
 } from "react-icons/md";
 import { formatDate } from "@/utils/general";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 
 const ACCENT = "#18a2e3";
-const ACCENT_DARK = "#0d8bc9";
 
 const ACTION_MAP = {
-  CREATE: { label: "إنشاء الطلب", icon: <MdOutlineLogin />, color: "text-emerald-600 bg-emerald-50" },
-  UPDATE: { label: "تحديث البيانات", icon: <MdUpdate />, color: "text-blue-600 bg-blue-50" },
-  STATUS_CHANGE: { label: "تغيير الحالة", icon: <MdSwapHoriz />, color: "text-violet-600 bg-violet-50" },
-  DELETE: { label: "حذف الطلب", icon: <MdDelete />, color: "text-red-600 bg-red-50" },
-  RESTORE: { label: "إستعادة الطلب", icon: <MdRefresh />, color: "text-indigo-600 bg-indigo-50" },
+  CREATE: {
+    label: "إنشاء الطلب",
+    icon: <MdOutlineLogin />,
+    color: "text-emerald-600 bg-emerald-50",
+  },
+  UPDATE: {
+    label: "تحديث البيانات",
+    icon: <MdUpdate />,
+    color: "text-blue-600 bg-blue-50",
+  },
+  STATUS_CHANGE: {
+    label: "تغيير الحالة",
+    icon: <MdSwapHoriz />,
+    color: "text-violet-600 bg-violet-50",
+  },
+  DELETE: {
+    label: "حذف الطلب",
+    icon: <MdDelete />,
+    color: "text-red-600 bg-red-50",
+  },
+  RESTORE: {
+    label: "إستعادة الطلب",
+    icon: <MdRefresh />,
+    color: "text-indigo-600 bg-indigo-50",
+  },
 };
 
 const FIELD_LABELS = {
@@ -61,6 +80,7 @@ const FIELD_LABELS = {
   isDeleted: "حالة الحذف",
   delayedUntil: "تاريخ التأجيل",
   completedAt: "تاريخ التفعيل",
+  whatsappStatus: "حالة الواتساب",
 };
 
 const VALUE_MAPS = {
@@ -75,6 +95,10 @@ const VALUE_MAPS = {
     TECHNICAL_PROBLEM: "مشكلة تقنية",
     TRYING_TO_PERSUADE: "محاولة إقناع",
     ACTIVATED: "مفعل",
+  },
+  whatsappStatus: {
+    NOT_ADDED: "غير مضاف",
+    ADDED: "مضاف",
   },
   hasInternet: {
     yes: "نعم",
@@ -164,7 +188,11 @@ export default function ApplicationLogsPage() {
           <h2 className="text-xl font-bold text-gray-900">حدث خطأ ما</h2>
           <p className="text-gray-600 max-w-xs mx-auto">{error}</p>
         </div>
-        <Button variant="secondary" onClick={() => router.back()} className="rounded-xl!">
+        <Button
+          variant="secondary"
+          onClick={() => router.back()}
+          className="rounded-xl!"
+        >
           العودة للخلف
         </Button>
       </div>
@@ -312,7 +340,8 @@ export default function ApplicationLogsPage() {
                       </div>
                     ) : log.action === "CREATE" ? (
                       <div className="mt-2 text-sm text-gray-600 font-medium italic border-r-2 border-emerald-200 pr-3 py-1">
-                        تم إنشاء الطلب لأول مرة في النظام من قبل {log.adminName}.
+                        تم إنشاء الطلب لأول مرة في النظام من قبل {log.adminName}
+                        .
                       </div>
                     ) : log.action === "DELETE" ? (
                       <div className="mt-2 text-sm text-gray-600 font-medium italic border-r-2 border-red-200 pr-3 py-1">

@@ -9,6 +9,7 @@ import {
   FaTiktok,
   FaPhoneAlt,
   FaMapMarkerAlt,
+  FaYoutube,
 } from "react-icons/fa";
 
 const Footer = () => {
@@ -70,12 +71,12 @@ const Footer = () => {
                     <FaWhatsapp size={20} />
                   </a>
                   <a
-                    href="https://wa.me/905387345820"
+                    href="https://www.youtube.com/@internettelekom-net-tr"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-red-600 text-white transition-all duration-300"
                   >
-                    <FaWhatsapp size={20} />
+                    <FaYoutube size={20} />
                   </a>
                 </div>
               </div>
@@ -83,7 +84,9 @@ const Footer = () => {
 
             {/* contact info */}
             <div>
-              <h4 className="text-black font-bold text-base mb-5">اتصل بنا :</h4>
+              <h4 className="text-black font-bold text-base mb-5">
+                اتصل بنا :
+              </h4>
               <ul className="space-y-3">
                 <li>
                   <a
@@ -121,11 +124,13 @@ const Footer = () => {
 
             {/* map */}
             <div>
-              <h4 className="text-black font-bold text-base mb-5 text-center">تفضل بزيارة شركتنا</h4>
+              <h4 className="text-black font-bold text-base mb-5 text-center">
+                تفضل بزيارة شركتنا
+              </h4>
               <div className="rounded-2xl overflow-hidden relative group transition-all duration-400 hover:shadow-[0_12px_40px_rgba(24,162,227,0.15)] hover:-translate-y-1 bg-white">
-                <a 
-                  href="https://maps.app.goo.gl/vN9GunSEyTgh75sBA" 
-                  target="_blank" 
+                <a
+                  href="https://maps.app.goo.gl/vN9GunSEyTgh75sBA"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="absolute inset-0 z-20 flex items-center justify-center bg-black/0 group-hover:bg-black/10 backdrop-blur-[0px] group-hover:backdrop-blur-sm transition-all duration-500"
                   aria-label="فتح في خرائط جوجل"
@@ -155,7 +160,7 @@ const Footer = () => {
           {/* bottom copyright */}
           <div className="pt-6 flex flex-col md:flex-row items-center justify-center gap-3">
             <p className="text-black text-sm">
-              © {currentYear} إنترنت تيليكوم - جميع الحقوق محفوظة
+              © 2010 - {currentYear} إنترنت تيليكوم - جميع الحقوق محفوظة
             </p>
           </div>
         </div>
