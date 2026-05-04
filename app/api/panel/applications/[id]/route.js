@@ -249,6 +249,11 @@ export async function PUT(request, { params }) {
       if (body.completedAt) data.completedAt = new Date(body.completedAt);
     }
 
+    // Auto-set completedAt when activating (unless admin explicitly provided a date above)
+    if (body.status === "ACTIVATED" && !data.completedAt) {
+      data.completedAt = new Date();
+    }
+
     if (invoiceFileUrl !== undefined && contentType.includes("multipart/form-data")) {
       data.invoiceFileUrl = invoiceFileUrl;
     }

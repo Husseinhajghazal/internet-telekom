@@ -71,6 +71,7 @@ const ActionMenu = ({
   openCustomerNoteModal,
   isDeletedMode,
   isAddedMode,
+  isExpiringMode,
   userRole,
   handleSendReviewLink,
   handleOpenWhatsApp,
@@ -125,9 +126,13 @@ const ActionMenu = ({
           ? userRole === "ADMIN"
             ? 380
             : 280
-          : userRole === "ADMIN"
-            ? 420
-            : 320;
+          : isExpiringMode
+            ? userRole === "ADMIN"
+              ? 360
+              : 260
+            : userRole === "ADMIN"
+              ? 420
+              : 320;
       const dropdownWidth = 176;
       const spaceBelow = window.innerHeight - rect.bottom;
 
@@ -186,7 +191,7 @@ const ActionMenu = ({
               </button>
             )}
 
-            {!isDeletedMode && isAddedMode && (
+            {!isDeletedMode && (isAddedMode || isExpiringMode) && (
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -199,7 +204,7 @@ const ActionMenu = ({
               </button>
             )}
 
-            {!isDeletedMode && !isAddedMode && (
+            {!isDeletedMode && !isAddedMode && !isExpiringMode && (
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -291,7 +296,7 @@ const ActionMenu = ({
               </button>
             )}
 
-            {!isDeletedMode && !isAddedMode && (
+            {!isDeletedMode && !isAddedMode && !isExpiringMode && (
               <button
                 disabled={!canChangeStatus(app.status) || actionId === app.id}
                 onClick={() => {
@@ -351,10 +356,28 @@ const ActionMenu = ({
 export default function AdminApplicationsClient({
   isDeletedMode = false,
   isAddedMode = false,
+  isExpiringMode = false,
   userRole = "ADMIN",
 }) {
   const router = useRouter();
-  const [page, setPage] = useState(1);
+
+  const storageKey = isDeletedMode
+    ? "panel_deleted"
+    : isAddedMode
+      ? "panel_added"
+      : isExpiringMode
+        ? "panel_expiring"
+        : "panel_main";
+
+  const getStoredFilters = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem(storageKey) || "null");
+    } catch {
+      return null;
+    }
+  };
+
+  const [page, setPage] = useState(() => getStoredFilters()?.page || 1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [creatingApp, setCreatingApp] = useState(false);
@@ -412,19 +435,68 @@ ${reviewLink}
     }).then(() => load(page));
   };
 
-  const [searchInput, setSearchInput] = useState("");
-  const [debouncedQ, setDebouncedQ] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [searchInput, setSearchInput] = useState(
+    () => getStoredFilters()?.searchInput ?? "",
+  );
+  const [debouncedQ, setDebouncedQ] = useState(
+    () => getStoredFilters()?.searchInput?.trim() ?? "",
+  );
+  const [statusFilter, setStatusFilter] = useState(
+    () => getStoredFilters()?.statusFilter ?? "",
+  );
   const [dateField, setDateField] = useState(
-    isDeletedMode ? "updatedAt" : "createdAt",
+    () =>
+      getStoredFilters()?.dateField ??
+      (isDeletedMode ? "updatedAt" : "createdAt"),
   );
   const [dateFrom, setDateFrom] = useState(() => {
+    const saved = getStoredFilters()?.dateFrom;
+    if (saved !== undefined && saved !== null) return saved;
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000;
     return new Date(now - offset).toISOString().slice(0, 10);
   });
-  const [dateTo, setDateTo] = useState("");
+  const [dateTo, setDateTo] = useState(() => getStoredFilters()?.dateTo ?? "");
+  const [lastClickedAppId, setLastClickedAppId] = useState(() => {
+    try {
+      return sessionStorage.getItem(`${storageKey}_last`) || null;
+    } catch {
+      return null;
+    }
+  });
   const searchFirstRun = useRef(true);
+
+  // Persist filters to sessionStorage whenever they change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          searchInput,
+          statusFilter,
+          dateField,
+          dateFrom,
+          dateTo,
+          page,
+        }),
+      );
+    } catch {}
+  }, [
+    storageKey,
+    searchInput,
+    statusFilter,
+    dateField,
+    dateFrom,
+    dateTo,
+    page,
+  ]);
+
+  const handleAppClick = (appId) => {
+    setLastClickedAppId(appId);
+    try {
+      sessionStorage.setItem(`${storageKey}_last`, appId);
+    } catch {}
+  };
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -440,19 +512,23 @@ ${reviewLink}
       const params = new URLSearchParams({ page: String(p) });
       if (isDeletedMode) params.set("deleted", "true");
       else if (isAddedMode) params.set("view", "added");
+      else if (isExpiringMode) params.set("view", "expiring");
       if (debouncedQ) params.set("q", debouncedQ);
-      if (statusFilter) params.set("status", statusFilter);
-      if (!debouncedQ) {
-        if (dateField && dateField !== "createdAt")
-          params.set("dateField", dateField);
-        if (dateFrom) params.set("dateFrom", dateFrom);
-        if (dateTo) params.set("dateTo", dateTo);
+      if (!isExpiringMode) {
+        if (statusFilter) params.set("status", statusFilter);
+        if (!debouncedQ) {
+          if (dateField && dateField !== "createdAt")
+            params.set("dateField", dateField);
+          if (dateFrom) params.set("dateFrom", dateFrom);
+          if (dateTo) params.set("dateTo", dateTo);
+        }
       }
       return params.toString();
     },
     [
       isDeletedMode,
       isAddedMode,
+      isExpiringMode,
       debouncedQ,
       statusFilter,
       dateField,
@@ -771,7 +847,9 @@ ${reviewLink}
   };
 
   const canChangeStatus = (status) =>
-    status !== "REJECTED" && status !== "ACTIVATED";
+    isExpiringMode
+      ? status !== "REJECTED"
+      : status !== "REJECTED" && status !== "ACTIVATED";
 
   const clearFilters = () => {
     setSearchInput("");
@@ -807,6 +885,8 @@ ${reviewLink}
             >
               {isDeletedMode ? (
                 <MdDelete size={26} />
+              ) : isExpiringMode ? (
+                <MdOutlineTimer size={26} />
               ) : (
                 <MdOutlineAssignment size={26} />
               )}
@@ -817,7 +897,9 @@ ${reviewLink}
                   ? "الطلبات المحذوفة"
                   : isAddedMode
                     ? "الطلبات المضافة"
-                    : "الطلبات"}
+                    : isExpiringMode
+                      ? "طلبات ستنتهي قريباً"
+                      : "الطلبات"}
               </h2>
               <p className="text-sm text-gray-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="inline-flex items-center gap-1">
@@ -837,7 +919,7 @@ ${reviewLink}
             </div>
           </div>
           <div className="flex flex-col md:flex-row gap-3">
-            {!isDeletedMode && !isAddedMode && (
+            {!isDeletedMode && !isAddedMode && !isExpiringMode && (
               <button
                 type="button"
                 onClick={handleCreateBlankApp}
@@ -916,7 +998,7 @@ ${reviewLink}
               />
             </div>
           </div>
-          {!isDeletedMode && (
+          {!isDeletedMode && !isExpiringMode && (
             <div className="lg:col-span-2">
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
                 حالة الطلب
@@ -944,56 +1026,64 @@ ${reviewLink}
               </select>
             </div>
           )}
-          <div className="lg:col-span-2">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              تصفية حسب
-            </label>
-            <select
-              value={dateField}
-              onChange={(e) => {
-                setDateField(e.target.value);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-            >
-              <option value="createdAt">تاريخ التسجيل</option>
-              {isDeletedMode && <option value="updatedAt">تاريخ الحذف</option>}
-              {!isDeletedMode && !isAddedMode && (
-                <option value="completedAt">تاريخ التفعيل</option>
-              )}
-              {!isDeletedMode && !isAddedMode && (
-                <option value="delayedUntil">تاريخ التأجيل</option>
-              )}
-            </select>
-          </div>
-          <div className="lg:col-span-2">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              من تاريخ
-            </label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => {
-                setDateFrom(e.target.value);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
-            />
-          </div>
-          <div className="lg:col-span-2">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              إلى تاريخ
-            </label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => {
-                setDateTo(e.target.value);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
-            />
-          </div>
+          {!isExpiringMode && (
+            <div className="lg:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                تصفية حسب
+              </label>
+              <select
+                value={dateField}
+                onChange={(e) => {
+                  setDateField(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+              >
+                <option value="createdAt">تاريخ التسجيل</option>
+                {isDeletedMode && (
+                  <option value="updatedAt">تاريخ الحذف</option>
+                )}
+                {!isDeletedMode && !isAddedMode && (
+                  <option value="completedAt">تاريخ التفعيل</option>
+                )}
+                {!isDeletedMode && !isAddedMode && (
+                  <option value="delayedUntil">تاريخ التأجيل</option>
+                )}
+              </select>
+            </div>
+          )}
+          {!isExpiringMode && (
+            <div className="lg:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                من تاريخ
+              </label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => {
+                  setDateFrom(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
+              />
+            </div>
+          )}
+          {!isExpiringMode && (
+            <div className="lg:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                إلى تاريخ
+              </label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => {
+                  setDateTo(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
+              />
+            </div>
+          )}
           <div className="lg:col-span-1 flex items-end">
             <button
               type="button"
@@ -1074,7 +1164,7 @@ ${reviewLink}
                       </span>
                     </th>
                   )}
-                  {!isDeletedMode && !isAddedMode && (
+                  {!isDeletedMode && !isAddedMode && !isExpiringMode && (
                     <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                       <span className="inline-flex items-center gap-1.5">
                         <MdDoneAll size={18} />
@@ -1082,11 +1172,27 @@ ${reviewLink}
                       </span>
                     </th>
                   )}
-                  {!isDeletedMode && !isAddedMode && (
+                  {!isDeletedMode && !isAddedMode && !isExpiringMode && (
                     <th className="px-3 py-3.5 font-bold whitespace-nowrap">
                       <span className="inline-flex items-center gap-1.5">
                         <MdOutlineTimer size={18} />
                         تاريخ التأجيل
+                      </span>
+                    </th>
+                  )}
+                  {isExpiringMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdDoneAll size={18} />
+                        تاريخ التفعيل
+                      </span>
+                    </th>
+                  )}
+                  {isExpiringMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdOutlineTimer size={18} />
+                        تاريخ الانتهاء
                       </span>
                     </th>
                   )}
@@ -1130,12 +1236,25 @@ ${reviewLink}
                 ) : (
                   applications.map((app, idx) => {
                     const dueDelayed = isDueDelayed(app);
+                    console.log(dueDelayed);
+                    const expiringSoon =
+                      isExpiringMode && app.expiresAt
+                        ? (new Date(app.expiresAt) - new Date()) /
+                            (1000 * 60 * 60 * 24) <=
+                          60
+                        : false;
+                    const isLastClicked = app.id === lastClickedAppId;
                     return (
                       <tr
                         key={app.id}
-                        className={`border-b transition-colors hover:bg-cyan-50/40 ${
-                          idx % 2 === 0 ? "bg-white" : "bg-slate-50/40"
-                        } ${dueDelayed ? "ring-2 ring-inset ring-orange-500 z-10 relative bg-orange-50/30 border-none" : isAddedMode && app.whatsappStatus === "ADDED" ? "ring-2 ring-inset ring-emerald-400 z-10 relative bg-emerald-50/30 border-none" : "border-gray-100"}`}
+                        onClick={() => handleAppClick(app.id)}
+                        className={`border-b transition-colors hover:bg-cyan-50/40 cursor-pointer ${
+                          isLastClicked
+                            ? "bg-blue-200"
+                            : idx % 2 === 0
+                              ? "bg-white"
+                              : "bg-slate-50/40"
+                        } ${dueDelayed ? "outline-2 outline-orange-500 -outline-offset-2 z-10 relative bg-orange-50/30 border-none" : isAddedMode && app.whatsappStatus === "ADDED" ? "outline-2 outline-emerald-400 -outline-offset-2 z-10 relative bg-emerald-50/30 border-none" : expiringSoon ? "outline-2 outline-amber-400 -outline-offset-2 z-10 relative bg-amber-50/30 border-none" : "border-gray-100"}`}
                       >
                         <td
                           className="px-3 py-3.5 text-center font-mono font-bold tabular-nums"
@@ -1203,18 +1322,30 @@ ${reviewLink}
                             {app.updatedAt ? formatDate(app.updatedAt) : "—"}
                           </td>
                         )}
-                        {!isDeletedMode && !isAddedMode && (
+                        {!isDeletedMode && !isAddedMode && !isExpiringMode && (
                           <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                             {app.completedAt
                               ? formatDate(app.completedAt)
                               : "—"}
                           </td>
                         )}
-                        {!isDeletedMode && !isAddedMode && (
+                        {!isDeletedMode && !isAddedMode && !isExpiringMode && (
                           <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                             {app.delayedUntil
                               ? formatDate(app.delayedUntil, "4")
                               : "—"}
+                          </td>
+                        )}
+                        {isExpiringMode && (
+                          <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
+                            {app.completedAt
+                              ? formatDate(app.completedAt)
+                              : "—"}
+                          </td>
+                        )}
+                        {isExpiringMode && (
+                          <td className="px-3 py-3.5 whitespace-nowrap text-xs font-bold text-amber-700">
+                            {app.expiresAt ? formatDate(app.expiresAt) : "—"}
                           </td>
                         )}
                         {isAddedMode && (
@@ -1258,6 +1389,7 @@ ${reviewLink}
                             openCustomerNoteModal={setCustomerNoteApp}
                             isDeletedMode={isDeletedMode}
                             isAddedMode={isAddedMode}
+                            isExpiringMode={isExpiringMode}
                             userRole={userRole}
                             handleSendReviewLink={handleSendReviewLink}
                             handleOpenWhatsApp={handleOpenWhatsApp}
@@ -1330,11 +1462,13 @@ ${reviewLink}
           onUpdateStatus={handleStatusUpdate}
           loading={!!actionId && actionId === statusApp.id}
           allowedStatuses={
-            isAddedMode
-              ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
-              : Object.keys(STATUS_LABELS).filter(
-                  (s) => s !== "NOT_COMPLETED" && s !== "COMPLETED",
-                )
+            isExpiringMode
+              ? Object.keys(STATUS_LABELS)
+              : isAddedMode
+                ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
+                : Object.keys(STATUS_LABELS).filter(
+                    (s) => s !== "NOT_COMPLETED" && s !== "COMPLETED",
+                  )
           }
         />
       )}

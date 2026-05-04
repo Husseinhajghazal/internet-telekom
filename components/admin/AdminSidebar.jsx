@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiList, FiChevronRight, FiChevronLeft, FiStar, FiUser, FiInbox } from "react-icons/fi";
+import { FiList, FiChevronRight, FiChevronLeft, FiStar, FiUser, FiInbox, FiClock } from "react-icons/fi";
 import { MdDelete, MdPerson } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 import { useRouter } from "next/navigation";
@@ -38,6 +38,7 @@ export default function AdminSidebar({ userRole, userName }) {
   const navItems = [
     { name: "مستعرض الطلبات", href: "/panel", icon: FiList },
     { name: "الطلبات المضافة", href: "/panel/added", icon: FiInbox },
+    { name: "ستنتهي قريباً", href: "/panel/expiring", icon: FiClock },
   ];
 
   if (userRole === "ADMIN") {
@@ -64,18 +65,18 @@ export default function AdminSidebar({ userRole, userName }) {
       </button>
 
       <div className={`flex flex-col items-center justify-center border-b border-gray-100/80 shrink-0 transition-all duration-500 ${isCollapsed ? "h-24 px-2" : "h-28 px-6"}`}>
-        <div className="relative w-full h-12 flex items-center justify-center">
-          <img 
-            src="/logo.png" 
-            alt="Logo Icon" 
-            className={`absolute h-8 lg:h-9 w-auto object-contain transition-all duration-500 ${isCollapsed ? "opacity-100 scale-100" : "opacity-0 scale-50"}`} 
+        <Link href="/" className="relative w-full h-12 flex items-center justify-center">
+          <img
+            src="/logo.png"
+            alt="Logo Icon"
+            className={`absolute h-8 lg:h-9 w-auto object-contain transition-all duration-500 ${isCollapsed ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
           />
-          <img 
-            src="/full-logo.png" 
-            alt="Full Logo" 
-            className={`absolute h-10 lg:h-12 w-auto object-contain transition-all duration-500 ${isCollapsed ? "opacity-0 scale-50" : "opacity-100 scale-100"}`} 
+          <img
+            src="/full-logo.png"
+            alt="Full Logo"
+            className={`absolute h-10 lg:h-12 w-auto object-contain transition-all duration-500 ${isCollapsed ? "opacity-0 scale-50" : "opacity-100 scale-100"}`}
           />
-        </div>
+        </Link>
       </div>
 
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto overflow-x-hidden custom-scrollbar">

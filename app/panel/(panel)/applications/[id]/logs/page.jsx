@@ -14,6 +14,7 @@ import {
   MdRefresh,
   MdInfoOutline,
 } from "react-icons/md";
+import Link from "next/link";
 import { formatDate } from "@/utils/general";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
@@ -204,11 +205,11 @@ export default function ApplicationLogsPage() {
       <header className="border-b border-cyan-100/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm shadow-cyan-500/5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3 font-bold text-gray-800 text-lg">
-            <img
+            <Link href="/"><img
               src="/logo.png"
               alt="Logo"
               className="h-9 w-auto object-contain lg:hidden"
-            />
+            /></Link>
             <span className="lg:hidden">لوحة الإدارة</span>
             <span className="hidden lg:inline-block">
               لوحة الإدارة - سجل التعديلات
@@ -314,7 +315,7 @@ export default function ApplicationLogsPage() {
                           </thead>
                           <tbody>
                             {Object.entries(log.changes).map(
-                              ([key, val], fIdx) => (
+                              ([key, val]) => (
                                 <tr
                                   key={key}
                                   className="group hover:bg-slate-50/30 transition"

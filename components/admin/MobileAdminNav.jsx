@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiList, FiStar, FiUser, FiInbox } from "react-icons/fi";
+import { FiList, FiStar, FiUser, FiInbox, FiClock } from "react-icons/fi";
 import { MdDelete, MdPerson } from "react-icons/md";
 
 export default function MobileAdminNav({ userRole }) {
@@ -11,6 +11,7 @@ export default function MobileAdminNav({ userRole }) {
   const navItems = [
     { name: "الطلبات", href: "/panel", icon: FiList },
     { name: "المضافة", href: "/panel/added", icon: FiInbox },
+    { name: "ستنتهي", href: "/panel/expiring", icon: FiClock },
   ];
 
   if (userRole === "ADMIN") {

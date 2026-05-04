@@ -39,7 +39,7 @@ const Footer = () => {
                 </h4>
                 <div className="flex items-center gap-3">
                   <a
-                    href="https://www.facebook.com/internettelekom.net.tr"
+                    href="https://www.facebook.com/internettelekom.official"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-[#1877f2] text-white transition-all duration-300"
@@ -63,20 +63,20 @@ const Footer = () => {
                     <FaTiktok size={20} />
                   </a>
                   <a
+                    href="https://www.youtube.com/@internettelekom.official"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-red-600 text-white transition-all duration-300"
+                  >
+                    <FaYoutube size={20} />
+                  </a>
+                  <a
                     href="https://wa.me/902126112122"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-[#25d366] text-white transition-all duration-300"
                   >
                     <FaWhatsapp size={20} />
-                  </a>
-                  <a
-                    href="https://www.youtube.com/@internettelekom-net-tr"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full flex items-center justify-center bg-red-600 text-white transition-all duration-300"
-                  >
-                    <FaYoutube size={20} />
                   </a>
                 </div>
               </div>

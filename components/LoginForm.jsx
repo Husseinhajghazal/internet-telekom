@@ -40,11 +40,13 @@ export default function AdminLoginForm() {
     <div className="w-full max-w-md space-y-8">
       <div className="text-center space-y-3">
         <div className="mx-auto w-48 md:w-56">
-          <img
-            src="/full-logo.png"
-            alt="إنترنت تيليكوم"
-            className="w-full h-auto object-contain"
-          />
+          <Link href="/">
+            <img
+              src="/full-logo.png"
+              alt="إنترنت تيليكوم"
+              className="w-full h-auto object-contain"
+            />
+          </Link>
         </div>
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">

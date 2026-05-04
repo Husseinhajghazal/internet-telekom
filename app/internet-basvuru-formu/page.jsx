@@ -148,6 +148,7 @@ const ApplyPage = () => {
                       errors={errors}
                       touched={touched}
                       setFieldValue={setFieldValue}
+                      handleForward={handleForward}
                     />
                   )}
 

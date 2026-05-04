@@ -5,6 +5,14 @@ import { formatPhoneNumber } from "@/utils/general";
 
 const PAGE_SIZE = 20;
 
+function getPackageDurationMonths(selectedPackage) {
+  if (!selectedPackage) return null;
+  const parts = selectedPackage.split("-");
+  if (parts.length < 2) return null;
+  const months = parseInt(parts[1], 10);
+  return isNaN(months) ? null : months;
+}
+
 const VALID_STATUSES = [
   "NOT_COMPLETED",
   "NEW",
@@ -74,10 +82,7 @@ function buildWhere(searchParams) {
           OR: [
             { createdAt: dateCondition },
             {
-              AND: [
-                { status: "DELAYED" },
-                { delayedUntil: { lte: todayEnd } },
-              ],
+              AND: [{ status: "DELAYED" }, { delayedUntil: { lte: todayEnd } }],
             },
           ],
         });
@@ -106,11 +111,7 @@ function buildWhere(searchParams) {
     if (digits.length > 0) {
       const idx = Number(digits);
 
-      if (
-        Number.isInteger(idx) &&
-        idx > 0 &&
-        idx <= 2147483647
-      ) {
+      if (Number.isInteger(idx) && idx > 0 && idx <= 2147483647) {
         orCond.push({ appIndex: idx });
       }
     }
@@ -136,8 +137,7 @@ function buildWhere(searchParams) {
       let dIdx = 0;
 
       const startCharIdx = digitPositions[startSlot];
-      const endCharIdx =
-        digitPositions[startSlot + digits.length - 1];
+      const endCharIdx = digitPositions[startSlot + digits.length - 1];
 
       for (let i = startCharIdx; i <= endCharIdx; i++) {
         if (digitPositions.includes(i)) {
@@ -200,6 +200,62 @@ export async function GET(request) {
     );
     const skip = (page - 1) * PAGE_SIZE;
 
+    const view = searchParams.get("view");
+
+    if (view === "expiring") {
+      const q = searchParams.get("q")?.trim();
+      const whereBase = { isDeleted: false, status: "ACTIVATED" };
+      if (q) {
+        const digits = q.replace(/\D/g, "");
+        const orCond = [
+          { name: { contains: q, mode: "insensitive" } },
+          { phone: { contains: q, mode: "insensitive" } },
+          { phone2: { contains: q, mode: "insensitive" } },
+          { newPhone: { contains: q, mode: "insensitive" } },
+          { nationalNumber: { contains: q, mode: "insensitive" } },
+        ];
+        if (digits.length > 0) {
+          const idx = Number(digits);
+          if (Number.isInteger(idx) && idx > 0 && idx <= 2147483647)
+            orCond.push({ appIndex: idx });
+        }
+        whereBase.AND = [{ OR: orCond }];
+      }
+      const allActivated = await prisma.application.findMany({
+        where: whereBase,
+        include: { notes: { orderBy: { createdAt: "desc" } }, Review: true },
+      });
+      const now = new Date();
+      const twoMonthsFromNow = new Date(now);
+      twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
+      const expiring = allActivated
+        .map((app) => {
+          const durationMonths = getPackageDurationMonths(app.selectedPackage);
+          if (!durationMonths || !app.completedAt) return null;
+          const expiresAt = new Date(app.completedAt);
+          expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
+          return { ...app, expiresAt };
+        })
+        .filter(Boolean)
+        .filter(
+          (app) => app.expiresAt >= now && app.expiresAt <= twoMonthsFromNow,
+        )
+        .sort((a, b) => a.expiresAt - b.expiresAt);
+      const total = expiring.length;
+      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      const paginated = expiring.slice(skip, skip + PAGE_SIZE).map((app) => ({
+        ...app,
+        expiresAt: app.expiresAt.toISOString(),
+      }));
+      return NextResponse.json({
+        applications: paginated,
+        total,
+        page,
+        pageSize: PAGE_SIZE,
+        totalPages,
+      });
+    }
+
     const where = buildWhere(searchParams);
 
     const [total, allApplications] = await Promise.all([
@@ -233,13 +289,16 @@ export async function GET(request) {
 
     const todayEnd = new Date();
     todayEnd.setHours(23, 59, 59, 999);
-    const isDue = (app) => app.status === "DELAYED" && app.delayedUntil && new Date(app.delayedUntil) <= todayEnd;
+    const isDue = (app) =>
+      app.status === "DELAYED" &&
+      app.delayedUntil &&
+      new Date(app.delayedUntil) <= todayEnd;
 
     // Sort by status priority first, then by creation date (newest first)
     allApplications.sort((a, b) => {
       const aDue = isDue(a);
       const bDue = isDue(b);
-      
+
       if (aDue && !bDue) return -1;
       if (!aDue && bDue) return 1;
 
@@ -293,16 +352,21 @@ export async function POST(request) {
         }
       }
 
-      const newInvoiceFiles = formData.getAll("invoiceFiles[]").length > 0 ? formData.getAll("invoiceFiles[]") : formData.getAll("invoiceFiles");
+      const newInvoiceFiles =
+        formData.getAll("invoiceFiles[]").length > 0
+          ? formData.getAll("invoiceFiles[]")
+          : formData.getAll("invoiceFiles");
       const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
       let allUrls = existingUrlsStr.split(",").filter(Boolean);
 
       if (newInvoiceFiles && newInvoiceFiles.length > 0) {
-        const { saveInvoiceFileLocally } = require("../../../../lib/application");
+        const {
+          saveInvoiceFileLocally,
+        } = require("../../../../lib/application");
         const validNewUrls = await Promise.all(
           newInvoiceFiles
             .filter((f) => typeof f === "object" && f.size > 0)
-            .map((f) => saveInvoiceFileLocally(f))
+            .map((f) => saveInvoiceFileLocally(f)),
         );
         allUrls = [...allUrls, ...validNewUrls.filter(Boolean)];
       }
@@ -311,7 +375,7 @@ export async function POST(request) {
     } else {
       body = await request.json();
     }
-    
+
     // Select only editable fields
     const data = {
       status: body.status || "NEW",
@@ -321,7 +385,8 @@ export async function POST(request) {
       nationalNumber: body.nationalNumber,
       birthDate: body.birthDate,
       addressCode: body.addressCode,
-      originalAddress: body.originalAddress === "true" || body.originalAddress === true,
+      originalAddress:
+        body.originalAddress === "true" || body.originalAddress === true,
       hasInternet: body.hasInternet,
       serviceType: body.serviceType,
       contractPreference: body.contractPreference,
@@ -334,13 +399,18 @@ export async function POST(request) {
       address: body.address,
       note: body.note,
       adminNote: body.adminNote,
-      delayedUntil: body.status === "DELAYED" && body.delayedUntil
-        ? new Date(body.delayedUntil)
-        : null,
+      delayedUntil:
+        body.status === "DELAYED" && body.delayedUntil
+          ? new Date(body.delayedUntil)
+          : null,
       step: 6,
-      electronicApproval: body.electronicApproval === "true" || body.electronicApproval === true,
-      approvalViaShipping: body.approvalViaShipping === "true" || body.approvalViaShipping === true,
-      paidByUserName: body.paidByUserName === "true" || body.paidByUserName === true,
+      electronicApproval:
+        body.electronicApproval === "true" || body.electronicApproval === true,
+      approvalViaShipping:
+        body.approvalViaShipping === "true" ||
+        body.approvalViaShipping === true,
+      paidByUserName:
+        body.paidByUserName === "true" || body.paidByUserName === true,
       paidByName: body.paidByName,
       discountCount: body.discountCount,
       createdBy: body.createdBy || sessionUser.fullName,
@@ -352,7 +422,7 @@ export async function POST(request) {
     }
 
     // Remove undefined values
-    Object.keys(data).forEach(k => data[k] === undefined && delete data[k]);
+    Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
 
     let application = null;
     for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -383,9 +453,6 @@ export async function POST(request) {
     return NextResponse.json(application, { status: 201 });
   } catch (error) {
     console.error("POST error:", error);
-    return NextResponse.json(
-      { error: "فشل إنشاء الطلب" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "فشل إنشاء الطلب" }, { status: 500 });
   }
 }

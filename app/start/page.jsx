@@ -39,14 +39,16 @@ export default function StartPage() {
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-right min-w-0">
           {/* Logo */}
           <div className="animate-hero-image-in mb-6">
-            <Image
-              src="/full-logo.png"
-              alt="إنترنت تيليكوم"
-              width={260}
-              height={93}
-              className="w-auto h-auto object-contain max-w-[220px] sm:max-w-[260px] hover:scale-105 transition-transform duration-500"
-              priority
-            />
+            <Link href="/">
+              <Image
+                src="/full-logo.png"
+                alt="إنترنت تيليكوم"
+                width={260}
+                height={93}
+                className="w-auto h-auto object-contain max-w-[220px] sm:max-w-[260px] hover:scale-105 transition-transform duration-500"
+                priority
+              />
+            </Link>
           </div>
 
           {/* Brand badge */}

@@ -190,7 +190,7 @@ const getNextStep = (step, values) => {
       values.serviceType === "services" &&
       values.selectedService === "upgrade"
     )
-      return 6;
+      return 5;
     return 4;
   }
   if (step === 4) {
@@ -209,13 +209,20 @@ const getPreviousStep = (step, values) => {
   if (step === 2) return 1;
   if (step === 3) return 2;
   if (step === 4) return 3;
-  if (step === 5) return 4;
+  if (step === 5) {
+    if (
+      values.serviceType === "services" &&
+      values.selectedService === "upgrade"
+    )
+      return 3;
+    return 4;
+  }
   if (step === 6) {
     if (
       values.serviceType === "services" &&
       values.selectedService === "upgrade"
     ) {
-      return 3;
+      return 5;
     }
     if (values.serviceType === "services") return 4;
     if (values.serviceType === "newline") {

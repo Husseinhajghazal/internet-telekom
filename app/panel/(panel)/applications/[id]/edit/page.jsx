@@ -1,11 +1,20 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MdSave, MdArrowBack, MdOutlineRefresh, MdClose } from "react-icons/md";
+import Link from "next/link";
+import {
+  MdSave,
+  MdArrowBack,
+  MdOutlineRefresh,
+  MdClose,
+  MdContentCopy,
+  MdDone,
+} from "react-icons/md";
 import { TbFileInvoiceFilled } from "react-icons/tb";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
+import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import { STATUS_LABELS } from "@/utils/data";
 import {
   formatPhoneNumber,
@@ -52,8 +61,8 @@ const TECH_TYPE_OPTIONS = [
 ];
 
 const PKG_TYPES = [
-  { value: "family", label: "عائلية" },
-  { value: "vip", label: "VIP" },
+  { value: "family", label: "Göknet" },
+  { value: "vip", label: "Türk Telekom" },
 ];
 const PKG_DURATIONS = {
   family: [
@@ -86,62 +95,122 @@ const formatIsoDateFromDisplay = (value) => {
   return `${year}-${month}-${day}`;
 };
 
+const INITIAL_FORM_DATA = {
+  status: "",
+  name: "",
+  newName: "",
+  phone: "",
+  hasInternet: "",
+  serviceType: "",
+  contractPreference: "",
+  selectedService: "",
+  selectedPackage: "",
+  noContractTechType: "",
+  selectedInquiry: "",
+  internetCompany: "",
+  subscriptionNo: "",
+  lastInvoiceAmount: "",
+  address: "",
+  newAddress: "",
+  newPhone: "",
+  addressCode: "",
+  newAddressCode: "",
+  note: "",
+  adminNote: "",
+  delayedUntil: "",
+  phone2: "",
+  nationalNumber: "",
+  newNationalNumber: "",
+  birthDate: "",
+  originalAddress: true,
+  originalAddressText: "",
+  newOriginalAddress: true,
+  newOriginalAddressText: "",
+  invoiceFileUrls: [],
+  invoiceFiles: [],
+  electronicApproval: false,
+  approvalViaShipping: false,
+  paidByUserName: false,
+  paidByName: "",
+  discountCount: "",
+  createdBy: "",
+  createdAt: "",
+  completedAt: "",
+};
+
 export default function EditApplicationPage() {
   const { id } = useParams();
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+  const originalData = useRef(null);
+  const pendingNavCallback = useRef(null);
+
+  const showToast = (message, type = "error") => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast({ message, type });
+    toastTimer.current = setTimeout(() => setToast(null), 5000);
+  };
   const [userRole, setUserRole] = useState(null);
+  const [editDates, setEditDates] = useState(false);
   const [pkgType, setPkgType] = useState("");
   const [pkgDuration, setPkgDuration] = useState("");
   const [pkgSpeed, setPkgSpeed] = useState("");
 
-  const [formData, setFormData] = useState({
-    status: "",
-    name: "",
-    newName: "",
-    phone: "",
-    hasInternet: "",
-    serviceType: "",
-    contractPreference: "",
-    selectedService: "",
-    selectedPackage: "",
-    noContractTechType: "",
-    selectedInquiry: "",
-    internetCompany: "",
-    subscriptionNo: "",
-    lastInvoiceAmount: "",
-    address: "",
-    newAddress: "",
-    newPhone: "",
-    addressCode: "",
-    newAddressCode: "",
-    note: "",
-    adminNote: "",
-    delayedUntil: "",
-    phone2: "",
-    nationalNumber: "",
-    newNationalNumber: "",
-    birthDate: "",
-    originalAddress: true,
-    originalAddressText: "",
-    newOriginalAddress: true,
-    newOriginalAddressText: "",
-    invoiceFileUrls: [],
-    invoiceFiles: [],
-    electronicApproval: false,
-    approvalViaShipping: false,
-    paidByUserName: false,
-    paidByName: "",
-    discountCount: "",
-    createdBy: "",
-    createdAt: "",
-    completedAt: "",
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
   const [users, setUsers] = useState([]);
+  const [copiedField, setCopiedField] = useState(null);
+
+  const copyPhone = (value, field) => {
+    const digits = value.replace(/\D/g, "");
+    if (!digits) return;
+    navigator.clipboard.writeText(digits);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const isDirty = useMemo(() => {
+    if (!originalData.current) return false;
+    const { invoiceFiles: _cf, ...current } = formData;
+    const { invoiceFiles: _of, ...original } = originalData.current;
+    return (
+      JSON.stringify(current) !== JSON.stringify(original) ||
+      formData.invoiceFiles.length > 0
+    );
+  }, [formData]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
+  const handleNavAway = (callback) => {
+    if (isDirty) {
+      pendingNavCallback.current = callback;
+      setLeaveConfirmOpen(true);
+    } else {
+      callback();
+    }
+  };
+
+  const handleConfirmLeave = () => {
+    setLeaveConfirmOpen(false);
+    const cb = pendingNavCallback.current;
+    pendingNavCallback.current = null;
+    cb?.();
+  };
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -150,7 +219,7 @@ export default function EditApplicationPage() {
         const data = await res.json();
         if (!res.ok)
           throw new Error(data.error || "Failed to load application");
-        setFormData({
+        const loadedData = {
           status: data.status || "",
           name: data.name || "",
           newName: data.newName || "",
@@ -207,7 +276,9 @@ export default function EditApplicationPage() {
                 new Date(data.completedAt).toISOString().slice(0, 10),
               )
             : "",
-        });
+        };
+        setFormData(loadedData);
+        originalData.current = loadedData;
         const pkgParts = (data.selectedPackage || "").split("-");
         setPkgType(pkgParts[0] || "");
         setPkgDuration(pkgParts[1] || "");
@@ -234,6 +305,7 @@ export default function EditApplicationPage() {
 
     fetchUsers();
     if (id === "new") {
+      originalData.current = { ...INITIAL_FORM_DATA };
       setLoading(false);
     } else if (id) {
       fetchApp();
@@ -317,20 +389,32 @@ export default function EditApplicationPage() {
 
   const parseEmptyToNull = (val) => (val === "" ? null : val);
 
-  const handleSave = async (e) => {
+  const handleSave = (e) => {
     e.preventDefault();
 
     if (
-      (formData.nationalNumber.length === 11 &&
-        !validateTC(formData.nationalNumber)) ||
-      (formData.newNationalNumber.length === 11 &&
-        !validateTC(formData.newNationalNumber))
+      formData.nationalNumber.length === 11 &&
+      !validateTC(formData.nationalNumber)
     ) {
+      showToast("الرقم الوطني (TC) غير صالح — يرجى التأكد من الأرقام");
+      return;
+    }
+    if (
+      formData.newNationalNumber.length === 11 &&
+      !validateTC(formData.newNationalNumber)
+    ) {
+      showToast(
+        "الرقم الوطني للمالك الجديد (TC) غير صالح — يرجى التأكد من الأرقام",
+      );
       return;
     }
 
+    setConfirmOpen(true);
+  };
+
+  const doSave = async () => {
+    setConfirmOpen(false);
     setSaving(true);
-    setError(null);
 
     try {
       const payload = new FormData();
@@ -401,10 +485,11 @@ export default function EditApplicationPage() {
       });
 
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Failed to save application");
+      if (!res.ok) throw new Error(json.error || "فشل الحفظ");
+      originalData.current = { ...formData, invoiceFiles: [] };
       router.push("/panel");
     } catch (err) {
-      setError(err.message);
+      showToast(err.message || "حدث خطأ أثناء الحفظ");
     } finally {
       setSaving(false);
     }
@@ -436,11 +521,13 @@ export default function EditApplicationPage() {
       <header className="border-b border-cyan-100/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm shadow-cyan-500/5 mb-8">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4 text-right">
           <div className="flex items-center gap-3 font-bold text-gray-800 text-lg">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="h-9 w-auto object-contain lg:hidden"
-            />
+            <Link href="/">
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-9 w-auto object-contain lg:hidden"
+              />
+            </Link>
             <span className="lg:hidden">لوحة الإدارة - تحرير الطلب</span>
             <span className="hidden lg:inline-block">تحرير الطلب</span>
           </div>
@@ -457,19 +544,13 @@ export default function EditApplicationPage() {
           </h1>
           <button
             type="button"
-            onClick={() => router.push("/panel")}
+            onClick={() => handleNavAway(() => router.push("/panel"))}
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition"
           >
             العودة للقائمة
             <MdArrowBack size={20} />
           </button>
         </div>
-
-        {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50/90 px-4 py-3 text-red-800 text-sm font-bold">
-            {error}
-          </div>
-        )}
 
         <form
           onSubmit={handleSave}
@@ -521,25 +602,51 @@ export default function EditApplicationPage() {
                     ? "رقم الموبايل القديم"
                     : "رقم الموبايل"}
               </label>
-              <input
-                name="phone"
-                type="text"
-                dir="ltr"
-                value={formData.phone}
-                onChange={handleChange}
-                className={inputClass}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  name="phone"
+                  type="text"
+                  dir="ltr"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={() => copyPhone(formData.phone, "phone")}
+                  className="shrink-0 p-2.5 rounded-2xl border border-gray-200 text-gray-400 hover:text-cyan-600 hover:border-cyan-300 transition bg-slate-50/50"
+                >
+                  {copiedField === "phone" ? (
+                    <MdDone size={18} className="text-emerald-500" />
+                  ) : (
+                    <MdContentCopy size={18} />
+                  )}
+                </button>
+              </div>
             </div>
             <div>
               <label className={labelClass}>رقم موبايل ٱخر (إختياري)</label>
-              <input
-                name="phone2"
-                type="text"
-                dir="ltr"
-                value={formData.phone2}
-                onChange={handleChange}
-                className={inputClass}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  name="phone2"
+                  type="text"
+                  dir="ltr"
+                  value={formData.phone2}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={() => copyPhone(formData.phone2, "phone2")}
+                  className="shrink-0 p-2.5 rounded-2xl border border-gray-200 text-gray-400 hover:text-cyan-600 hover:border-cyan-300 transition bg-slate-50/50"
+                >
+                  {copiedField === "phone2" ? (
+                    <MdDone size={18} className="text-emerald-500" />
+                  ) : (
+                    <MdContentCopy size={18} />
+                  )}
+                </button>
+              </div>
             </div>
             <div>
               <label className={labelClass}>
@@ -574,6 +681,24 @@ export default function EditApplicationPage() {
               </div>
             )}
             {userRole === "ADMIN" && (
+              <div className="md:col-span-2">
+                <button
+                  type="button"
+                  onClick={() => setEditDates((v) => !v)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold transition ${editDates ? "bg-cyan-50 border-cyan-300 text-cyan-700" : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"}`}
+                >
+                  <span
+                    className={`w-8 h-4 rounded-full relative transition-colors ${editDates ? "bg-cyan-500" : "bg-gray-300"}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-all ${editDates ? "right-0.5" : "left-0.5"}`}
+                    />
+                  </span>
+                  تعديل التواريخ
+                </button>
+              </div>
+            )}
+            {userRole === "ADMIN" && editDates && (
               <div>
                 <label className={labelClass}>تاريخ التسجيل (DD/MM/YYYY)</label>
                 <input
@@ -587,7 +712,7 @@ export default function EditApplicationPage() {
                 />
               </div>
             )}
-            {userRole === "ADMIN" && (
+            {userRole === "ADMIN" && editDates && (
               <div>
                 <label className={labelClass}>تاريخ التفعيل (DD/MM/YYYY)</label>
                 <input
@@ -626,7 +751,7 @@ export default function EditApplicationPage() {
                   dir="ltr"
                   value={formData.delayedUntil}
                   onChange={handleChange}
-                  className={`${inputClass} !border-orange-200 !bg-orange-50/50 focus:!border-orange-400 focus:!ring-orange-500/20`}
+                  className={`${inputClass} border-orange-200! bg-orange-50/50! focus:border-orange-400! focus:ring-orange-500/20!`}
                 />
               </div>
             )}
@@ -1107,14 +1232,14 @@ export default function EditApplicationPage() {
                 rows={3}
                 value={formData.adminNote}
                 onChange={handleChange}
-                className={`${inputClass} !bg-cyan-50/50 !border-cyan-200`}
+                className={`${inputClass} bg-cyan-50/50! border-cyan-200!`}
                 placeholder="اكتب رسالة تنبيه للمشترك هنا..."
               />
             </div>
 
             <div className="md:col-span-2 space-y-4">
               <div className="flex items-center justify-between">
-                <label className={labelClass + " !mb-0"}>الصور المرفقة</label>
+                <label className={labelClass + " mb-0!"}>الصور المرفقة</label>
                 {formData.invoiceFiles.length +
                   formData.invoiceFileUrls.length <
                   5 && (
@@ -1243,6 +1368,42 @@ export default function EditApplicationPage() {
           </div>
         </form>
       </main>
+
+      <AdminConfirmDialog
+        open={confirmOpen}
+        kind="activate"
+        title="تأكيد حفظ التعديلات"
+        message="هل أنت متأكد من حفظ تعديلات هذا الطلب؟"
+        confirmLabel="نعم، حفظ"
+        cancelLabel="رجوع"
+        onConfirm={doSave}
+        onCancel={() => setConfirmOpen(false)}
+      />
+
+      <AdminConfirmDialog
+        open={leaveConfirmOpen}
+        kind="reject"
+        title="مغادرة دون حفظ؟"
+        message="لديك تعديلات غير محفوظة. هل تريد المغادرة دون حفظ التغييرات؟"
+        confirmLabel="مغادرة"
+        cancelLabel="البقاء"
+        onConfirm={handleConfirmLeave}
+        onCancel={() => setLeaveConfirmOpen(false)}
+      />
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl text-sm font-bold text-white max-w-sm w-[calc(100%-2rem)] bg-red-500 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <MdClose size={20} className="shrink-0" />
+          <span className="flex-1 text-center">{toast.message}</span>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            className="shrink-0 opacity-70 hover:opacity-100 transition"
+          >
+            <MdClose size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

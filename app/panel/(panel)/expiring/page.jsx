@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { verifySessionToken } from "../../../../lib/admin-session";
-import { redirect } from "next/navigation";
 import AdminLogoutButton from "../../../../components/admin/AdminLogoutButton";
 import AdminApplicationsClient from "../../../../components/admin/AdminApplicationsClient";
 
-export default async function DeletedApplicationsPage() {
+export const metadata = {
+  title: "طلبات ستنتهي قريباً | لوحة الإدارة",
+};
+
+export default async function ExpiringApplicationsPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("admin_session")?.value;
   const sessionUser = verifySessionToken(token);
-  if (!sessionUser || sessionUser.role !== "ADMIN") {
-    redirect("/panel");
-  }
 
   return (
     <div className="min-h-svh bg-linear-to-br from-slate-50 via-cyan-50/30 to-white overflow-x-hidden">
@@ -20,7 +20,7 @@ export default async function DeletedApplicationsPage() {
           <div className="flex items-center gap-3 font-bold text-gray-800 text-lg">
             <Link href="/"><img src="/logo.png" alt="Logo" className="h-9 w-auto object-contain lg:hidden" /></Link>
             <span className="lg:hidden">لوحة الإدارة</span>
-            <span className="hidden lg:inline-block">لوحة الإدارة - الطلبات المحذوفة</span>
+            <span className="hidden lg:inline-block">لوحة الإدارة - طلبات ستنتهي قريباً</span>
           </div>
           <div className="lg:hidden">
             <AdminLogoutButton />
@@ -30,7 +30,7 @@ export default async function DeletedApplicationsPage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-12 text-right">
         <div className="space-y-8">
-          <AdminApplicationsClient isDeletedMode={true} />
+          <AdminApplicationsClient isExpiringMode userRole={sessionUser?.role} />
         </div>
       </main>
     </div>
