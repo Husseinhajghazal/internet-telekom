@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Field } from "formik";
 import { MdPhoneInTalk } from "react-icons/md";
 import { TbFileInvoiceFilled } from "react-icons/tb";
+import { FaWhatsapp } from "react-icons/fa";
 import { formatPhoneNumber } from "../../utils/general";
 import FormFieldBlock from "../FormFieldBlock";
 import StepHeader from "../StepHeader";
@@ -136,6 +137,39 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
       </StepHeader>
 
       <div className="space-y-4 md:space-y-8 md:px-6">
+        {/* WhatsApp contact nudge */}
+        <a
+          href="https://wa.me/905524011140"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-3 rounded-2xl bg-linear-to-l from-emerald-500/10 via-green-50 to-white border border-emerald-200/70 px-4 py-3.5 md:px-5 md:py-4 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 no-underline"
+        >
+          <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-md shadow-emerald-200 group-hover:scale-105 transition-transform duration-300">
+            <FaWhatsapp size={22} className="text-white" />
+          </div>
+          <div className="flex-1 min-w-0 text-right">
+            <p className="text-sm font-bold text-gray-800 leading-snug">
+              لم تكمل النموذج؟ لا مشكلة!
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+              تواصل معنا عبر واتساب برقمك وسنساعدك
+            </p>
+          </div>
+          <div className="shrink-0 text-emerald-500 group-hover:-translate-x-0.75 transition-transform duration-300">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </div>
+        </a>
 
         {values?.serviceType === "services" && (
           <FormFieldBlock label="شركة الإنترنت" name="internetCompany">
@@ -152,155 +186,176 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
             />
           </FormFieldBlock>
         )}
-        {values?.serviceType === "services" && values?.selectedService === "change-phone" && (
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
-                تغيير رقم الموبايل المثبت
-              </h3>
-              <p className="text-sm text-gray-500 text-right">
-                سيتم استبدال رقمك الحالي بالرقم الجديد الذي ستدخله
-              </p>
-            </div>
+        {values?.serviceType === "services" &&
+          values?.selectedService === "change-phone" && (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
+                  تغيير رقم الموبايل المثبت
+                </h3>
+                <p className="text-sm text-gray-500 text-right">
+                  سيتم استبدال رقمك الحالي بالرقم الجديد الذي ستدخله
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormFieldBlock label="رقم الموبايل الحالي" name="phone">
-                <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormFieldBlock label="رقم الموبايل الحالي" name="phone">
+                  <div className="relative">
+                    <Field
+                      type="tel"
+                      name="phone"
+                      id="phone"
+                      className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                        errors.phone && touched.phone
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      placeholder="0 (5XX) XXX XX XX"
+                      dir="ltr"
+                      onChange={(e) => {
+                        setFieldValue(
+                          "phone",
+                          formatPhoneNumber(e.target.value),
+                        );
+                      }}
+                    />
+                    <MdPhoneInTalk
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                      size={20}
+                    />
+                  </div>
+                </FormFieldBlock>
+
+                <FormFieldBlock label="رقم الموبايل الجديد" name="newPhone">
+                  <div className="relative">
+                    <Field
+                      type="tel"
+                      name="newPhone"
+                      id="newPhone"
+                      className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                        errors.newPhone && touched.newPhone
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      placeholder="0 (5XX) XXX XX XX"
+                      dir="ltr"
+                      onChange={(e) => {
+                        setFieldValue(
+                          "newPhone",
+                          formatPhoneNumber(e.target.value),
+                        );
+                      }}
+                    />
+                    <MdPhoneInTalk
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                      size={20}
+                    />
+                  </div>
+                </FormFieldBlock>
+              </div>
+            </div>
+          )}
+
+        {values?.serviceType === "services" &&
+          values?.selectedService === "transfer-name" && (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
+                  نقل ملكية خط الإنترنت
+                </h3>
+                <p className="text-sm text-gray-500 text-right">
+                  سيتم نقل ملكية الخط من المالك الحالي إلى المالك الجديد
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormFieldBlock label="إسم المالك الحالي" name="name">
                   <Field
-                    type="tel"
-                    name="phone"
-                    id="phone"
-                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
-                      errors.phone && touched.phone
+                    type="text"
+                    name="name"
+                    id="name"
+                    className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                      errors.name && touched.name
                         ? "border-red-500"
                         : "border-gray-300"
                     }`}
-                    placeholder="0 (5XX) XXX XX XX"
-                    dir="ltr"
-                    onChange={(e) => {
-                      setFieldValue("phone", formatPhoneNumber(e.target.value));
-                    }}
+                    placeholder="أكتب الإسم الكامل هنا"
                   />
-                  <MdPhoneInTalk
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
-                    size={20}
-                  />
-                </div>
-              </FormFieldBlock>
+                </FormFieldBlock>
 
-              <FormFieldBlock label="رقم الموبايل الجديد" name="newPhone">
-                <div className="relative">
+                <FormFieldBlock label="إسم المالك الجديد" name="newName">
                   <Field
-                    type="tel"
-                    name="newPhone"
-                    id="newPhone"
-                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
-                      errors.newPhone && touched.newPhone
+                    type="text"
+                    name="newName"
+                    id="newName"
+                    className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                      errors.newName && touched.newName
                         ? "border-red-500"
                         : "border-gray-300"
                     }`}
-                    placeholder="0 (5XX) XXX XX XX"
-                    dir="ltr"
-                    onChange={(e) => {
-                      setFieldValue("newPhone", formatPhoneNumber(e.target.value));
-                    }}
+                    placeholder="أكتب الإسم الكامل هنا"
                   />
-                  <MdPhoneInTalk
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
-                    size={20}
-                  />
-                </div>
-              </FormFieldBlock>
+                </FormFieldBlock>
+
+                <FormFieldBlock label="رقم موبايل المالك الحالي" name="phone">
+                  <div className="relative">
+                    <Field
+                      type="tel"
+                      name="phone"
+                      id="phone"
+                      className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                        errors.phone && touched.phone
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      placeholder="0 (5XX) XXX XX XX"
+                      dir="ltr"
+                      onChange={(e) => {
+                        setFieldValue(
+                          "phone",
+                          formatPhoneNumber(e.target.value),
+                        );
+                      }}
+                    />
+                    <MdPhoneInTalk
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                      size={20}
+                    />
+                  </div>
+                </FormFieldBlock>
+
+                <FormFieldBlock
+                  label="رقم موبايل المالك الجديد"
+                  name="newPhone"
+                >
+                  <div className="relative">
+                    <Field
+                      type="tel"
+                      name="newPhone"
+                      id="newPhone"
+                      className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
+                        errors.newPhone && touched.newPhone
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                      placeholder="0 (5XX) XXX XX XX"
+                      dir="ltr"
+                      onChange={(e) => {
+                        setFieldValue(
+                          "newPhone",
+                          formatPhoneNumber(e.target.value),
+                        );
+                      }}
+                    />
+                    <MdPhoneInTalk
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
+                      size={20}
+                    />
+                  </div>
+                </FormFieldBlock>
+              </div>
             </div>
-          </div>
-        )}
-
-        {values?.serviceType === "services" && values?.selectedService === "transfer-name" && (
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
-                نقل ملكية خط الإنترنت
-              </h3>
-              <p className="text-sm text-gray-500 text-right">
-                سيتم نقل ملكية الخط من المالك الحالي إلى المالك الجديد
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormFieldBlock label="إسم المالك الحالي" name="name">
-                <Field
-                  type="text"
-                  name="name"
-                  id="name"
-                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
-                    errors.name && touched.name ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="أكتب الإسم الكامل هنا"
-                />
-              </FormFieldBlock>
-
-              <FormFieldBlock label="إسم المالك الجديد" name="newName">
-                <Field
-                  type="text"
-                  name="newName"
-                  id="newName"
-                  className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
-                    errors.newName && touched.newName ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="أكتب الإسم الكامل هنا"
-                />
-              </FormFieldBlock>
-
-              <FormFieldBlock label="رقم موبايل المالك الحالي" name="phone">
-                <div className="relative">
-                  <Field
-                    type="tel"
-                    name="phone"
-                    id="phone"
-                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
-                      errors.phone && touched.phone
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                    placeholder="0 (5XX) XXX XX XX"
-                    dir="ltr"
-                    onChange={(e) => {
-                      setFieldValue("phone", formatPhoneNumber(e.target.value));
-                    }}
-                  />
-                  <MdPhoneInTalk
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
-                    size={20}
-                  />
-                </div>
-              </FormFieldBlock>
-
-              <FormFieldBlock label="رقم موبايل المالك الجديد" name="newPhone">
-                <div className="relative">
-                  <Field
-                    type="tel"
-                    name="newPhone"
-                    id="newPhone"
-                    className={`w-full outline-0 pr-12 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-right ${
-                      errors.newPhone && touched.newPhone
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                    placeholder="0 (5XX) XXX XX XX"
-                    dir="ltr"
-                    onChange={(e) => {
-                      setFieldValue("newPhone", formatPhoneNumber(e.target.value));
-                    }}
-                  />
-                  <MdPhoneInTalk
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#18a2e3]"
-                    size={20}
-                  />
-                </div>
-              </FormFieldBlock>
-            </div>
-          </div>
-        )}
+          )}
 
         {values?.serviceType === "services" && (
           <>
@@ -321,10 +376,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
               />
             </FormFieldBlock>
 
-            <FormFieldBlock
-              label="قيمة أخر فاتورة"
-              name="lastInvoiceAmount"
-            >
+            <FormFieldBlock label="قيمة أخر فاتورة" name="lastInvoiceAmount">
               <Field
                 type="text"
                 name="lastInvoiceAmount"
@@ -344,7 +396,10 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
           <>
             <div className="space-y-1">
               <h3 className="text-lg md:text-xl font-bold text-gray-800 text-right">
-                اختر {values.selectedService === "transfer-address" ? "عنوانك الحالي" : "عنوانك"}
+                اختر{" "}
+                {values.selectedService === "transfer-address"
+                  ? "عنوانك الحالي"
+                  : "عنوانك"}
               </h3>
               <p className="text-sm text-gray-500 text-right">
                 الولاية، المنطقة، المحلة، الشارع، رقم البناء، رقم الشقة
@@ -577,12 +632,16 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormFieldBlock label="الولاية الجديدة" name="newAddressProvinceCode">
+              <FormFieldBlock
+                label="الولاية الجديدة"
+                name="newAddressProvinceCode"
+              >
                 <select
                   name="newAddressProvinceCode"
                   id="newAddressProvinceCode"
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
-                    errors.newAddressProvinceCode && touched.newAddressProvinceCode
+                    errors.newAddressProvinceCode &&
+                    touched.newAddressProvinceCode
                       ? "border-red-500"
                       : "border-gray-300"
                   }`}
@@ -593,7 +652,10 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                       (c) => String(c.cityCode) === String(code),
                     );
                     setFieldValue("newAddressProvinceCode", code);
-                    setFieldValue("newAddressProvinceName", city?.cityName || "");
+                    setFieldValue(
+                      "newAddressProvinceName",
+                      city?.cityName || "",
+                    );
                     setFieldValue("newAddressDistrictCode", "");
                     setFieldValue("newAddressDistrictName", "");
                     setFieldValue("newAddressNeighborhoodCode", "");
@@ -613,13 +675,17 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 </select>
               </FormFieldBlock>
 
-              <FormFieldBlock label="المنطقة الجديدة" name="newAddressDistrictCode">
+              <FormFieldBlock
+                label="المنطقة الجديدة"
+                name="newAddressDistrictCode"
+              >
                 <select
                   disabled={!values.newAddressProvinceCode}
                   name="newAddressDistrictCode"
                   id="newAddressDistrictCode"
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
-                    errors.newAddressDistrictCode && touched.newAddressDistrictCode
+                    errors.newAddressDistrictCode &&
+                    touched.newAddressDistrictCode
                       ? "border-red-500"
                       : "border-gray-300"
                   }`}
@@ -651,7 +717,10 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 </select>
               </FormFieldBlock>
 
-              <FormFieldBlock label="المحلة الجديدة" name="newAddressNeighborhoodCode">
+              <FormFieldBlock
+                label="المحلة الجديدة"
+                name="newAddressNeighborhoodCode"
+              >
                 <select
                   disabled={!values.newAddressDistrictCode}
                   name="newAddressNeighborhoodCode"
@@ -705,7 +774,8 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     const nextAddress = buildAddressString({
                       addressProvinceName: values.newAddressProvinceName,
                       addressDistrictName: values.newAddressDistrictName,
-                      addressNeighborhoodName: values.newAddressNeighborhoodName,
+                      addressNeighborhoodName:
+                        values.newAddressNeighborhoodName,
                       addressStreetName: streetName,
                       addressOutsideDoorNo: values.newAddressOutsideDoorNo,
                       addressInsideDoorNo: values.newAddressInsideDoorNo,
@@ -715,13 +785,17 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 />
               </FormFieldBlock>
 
-              <FormFieldBlock label="رقم البناء الجديد" name="newAddressOutsideDoorNo">
+              <FormFieldBlock
+                label="رقم البناء الجديد"
+                name="newAddressOutsideDoorNo"
+              >
                 <Field
                   type="text"
                   name="newAddressOutsideDoorNo"
                   id="newAddressOutsideDoorNo"
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
-                    errors.newAddressOutsideDoorNo && touched.newAddressOutsideDoorNo
+                    errors.newAddressOutsideDoorNo &&
+                    touched.newAddressOutsideDoorNo
                       ? "border-red-500"
                       : "border-gray-300"
                   }`}
@@ -732,7 +806,8 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     const nextAddress = buildAddressString({
                       addressProvinceName: values.newAddressProvinceName,
                       addressDistrictName: values.newAddressDistrictName,
-                      addressNeighborhoodName: values.newAddressNeighborhoodName,
+                      addressNeighborhoodName:
+                        values.newAddressNeighborhoodName,
                       addressStreetName: values.newAddressStreetName,
                       addressOutsideDoorNo: nextOutside,
                       addressInsideDoorNo: values.newAddressInsideDoorNo,
@@ -742,13 +817,17 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 />
               </FormFieldBlock>
 
-              <FormFieldBlock label="رقم الشقة الجديد" name="newAddressInsideDoorNo">
+              <FormFieldBlock
+                label="رقم الشقة الجديد"
+                name="newAddressInsideDoorNo"
+              >
                 <Field
                   type="text"
                   name="newAddressInsideDoorNo"
                   id="newAddressInsideDoorNo"
                   className={`w-full outline-0 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#18a2e3] focus:border-transparent text-start ${
-                    errors.newAddressInsideDoorNo && touched.newAddressInsideDoorNo
+                    errors.newAddressInsideDoorNo &&
+                    touched.newAddressInsideDoorNo
                       ? "border-red-500"
                       : "border-gray-300"
                   }`}
@@ -759,7 +838,8 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     const nextAddress = buildAddressString({
                       addressProvinceName: values.newAddressProvinceName,
                       addressDistrictName: values.newAddressDistrictName,
-                      addressNeighborhoodName: values.newAddressNeighborhoodName,
+                      addressNeighborhoodName:
+                        values.newAddressNeighborhoodName,
                       addressStreetName: values.newAddressStreetName,
                       addressOutsideDoorNo: values.newAddressOutsideDoorNo,
                       addressInsideDoorNo: nextInside,
@@ -919,10 +999,13 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
 
                   const { compressImage } = await import("../../utils/general");
                   const compressedFiles = await Promise.all(
-                    newFiles.map(file => compressImage(file))
+                    newFiles.map((file) => compressImage(file)),
                   );
 
-                  setFieldValue("invoiceFiles", [...invoiceFiles, ...compressedFiles]);
+                  setFieldValue("invoiceFiles", [
+                    ...invoiceFiles,
+                    ...compressedFiles,
+                  ]);
                 }}
               >
                 <div className="space-y-4">
@@ -952,9 +1035,10 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                         const availableSlots = 5 - totalImages;
                         const newFiles = selected.slice(0, availableSlots);
 
-                        const { compressImage } = await import("../../utils/general");
+                        const { compressImage } =
+                          await import("../../utils/general");
                         const compressedFiles = await Promise.all(
-                          newFiles.map(file => compressImage(file))
+                          newFiles.map((file) => compressImage(file)),
                         );
 
                         setFieldValue("invoiceFiles", [
@@ -968,6 +1052,40 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                 </div>
               </label>
             )}
+
+            {/* WhatsApp contact nudge */}
+            <a
+              href="https://wa.me/902126112122"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-4 rounded-2xl bg-linear-to-l from-emerald-500/10 via-green-50 to-white border border-emerald-200/70 px-5 py-4 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 no-underline"
+            >
+              <div className="shrink-0 w-12 h-12 rounded-xl bg-linear-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-md shadow-emerald-200 group-hover:scale-105 transition-transform duration-300">
+                <FaWhatsapp size={26} className="text-white" />
+              </div>
+              <div className="flex-1 text-right">
+                <p className="text-sm font-bold text-gray-800 leading-snug">
+                  لم تكمل العنوان؟ لا مشكلة!
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                  اضغط هنا للتواصل معنا مباشرة عبر واتساب وسنساعدك في إتمام طلبك
+                </p>
+              </div>
+              <div className="shrink-0 text-emerald-500 group-hover:-translate-x-0.75 transition-transform duration-300">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </div>
+            </a>
           </div>
         )}
       </div>
