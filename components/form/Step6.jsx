@@ -137,40 +137,6 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
       </StepHeader>
 
       <div className="space-y-4 md:space-y-8 md:px-6">
-        {/* WhatsApp contact nudge */}
-        <a
-          href="https://wa.me/905524011140"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center gap-3 rounded-2xl bg-linear-to-l from-emerald-500/10 via-green-50 to-white border border-emerald-200/70 px-4 py-3.5 md:px-5 md:py-4 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 no-underline"
-        >
-          <div className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-md shadow-emerald-200 group-hover:scale-105 transition-transform duration-300">
-            <FaWhatsapp size={22} className="text-white" />
-          </div>
-          <div className="flex-1 min-w-0 text-right">
-            <p className="text-sm font-bold text-gray-800 leading-snug">
-              لم تكمل النموذج؟ لا مشكلة!
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
-              تواصل معنا عبر واتساب برقمك وسنساعدك
-            </p>
-          </div>
-          <div className="shrink-0 text-emerald-500 group-hover:-translate-x-0.75 transition-transform duration-300">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </div>
-        </a>
-
         {values?.serviceType === "services" && (
           <FormFieldBlock label="شركة الإنترنت" name="internetCompany">
             <Field
