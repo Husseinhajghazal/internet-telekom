@@ -14,6 +14,7 @@ export default function AdminSidebar({ userRole, userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [expiringCount, setExpiringCount] = useState(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -22,6 +23,20 @@ export default function AdminSidebar({ userRole, userName }) {
     const stored = localStorage.getItem("adminSidebarCollapsed");
     if (stored) setIsCollapsed(JSON.parse(stored));
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchCount = async () => {
+      try {
+        const res = await fetch("/api/panel/applications?view=expiring&page=1");
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!cancelled) setExpiringCount(json.total ?? 0);
+      } catch {}
+    };
+    fetchCount();
+    return () => { cancelled = true; };
+  }, [pathname]);
 
   const toggleCollapse = () => {
     const newVal = !isCollapsed;
@@ -95,6 +110,7 @@ export default function AdminSidebar({ userRole, userName }) {
         {navItems.map((item) => {
           const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/panel');
           const Icon = item.icon;
+          const showBadge = item.href === "/panel/expiring" && expiringCount !== null && expiringCount > 0;
           return (
             <Link
               key={item.name}
@@ -106,16 +122,26 @@ export default function AdminSidebar({ userRole, userName }) {
                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
               } ${isCollapsed ? "px-0 justify-center mx-2" : "px-4 mx-3"}`}
             >
-              <div className={`flex items-center justify-center shrink-0 transition-transform ${isCollapsed && !isActive ? "group-hover:scale-110" : ""}`}>
+              <div className={`relative flex items-center justify-center shrink-0 transition-transform ${isCollapsed && !isActive ? "group-hover:scale-110" : ""}`}>
                 <Icon size={22} className={isActive ? "text-cyan-700" : "text-gray-400"} />
+                {showBadge && isCollapsed && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-sm">
+                    {expiringCount > 99 ? "99+" : expiringCount}
+                  </span>
+                )}
               </div>
-              
-              <div 
+
+              <div
                 className={`flex items-center overflow-hidden transition-all duration-300 ${
-                  isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100 mr-3"
+                  isCollapsed ? "w-0 opacity-0" : "flex-1 opacity-100 mr-3"
                 }`}
               >
-                <span className="whitespace-nowrap">{item.name}</span>
+                <span className="whitespace-nowrap flex-1">{item.name}</span>
+                {showBadge && (
+                  <span className="ml-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-extrabold flex items-center justify-center ring-1 ring-amber-200/80">
+                    {expiringCount > 99 ? "99+" : expiringCount}
+                  </span>
+                )}
               </div>
             </Link>
           );

@@ -5,7 +5,7 @@ import AdminLogoutButton from "../../../../components/admin/AdminLogoutButton";
 import AdminApplicationsClient from "../../../../components/admin/AdminApplicationsClient";
 
 export const metadata = {
-  title: "طلبات ستنتهي قريباً | لوحة الإدارة",
+  title: "عقود بانتظار التجديد | لوحة الإدارة",
 };
 
 export default async function ExpiringApplicationsPage() {
@@ -18,9 +18,17 @@ export default async function ExpiringApplicationsPage() {
       <header className="border-b border-cyan-100/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm shadow-cyan-500/5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3 font-bold text-gray-800 text-lg">
-            <Link href="/"><img src="/logo.png" alt="Logo" className="h-9 w-auto object-contain lg:hidden" /></Link>
+            <Link href="/">
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-9 w-auto object-contain lg:hidden"
+              />
+            </Link>
             <span className="lg:hidden">لوحة الإدارة</span>
-            <span className="hidden lg:inline-block">لوحة الإدارة - طلبات ستنتهي قريباً</span>
+            <span className="hidden lg:inline-block">
+              لوحة الإدارة - عقود بانتظار التجديد
+            </span>
           </div>
           <div className="lg:hidden">
             <AdminLogoutButton />
@@ -30,7 +38,10 @@ export default async function ExpiringApplicationsPage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-12 text-right">
         <div className="space-y-8">
-          <AdminApplicationsClient isExpiringMode userRole={sessionUser?.role} />
+          <AdminApplicationsClient
+            isExpiringMode
+            userRole={sessionUser?.role}
+          />
         </div>
       </main>
     </div>

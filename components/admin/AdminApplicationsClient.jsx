@@ -498,6 +498,23 @@ ${reviewLink}
     } catch {}
   };
 
+  const resetFilters = () => {
+    setSearchInput("");
+    setDebouncedQ("");
+    setStatusFilter("");
+    setDateField(isDeletedMode ? "updatedAt" : "createdAt");
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    setDateFrom(new Date(now - offset).toISOString().slice(0, 10));
+    setDateTo("");
+    setPage(1);
+    setLastClickedAppId(null);
+    try {
+      sessionStorage.removeItem(storageKey);
+      sessionStorage.removeItem(`${storageKey}_last`);
+    } catch {}
+  };
+
   useEffect(() => {
     const id = setTimeout(() => {
       setDebouncedQ(searchInput.trim());
@@ -898,7 +915,7 @@ ${reviewLink}
                   : isAddedMode
                     ? "الطلبات المضافة"
                     : isExpiringMode
-                      ? "طلبات ستنتهي قريباً"
+                      ? "عقود بانتظار التجديد"
                       : "الطلبات"}
               </h2>
               <p className="text-sm text-gray-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -939,7 +956,7 @@ ${reviewLink}
             )}
             <button
               type="button"
-              onClick={() => load(page)}
+              onClick={resetFilters}
               disabled={loading || creatingApp}
               className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
               style={{

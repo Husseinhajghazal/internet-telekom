@@ -5,7 +5,7 @@ import { ErrorMessage } from "formik";
 import Card from "../Card";
 import StepHeader from "../StepHeader";
 
-const Step3 = ({ values, errors, touched, setFieldValue, handleForward }) => {
+const Step3 = ({ values, errors, touched, setFieldValue }) => {
   const options = [
     {
       name: "selectedService",
@@ -26,12 +26,6 @@ const Step3 = ({ values, errors, touched, setFieldValue, handleForward }) => {
         setFieldValue("serviceType", "services");
         setFieldValue("selectedService", "upgrade");
         setFieldValue("contractPreference", "without");
-        handleForward({
-          ...values,
-          serviceType: "services",
-          selectedService: "upgrade",
-          contractPreference: "without",
-        });
       },
     },
     {

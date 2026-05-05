@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiList, FiStar, FiUser, FiInbox, FiClock } from "react-icons/fi";
@@ -7,6 +8,21 @@ import { MdDelete, MdPerson } from "react-icons/md";
 
 export default function MobileAdminNav({ userRole }) {
   const pathname = usePathname();
+  const [expiringCount, setExpiringCount] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchCount = async () => {
+      try {
+        const res = await fetch("/api/panel/applications?view=expiring&page=1");
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!cancelled) setExpiringCount(json.total ?? 0);
+      } catch {}
+    };
+    fetchCount();
+    return () => { cancelled = true; };
+  }, [pathname]);
 
   const navItems = [
     { name: "الطلبات", href: "/panel", icon: FiList },
@@ -27,6 +43,7 @@ export default function MobileAdminNav({ userRole }) {
       {navItems.map((item) => {
         const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/panel');
         const Icon = item.icon;
+        const showBadge = item.href === "/panel/expiring" && expiringCount !== null && expiringCount > 0;
         return (
           <Link
             key={item.name}
@@ -35,7 +52,14 @@ export default function MobileAdminNav({ userRole }) {
               isActive ? "text-cyan-600 bg-cyan-50 shadow-sm" : "hover:bg-slate-50 hover:text-gray-700"
             }`}
           >
-            <Icon size={22} className={isActive ? "text-cyan-600 scale-110 transition-transform" : "text-gray-400"} />
+            <div className="relative">
+              <Icon size={22} className={isActive ? "text-cyan-600 scale-110 transition-transform" : "text-gray-400"} />
+              {showBadge && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-amber-500 text-white text-[9px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-sm">
+                  {expiringCount > 99 ? "99+" : expiringCount}
+                </span>
+              )}
+            </div>
             <span className="truncate w-full text-center">{item.name}</span>
           </Link>
         );
