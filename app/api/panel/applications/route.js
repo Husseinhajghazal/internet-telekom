@@ -24,6 +24,8 @@ const VALID_STATUSES = [
   "TECHNICAL_PROBLEM",
   "TRYING_TO_PERSUADE",
   "ACTIVATED",
+  "WAITING_FOR_PORT",
+  "UNDER_INSTALLATION",
 ];
 
 const ADDED_VIEW_STATUSES = ["NOT_COMPLETED", "COMPLETED"];
@@ -75,21 +77,15 @@ function buildWhere(searchParams) {
     }
 
     if (Object.keys(dateCondition).length) {
-      if (targetDateField === "createdAt") {
-        const todayEnd = new Date();
-        todayEnd.setHours(23, 59, 59, 999);
-        andConditions.push({
-          OR: [
-            { createdAt: dateCondition },
-            {
-              AND: [{ status: "DELAYED" }, { delayedUntil: { lte: todayEnd } }],
-            },
-          ],
-        });
-      } else {
-        andConditions.push({ [targetDateField]: dateCondition });
-      }
+      andConditions.push({ [targetDateField]: dateCondition });
     }
+  }
+
+  const internetCompanyParam = searchParams.get("internetCompany")?.trim();
+  if (internetCompanyParam) {
+    andConditions.push({
+      internetCompany: { contains: internetCompanyParam, mode: "insensitive" },
+    });
   }
 
   const q = searchParams.get("q")?.trim();
@@ -170,6 +166,23 @@ function buildWhere(searchParams) {
   const isDeletedParam = searchParams.get("deleted") === "true";
   andConditions.push({ isDeleted: isDeletedParam });
 
+  const serviceTypeParam = searchParams.get("serviceType");
+  if (serviceTypeParam === "internet") {
+    andConditions.push({
+      OR: [
+        { serviceType: "newline" },
+        { serviceType: "services", selectedService: "upgrade" },
+      ],
+    });
+  } else if (serviceTypeParam === "services") {
+    andConditions.push({
+      OR: [
+        { serviceType: "inquiry" },
+        { serviceType: "services", NOT: { selectedService: "upgrade" } },
+      ],
+    });
+  }
+
   // Split between the main /panel list and the new /panel/added list.
   // Deleted view ignores `view` and shows every soft-deleted row regardless of status.
   if (!isDeletedParam) {
@@ -177,7 +190,17 @@ function buildWhere(searchParams) {
     if (view === "added") {
       andConditions.push({ status: { in: ADDED_VIEW_STATUSES } });
     } else {
-      andConditions.push({ status: { notIn: ADDED_VIEW_STATUSES } });
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+      andConditions.push({
+        OR: [
+          { status: { notIn: [...ADDED_VIEW_STATUSES, "DELAYED"] } },
+          {
+            status: "DELAYED",
+            OR: [{ delayedUntil: null }, { delayedUntil: { gt: todayEnd } }],
+          },
+        ],
+      });
     }
   }
 
@@ -204,7 +227,13 @@ export async function GET(request) {
 
     if (view === "expiring") {
       const q = searchParams.get("q")?.trim();
-      const whereBase = { isDeleted: false, status: "ACTIVATED" };
+      const now = new Date();
+      const todayEnd = new Date(now);
+      todayEnd.setHours(23, 59, 59, 999);
+      const twoMonthsFromNow = new Date(now);
+      twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
+
+      let searchAnd = [];
       if (q) {
         const digits = q.replace(/\D/g, "");
         const orCond = [
@@ -219,15 +248,25 @@ export async function GET(request) {
           if (Number.isInteger(idx) && idx > 0 && idx <= 2147483647)
             orCond.push({ appIndex: idx });
         }
-        whereBase.AND = [{ OR: orCond }];
+        searchAnd = [{ OR: orCond }];
       }
-      const allActivated = await prisma.application.findMany({
-        where: whereBase,
-        include: { notes: { orderBy: { createdAt: "desc" } }, Review: true },
-      });
-      const now = new Date();
-      const twoMonthsFromNow = new Date(now);
-      twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
+
+      const [allActivated, dueDelayed] = await Promise.all([
+        prisma.application.findMany({
+          where: { isDeleted: false, status: "ACTIVATED", AND: searchAnd },
+          include: { notes: { orderBy: { createdAt: "desc" } }, Review: true },
+        }),
+        prisma.application.findMany({
+          where: {
+            isDeleted: false,
+            status: "DELAYED",
+            delayedUntil: { not: null, lte: todayEnd },
+            AND: searchAnd,
+          },
+          include: { notes: { orderBy: { createdAt: "desc" } }, Review: true },
+        }),
+      ]);
+
       const expiring = allActivated
         .map((app) => {
           const durationMonths = getPackageDurationMonths(app.selectedPackage);
@@ -241,11 +280,18 @@ export async function GET(request) {
           (app) => app.expiresAt >= now && app.expiresAt <= twoMonthsFromNow,
         )
         .sort((a, b) => a.expiresAt - b.expiresAt);
-      const total = expiring.length;
+
+      // Due-delayed apps appear first, sorted by how overdue they are (oldest first)
+      const dueDelayedMapped = dueDelayed
+        .sort((a, b) => new Date(a.delayedUntil) - new Date(b.delayedUntil))
+        .map((app) => ({ ...app, expiresAt: new Date(app.delayedUntil) }));
+
+      const combined = [...dueDelayedMapped, ...expiring];
+      const total = combined.length;
       const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-      const paginated = expiring.slice(skip, skip + PAGE_SIZE).map((app) => ({
+      const paginated = combined.slice(skip, skip + PAGE_SIZE).map((app) => ({
         ...app,
-        expiresAt: app.expiresAt.toISOString(),
+        expiresAt: app.expiresAt instanceof Date ? app.expiresAt.toISOString() : app.expiresAt,
       }));
       return NextResponse.json({
         applications: paginated,
@@ -271,42 +317,7 @@ export async function GET(request) {
       }),
     ]);
 
-    // Custom status priority ordering. Urgent first; new ACTIVATED state pinned at the bottom.
-    // For the added view (which only contains NOT_COMPLETED + COMPLETED) the relative order
-    // 6 < 7 keeps NOT_COMPLETED above COMPLETED.
-    const statusPriority = {
-      NEW: 0,
-      UNDER_REVIEW: 1,
-      UNDER_OBSERVATION: 2,
-      DELAYED: 3,
-      TECHNICAL_PROBLEM: 4,
-      TRYING_TO_PERSUADE: 5,
-      NOT_COMPLETED: 6,
-      COMPLETED: 7,
-      REJECTED: 8,
-      ACTIVATED: 9,
-    };
-
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
-    const isDue = (app) =>
-      app.status === "DELAYED" &&
-      app.delayedUntil &&
-      new Date(app.delayedUntil) <= todayEnd;
-
-    // Sort by status priority first, then by creation date (newest first)
-    allApplications.sort((a, b) => {
-      const aDue = isDue(a);
-      const bDue = isDue(b);
-
-      if (aDue && !bDue) return -1;
-      if (!aDue && bDue) return 1;
-
-      const statusDiff =
-        (statusPriority[a.status] ?? 999) - (statusPriority[b.status] ?? 999);
-      if (statusDiff !== 0) return statusDiff;
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
+    allApplications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     // Apply pagination to sorted results
     const applications = allApplications.slice(skip, skip + PAGE_SIZE);

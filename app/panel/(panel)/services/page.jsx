@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { verifySessionToken } from "../../../lib/admin-session";
-import AdminLogoutButton from "../../../components/admin/AdminLogoutButton";
-import AdminApplicationsClient from "../../../components/admin/AdminApplicationsClient";
+import { verifySessionToken } from "../../../../lib/admin-session";
+import AdminLogoutButton from "../../../../components/admin/AdminLogoutButton";
+import AdminApplicationsClient from "../../../../components/admin/AdminApplicationsClient";
 
-export default async function AdminDashboardPage() {
+export default async function AdminServicesDashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("admin_session")?.value;
   const sessionUser = verifySessionToken(token);
@@ -14,8 +14,8 @@ export default async function AdminDashboardPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3 font-bold text-gray-800 text-lg">
             <Link href="/"><img src="/logo.png" alt="Logo" className="h-9 w-auto object-contain lg:hidden" /></Link>
-            <span className="lg:hidden">لوحة الإدارة</span>
-            <span className="hidden lg:inline-block">لوحة الإدارة - طلبات الإنترنت</span>
+            <span className="lg:hidden">طلبات الخدمات</span>
+            <span className="hidden lg:inline-block">لوحة الإدارة - طلبات الخدمات</span>
           </div>
           <div className="lg:hidden">
             <AdminLogoutButton />
@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-12 text-right">
         <div className="space-y-8">
-          <AdminApplicationsClient userRole={sessionUser?.role} />
+          <AdminApplicationsClient userRole={sessionUser?.role} isServicesMode={true} />
         </div>
       </main>
     </div>

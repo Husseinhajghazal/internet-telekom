@@ -94,7 +94,7 @@ const VALUE_MAPS = {
     REJECTED: "مرفوض",
     COMPLETED: "مكتمل",
     TECHNICAL_PROBLEM: "مشكلة تقنية",
-    TRYING_TO_PERSUADE: "محاولة إقناع",
+    TRYING_TO_PERSUADE: "تجديد الطلب",
     ACTIVATED: "مفعل",
   },
   whatsappStatus: {
@@ -205,11 +205,13 @@ export default function ApplicationLogsPage() {
       <header className="border-b border-cyan-100/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm shadow-cyan-500/5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3 font-bold text-gray-800 text-lg">
-            <Link href="/"><img
-              src="/logo.png"
-              alt="Logo"
-              className="h-9 w-auto object-contain lg:hidden"
-            /></Link>
+            <Link href="/">
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-9 w-auto object-contain lg:hidden"
+              />
+            </Link>
             <span className="lg:hidden">لوحة الإدارة</span>
             <span className="hidden lg:inline-block">
               لوحة الإدارة - سجل التعديلات
@@ -314,28 +316,26 @@ export default function ApplicationLogsPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {Object.entries(log.changes).map(
-                              ([key, val]) => (
-                                <tr
-                                  key={key}
-                                  className="group hover:bg-slate-50/30 transition"
-                                >
-                                  <td className="p-3 border-b border-slate-100 text-sm font-bold text-gray-700 whitespace-nowrap">
-                                    {FIELD_LABELS[key] || key}
-                                  </td>
-                                  <td className="p-3 border-b border-slate-100">
-                                    <span className="inline-block px-2 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold line-through opacity-70">
-                                      {formatLogValue(key, val.old)}
-                                    </span>
-                                  </td>
-                                  <td className="p-3 border-b border-slate-100">
-                                    <span className="inline-block px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold">
-                                      {formatLogValue(key, val.new)}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ),
-                            )}
+                            {Object.entries(log.changes).map(([key, val]) => (
+                              <tr
+                                key={key}
+                                className="group hover:bg-slate-50/30 transition"
+                              >
+                                <td className="p-3 border-b border-slate-100 text-sm font-bold text-gray-700 whitespace-nowrap">
+                                  {FIELD_LABELS[key] || key}
+                                </td>
+                                <td className="p-3 border-b border-slate-100">
+                                  <span className="inline-block px-2 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold line-through opacity-70">
+                                    {formatLogValue(key, val.old)}
+                                  </span>
+                                </td>
+                                <td className="p-3 border-b border-slate-100">
+                                  <span className="inline-block px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold">
+                                    {formatLogValue(key, val.new)}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
                           </tbody>
                         </table>
                       </div>

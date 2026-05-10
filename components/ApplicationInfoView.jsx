@@ -125,11 +125,14 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 {createdAtLabel}
               </Row>
               <Row label="نوع الطلب" icon={<MdOutlineDescription size={18} />}>
-                {describeServiceType(application.serviceType)}
+                {describeServiceType(
+                  application.serviceType,
+                  application.selectedService,
+                )}
               </Row>
               {application.serviceType === "newline" && (
                 <Row
-                  label="نوع العرض"
+                  label="نوع العقد"
                   icon={<MdOutlineDescription size={18} />}
                 >
                   {describeContractPreference(application.contractPreference)}

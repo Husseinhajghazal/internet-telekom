@@ -18,6 +18,8 @@ enum ApplicationStatus {
   TECHNICAL_PROBLEM
   TRYING_TO_PERSUADE
   ACTIVATED
+  WAITING_FOR_PORT
+  UNDER_INSTALLATION
 }
 
 enum WhatsappStatus {
@@ -73,6 +75,7 @@ model Application {
   createdBy           String?
   isDeleted           Boolean           @default(false)
   whatsappStatus      WhatsappStatus    @default(NOT_ADDED)
+  reminderSent        Boolean           @default(false)
   notes               Note[]
   Review              Review?
   logs                ApplicationLog[]

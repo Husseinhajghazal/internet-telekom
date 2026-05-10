@@ -33,6 +33,7 @@ import {
   MdHistory,
   MdSend,
 } from "react-icons/md";
+import { RxReset } from "react-icons/rx";
 import { FaWhatsapp } from "react-icons/fa";
 import { TiEdit } from "react-icons/ti";
 import { FaRegEdit } from "react-icons/fa";
@@ -72,9 +73,11 @@ const ActionMenu = ({
   isDeletedMode,
   isAddedMode,
   isExpiringMode,
+  isServicesMode,
   userRole,
   handleSendReviewLink,
   handleOpenWhatsApp,
+  handleSendReminder,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
@@ -181,9 +184,18 @@ const ActionMenu = ({
 
             {!isDeletedMode && (
               <button
-                onClick={() =>
-                  router.push(`/panel/applications/${app.id}/edit`)
-                }
+                onClick={() => {
+                  const from = isAddedMode
+                    ? ""
+                    : isExpiringMode
+                      ? "expiring"
+                      : isServicesMode
+                        ? "services"
+                        : "internet";
+                  router.push(
+                    `/panel/applications/${app.id}/edit${from ? `?from=${from}` : ""}`,
+                  );
+                }}
                 className="w-full px-4 py-2.5 text-sm text-orange-600 hover:bg-orange-50 transition flex items-center gap-2.5 font-bold"
               >
                 <FaRegEdit size={18} />
@@ -191,7 +203,7 @@ const ActionMenu = ({
               </button>
             )}
 
-            {!isDeletedMode && (isAddedMode || isExpiringMode) && (
+            {!isDeletedMode && isAddedMode && (
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -203,19 +215,52 @@ const ActionMenu = ({
                 إضافة لواتساب
               </button>
             )}
-
-            {!isDeletedMode && !isAddedMode && !isExpiringMode && (
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  handleSendReviewLink(app);
-                }}
-                className={`w-full px-4 py-2.5 text-sm transition flex items-center gap-2.5 font-bold border-t border-gray-50 ${app.Review ? "text-gray-400 bg-gray-50/50 cursor-not-allowed" : "text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"}`}
-              >
-                <FaWhatsapp size={18} />
-                {app.Review ? "تم طلب التقييم مسبقاً" : "إرسال طلب تقييم"}
-              </button>
+            {!isDeletedMode && isExpiringMode && (
+              <>
+                <button
+                  disabled={app.reminderSent}
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleSendReminder(app);
+                  }}
+                  className={`w-full px-4 py-2.5 text-sm transition flex items-center gap-2.5 font-bold border-t border-gray-50 ${app.reminderSent ? "text-gray-400 bg-gray-50/50 cursor-not-allowed" : "text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"}`}
+                >
+                  <FaWhatsapp size={18} />
+                  {app.reminderSent ? "تم الإرسال" : "إرسال تذكير"}
+                </button>
+                <button
+                  disabled={actionId === app.id}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setConfirm({
+                      kind: "promote",
+                      appId: app.id,
+                      appIndex: app.appIndex,
+                    });
+                  }}
+                  className="w-full px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <MdSend size={18} />
+                  طلب جديد
+                </button>
+              </>
             )}
+
+            {!isDeletedMode &&
+              !isAddedMode &&
+              !isExpiringMode &&
+              app.status == "ACTIVATED" && (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleSendReviewLink(app);
+                  }}
+                  className={`w-full px-4 py-2.5 text-sm transition flex items-center gap-2.5 font-bold border-t border-gray-50 ${app.Review ? "text-gray-400 bg-gray-50/50 cursor-not-allowed" : "text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"}`}
+                >
+                  <FaWhatsapp size={18} />
+                  {app.Review ? "تم طلب التقييم مسبقاً" : "إرسال طلب تقييم"}
+                </button>
+              )}
 
             {isDeletedMode && (
               <button
@@ -357,6 +402,7 @@ export default function AdminApplicationsClient({
   isDeletedMode = false,
   isAddedMode = false,
   isExpiringMode = false,
+  isServicesMode = false,
   userRole = "ADMIN",
 }) {
   const router = useRouter();
@@ -377,10 +423,10 @@ export default function AdminApplicationsClient({
     }
   };
 
+  const [mounted, setMounted] = useState(false);
   const [page, setPage] = useState(() => getStoredFilters()?.page || 1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [creatingApp, setCreatingApp] = useState(false);
   const [error, setError] = useState(null);
   const [detailApp, setDetailApp] = useState(null);
   const [notesApp, setNotesApp] = useState(null);
@@ -420,6 +466,35 @@ ${reviewLink}
     }
   };
 
+  const handleSendReminder = (app) => {
+    if (app.reminderSent) return;
+    const phoneToUse = app.phone || app.phone2 || app.newPhone || "";
+    const digits = phoneToUse.replace(/\D/g, "").replace(/^0/, "");
+    if (!digits) {
+      setAlertMsg("لا يوجد رقم هاتف متاح.");
+      return;
+    }
+    const expiryDate = app.expiresAt ? formatDate(app.expiresAt, "1") : "";
+    const text = `مرحبا ${app.newName || app.name} 🌹
+نود تذكيرك بأن اشتراكك لدى إنترنت تيليكوم سينتهي في تاريخ ${expiryDate} 📅
+يرجى التواصل معنا في أقرب وقت لتجديد اشتراكك وضمان استمرارية الخدمة 🙏
+
+رقم صاحب الطلب: ${app.phone || "-"}
+شركة الإنترنت: ${app.internetCompany || "-"}
+رقم الإشتراك: ${app.subscriptionNo || "-"}
+العنوان: ${app.address || "-"}
+`;
+    window.open(
+      `https://wa.me/90${digits}?text=${encodeURIComponent(text)}`,
+      "_blank",
+    );
+    fetch(`/api/panel/applications/${app.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reminderSent: true }),
+    }).then(() => load(page));
+  };
+
   const handleOpenWhatsApp = (app) => {
     const phoneToUse = app.phone || app.phone2 || app.newPhone || "";
     const digits = phoneToUse.replace(/\D/g, "").replace(/^0/, "");
@@ -457,6 +532,12 @@ ${reviewLink}
     return new Date(now - offset).toISOString().slice(0, 10);
   });
   const [dateTo, setDateTo] = useState(() => getStoredFilters()?.dateTo ?? "");
+  const [internetCompanyFilter, setInternetCompanyFilter] = useState(
+    () => getStoredFilters()?.internetCompanyFilter ?? "",
+  );
+  const [debouncedCompany, setDebouncedCompany] = useState(
+    () => getStoredFilters()?.internetCompanyFilter ?? "",
+  );
   const [lastClickedAppId, setLastClickedAppId] = useState(() => {
     try {
       return sessionStorage.getItem(`${storageKey}_last`) || null;
@@ -468,6 +549,10 @@ ${reviewLink}
 
   // Persist filters to sessionStorage whenever they change
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     try {
       sessionStorage.setItem(
         storageKey,
@@ -477,6 +562,7 @@ ${reviewLink}
           dateField,
           dateFrom,
           dateTo,
+          internetCompanyFilter,
           page,
         }),
       );
@@ -488,6 +574,7 @@ ${reviewLink}
     dateField,
     dateFrom,
     dateTo,
+    internetCompanyFilter,
     page,
   ]);
 
@@ -524,12 +611,18 @@ ${reviewLink}
     return () => clearTimeout(id);
   }, [searchInput]);
 
+  useEffect(() => {
+    setDebouncedCompany(internetCompanyFilter);
+    setPage(1);
+  }, [internetCompanyFilter]);
+
   const buildQuery = useCallback(
     (p) => {
       const params = new URLSearchParams({ page: String(p) });
       if (isDeletedMode) params.set("deleted", "true");
       else if (isAddedMode) params.set("view", "added");
       else if (isExpiringMode) params.set("view", "expiring");
+      else params.set("serviceType", isServicesMode ? "services" : "internet");
       if (debouncedQ) params.set("q", debouncedQ);
       if (!isExpiringMode) {
         if (statusFilter) params.set("status", statusFilter);
@@ -540,6 +633,7 @@ ${reviewLink}
           if (dateTo) params.set("dateTo", dateTo);
         }
       }
+      if (debouncedCompany) params.set("internetCompany", debouncedCompany);
       return params.toString();
     },
     [
@@ -551,6 +645,7 @@ ${reviewLink}
       dateField,
       dateFrom,
       dateTo,
+      debouncedCompany,
     ],
   );
 
@@ -580,7 +675,9 @@ ${reviewLink}
   }, [page, load]);
 
   const handleCreateBlankApp = () => {
-    router.push(`/panel/applications/new/edit`);
+    router.push(
+      `/panel/applications/new/edit?from=${isServicesMode ? "services" : "internet"}`,
+    );
   };
 
   const exportToExcel = useCallback(async () => {
@@ -872,6 +969,8 @@ ${reviewLink}
     setSearchInput("");
     setDebouncedQ("");
     setStatusFilter("");
+    setInternetCompanyFilter("");
+    setDebouncedCompany("");
     setDateField("createdAt");
     setDateFrom("");
     setDateTo("");
@@ -882,7 +981,8 @@ ${reviewLink}
     Boolean(debouncedQ) ||
     Boolean(statusFilter) ||
     Boolean(dateFrom) ||
-    Boolean(dateTo);
+    Boolean(dateTo) ||
+    Boolean(internetCompanyFilter);
 
   return (
     <div className="space-y-8">
@@ -940,24 +1040,20 @@ ${reviewLink}
               <button
                 type="button"
                 onClick={handleCreateBlankApp}
-                disabled={creatingApp || loading}
+                disabled={loading}
                 className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
                 style={{
                   background: `linear-gradient(to left, #ffb245, #f36802)`,
                 }}
               >
-                {creatingApp ? (
-                  <MdOutlineRefresh size={20} className="animate-spin" />
-                ) : (
-                  <MdAdd size={20} />
-                )}
+                <MdAdd size={20} />
                 إنشاء طلب جديد
               </button>
             )}
             <button
               type="button"
               onClick={resetFilters}
-              disabled={loading || creatingApp}
+              disabled={loading}
               className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:opacity-95 disabled:opacity-60"
               style={{
                 background: `linear-gradient(to left, ${ACCENT}, ${ACCENT_DARK})`,
@@ -965,7 +1061,7 @@ ${reviewLink}
             >
               <MdOutlineRefresh
                 size={20}
-                className={loading && !creatingApp ? "animate-spin" : ""}
+                className={loading ? "animate-spin" : ""}
               />
               تحديث القائمة
             </button>
@@ -989,13 +1085,24 @@ ${reviewLink}
 
       {/* Search & filters */}
       <div className="rounded-3xl border border-cyan-100/80 bg-white/95 p-4 md:p-6 shadow-md shadow-cyan-500/5 text-right space-y-4">
-        <div className="flex items-center gap-2 text-gray-800 font-bold">
-          <MdFilterList style={{ color: ACCENT }} size={22} />
-          <span>بحث وتصفية</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-gray-800 font-bold">
+            <MdFilterList style={{ color: ACCENT }} size={22} />
+            <span>بحث وتصفية</span>
+          </div>
+          <button
+            type="button"
+            onClick={clearFilters}
+            disabled={!mounted || !hasActiveFilters}
+            title="مسح الفلاتر"
+            className="w-8 h-8 flex items-center justify-center rounded-xl text-gray-600 hover:text-red-500 hover:bg-red-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <RxReset size={18} />
+          </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
           <div
-            className={`${isDeletedMode ? "lg:col-span-5" : "lg:col-span-3"} relative`}
+            className={`${isDeletedMode ? "lg:col-span-4" : "lg:col-span-2"} relative`}
           >
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               بحث (الإسم، رقم الطلب، الموبايل)
@@ -1014,6 +1121,24 @@ ${reviewLink}
                 dir="rtl"
               />
             </div>
+          </div>
+          <div className="lg:col-span-2">
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              شركة الإنترنت
+            </label>
+            <select
+              value={internetCompanyFilter}
+              onChange={(e) => {
+                setInternetCompanyFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+            >
+              <option value="">كل الشركات</option>
+              <option value="Türk Telekom">Türk Telekom</option>
+              <option value="Göknet">Göknet</option>
+              <option value="Turknet">Turknet</option>
+            </select>
           </div>
           {!isDeletedMode && !isExpiringMode && (
             <div className="lg:col-span-2">
@@ -1101,16 +1226,6 @@ ${reviewLink}
               />
             </div>
           )}
-          <div className="lg:col-span-1 flex items-end">
-            <button
-              type="button"
-              onClick={clearFilters}
-              disabled={!hasActiveFilters}
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 py-2.5 px-2 text-xs font-bold text-gray-600 transition hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              مسح
-            </button>
-          </div>
         </div>
       </div>
 
@@ -1213,6 +1328,14 @@ ${reviewLink}
                       </span>
                     </th>
                   )}
+                  {isExpiringMode && (
+                    <th className="px-3 py-3.5 font-bold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        <FaWhatsapp size={16} />
+                        التذكير
+                      </span>
+                    </th>
+                  )}
 
                   {isAddedMode && (
                     <th className="px-3 py-3.5 font-bold whitespace-nowrap">
@@ -1243,9 +1366,11 @@ ${reviewLink}
                       <div className="inline-flex flex-col items-center gap-2 text-gray-500">
                         <MdOutlineAssignment size={48} className="opacity-30" />
                         <span>
-                          {hasActiveFilters
-                            ? "لا توجد نتائج مطابقة للبحث أو التصفية"
-                            : "لا توجد طلبات بعد"}
+                          <span suppressHydrationWarning>
+                            {hasActiveFilters
+                              ? "لا توجد نتائج مطابقة للبحث أو التصفية"
+                              : "لا توجد طلبات بعد"}
+                          </span>
                         </span>
                       </div>
                     </td>
@@ -1253,7 +1378,6 @@ ${reviewLink}
                 ) : (
                   applications.map((app, idx) => {
                     const dueDelayed = isDueDelayed(app);
-                    console.log(dueDelayed);
                     const expiringSoon =
                       isExpiringMode && app.expiresAt
                         ? (new Date(app.expiresAt) - new Date()) /
@@ -1265,6 +1389,7 @@ ${reviewLink}
                       <tr
                         key={app.id}
                         onClick={() => handleAppClick(app.id)}
+                        onDoubleClick={() => openDetail(app)}
                         className={`border-b transition-colors hover:bg-cyan-50/40 cursor-pointer ${
                           isLastClicked
                             ? "bg-blue-200"
@@ -1325,24 +1450,26 @@ ${reviewLink}
                         {!isDeletedMode && (
                           <td className="px-3 py-3.5">
                             <span
-                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(app.status)}`}
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-nowrap ${statusBadgeClass(app.status)}`}
                             >
                               {describeStatus(app.status)}
                             </span>
                           </td>
                         )}
                         <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                          {app.createdAt ? formatDate(app.createdAt) : "—"}
+                          {app.createdAt ? formatDate(app.createdAt, "4") : "—"}
                         </td>
                         {isDeletedMode && (
                           <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
-                            {app.updatedAt ? formatDate(app.updatedAt) : "—"}
+                            {app.updatedAt
+                              ? formatDate(app.updatedAt, "4")
+                              : "—"}
                           </td>
                         )}
                         {!isDeletedMode && !isAddedMode && !isExpiringMode && (
                           <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                             {app.completedAt
-                              ? formatDate(app.completedAt)
+                              ? formatDate(app.completedAt, "4")
                               : "—"}
                           </td>
                         )}
@@ -1356,13 +1483,28 @@ ${reviewLink}
                         {isExpiringMode && (
                           <td className="px-3 py-3.5 text-gray-600 whitespace-nowrap text-xs">
                             {app.completedAt
-                              ? formatDate(app.completedAt)
+                              ? formatDate(app.completedAt, "4")
                               : "—"}
                           </td>
                         )}
                         {isExpiringMode && (
                           <td className="px-3 py-3.5 whitespace-nowrap text-xs font-bold text-amber-700">
                             {app.expiresAt ? formatDate(app.expiresAt) : "—"}
+                          </td>
+                        )}
+                        {isExpiringMode && (
+                          <td className="px-3 py-3.5 whitespace-nowrap text-center">
+                            {app.reminderSent ? (
+                              <MdDone
+                                size={20}
+                                className="mx-auto text-emerald-500"
+                              />
+                            ) : (
+                              <MdClose
+                                size={20}
+                                className="mx-auto text-red-500"
+                              />
+                            )}
                           </td>
                         )}
                         {isAddedMode && (
@@ -1407,9 +1549,11 @@ ${reviewLink}
                             isDeletedMode={isDeletedMode}
                             isAddedMode={isAddedMode}
                             isExpiringMode={isExpiringMode}
+                            isServicesMode={isServicesMode}
                             userRole={userRole}
                             handleSendReviewLink={handleSendReviewLink}
                             handleOpenWhatsApp={handleOpenWhatsApp}
+                            handleSendReminder={handleSendReminder}
                           />
                         </td>
                       </tr>
@@ -1532,7 +1676,7 @@ ${reviewLink}
               : confirm?.kind === "restore"
                 ? "نعم، إستعادة"
                 : confirm?.kind === "promote"
-                  ? "نعم، نقل"
+                  ? "نعم، تحويل"
                   : "نعم، تفعيل"
         }
         cancelLabel="رجوع"

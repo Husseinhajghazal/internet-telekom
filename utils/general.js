@@ -1,8 +1,9 @@
 import moment from "moment";
 import { STATUS_LABELS } from "./data";
 
-const describeServiceType = (serviceType = "") => {
-  if (serviceType === "newline") return "خط جديد";
+const describeServiceType = (serviceType = "", selectedService = "") => {
+  if (serviceType === "newline") return "خط إنترنت جديد";
+  if (serviceType === "services" && selectedService === "upgrade") return "تغيير لشركة آخرى";
   if (serviceType === "services") return "خدمات";
   if (serviceType === "inquiry") return "استشارات";
   return serviceType || "—";
@@ -333,6 +334,10 @@ const statusBadgeClass = (status) => {
       return "bg-rose-100 text-rose-900 ring-1 ring-rose-200/60";
     case "TRYING_TO_PERSUADE":
       return "bg-fuchsia-100 text-fuchsia-900 ring-1 ring-fuchsia-200/60";
+    case "WAITING_FOR_PORT":
+      return "bg-yellow-100 text-yellow-900 ring-1 ring-yellow-200/60";
+    case "UNDER_INSTALLATION":
+      return "bg-teal-100 text-teal-900 ring-1 ring-teal-200/60";
     default:
       return "bg-gray-100 text-gray-800";
   }

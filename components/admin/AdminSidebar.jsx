@@ -4,15 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  FiList,
   FiChevronRight,
   FiChevronLeft,
   FiStar,
   FiUser,
   FiInbox,
   FiClock,
+  FiWifi,
 } from "react-icons/fi";
-import { MdDelete, MdPerson } from "react-icons/md";
+import { MdDelete, MdMiscellaneousServices, MdPerson } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import AdminConfirmDialog from "./AdminConfirmDialog";
@@ -34,19 +34,28 @@ export default function AdminSidebar({ userRole, userName }) {
 
   useEffect(() => {
     let cancelled = false;
+    const CACHE_KEY = "adminExpiringCount";
+    const TTL = 6 * 60 * 60 * 1000;
     const fetchCount = async () => {
       try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+        if (cached && Date.now() - cached.ts < TTL) {
+          if (!cancelled) setExpiringCount(cached.count);
+          return;
+        }
         const res = await fetch("/api/panel/applications?view=expiring&page=1");
         if (!res.ok) return;
         const json = await res.json();
-        if (!cancelled) setExpiringCount(json.total ?? 0);
+        const count = json.total ?? 0;
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ count, ts: Date.now() }));
+        if (!cancelled) setExpiringCount(count);
       } catch {}
     };
     fetchCount();
     return () => {
       cancelled = true;
     };
-  }, [pathname]);
+  }, []);
 
   const toggleCollapse = () => {
     const newVal = !isCollapsed;
@@ -61,22 +70,23 @@ export default function AdminSidebar({ userRole, userName }) {
   };
 
   const navItems = [
-    { name: "مستعرض الطلبات", href: "/panel", icon: FiList },
+    { name: "طلبات الإنترنت", href: "/panel", icon: FiWifi },
+    { name: "طلبات الخدمات", href: "/panel/services", icon: MdMiscellaneousServices },
     { name: "الطلبات المضافة", href: "/panel/added", icon: FiInbox },
     { name: "عقود بانتظار التجديد", href: "/panel/expiring", icon: FiClock },
   ];
 
   if (userRole === "ADMIN") {
-    navItems.push({
-      name: "إدارة الموظفين",
-      href: "/panel/employees",
-      icon: MdPerson,
-    });
     navItems.push({ name: "التقييمات", href: "/panel/reviews", icon: FiStar });
     navItems.push({
       name: "الطلبات المحذوفة",
       href: "/panel/deleted",
       icon: MdDelete,
+    });
+    navItems.push({
+      name: "إدارة الموظفين",
+      href: "/panel/employees",
+      icon: MdPerson,
     });
   }
 

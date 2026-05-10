@@ -81,7 +81,8 @@ const useApplicationForm = () => {
   const getValidationSchema = (values) =>
     Yup.object({
       name:
-        step === 1 || (step === 6 && values?.selectedService === "transfer-name")
+        step === 1 ||
+        (step === 6 && values?.selectedService === "transfer-name")
           ? Yup.string()
               .trim()
               .required("الإسم مطلوب")
@@ -138,7 +139,7 @@ const useApplicationForm = () => {
 
       contractPreference:
         step === 4 && values?.serviceType === "newline"
-          ? Yup.string().required("يرجى اختيار نوع العرض")
+          ? Yup.string().required("يرجى اختيار نوع العقد")
           : Yup.string(),
 
       selectedService:

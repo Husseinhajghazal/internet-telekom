@@ -1,6 +1,14 @@
 import React from "react";
 
-import { MdCancel, MdPerson, MdPhone, MdDescription, MdSpeed, MdHome, MdOutlineReceiptLong } from "react-icons/md";
+import {
+  MdCancel,
+  MdPerson,
+  MdPhone,
+  MdDescription,
+  MdSpeed,
+  MdHome,
+  MdOutlineReceiptLong,
+} from "react-icons/md";
 import { PiSpeedometerFill } from "react-icons/pi";
 import { FaBuildingCircleCheck } from "react-icons/fa6";
 import { AiOutlineFieldNumber } from "react-icons/ai";
@@ -18,15 +26,21 @@ const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
     </div>
     <div
       dir={dir}
-      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap break-words">
+      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap break-words"
+    >
       {children}
     </div>
   </div>
 );
 
 import {
-  describeContractPreference,describeNoContractTechType,describeSelectedInquiry,describeSelectedPackage,describeSelectedService,describeServiceType,
-} from "../utils/general"
+  describeContractPreference,
+  describeNoContractTechType,
+  describeSelectedInquiry,
+  describeSelectedPackage,
+  describeSelectedService,
+  describeServiceType,
+} from "../utils/general";
 
 const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
   const isInquiry = confirmValues?.serviceType === "inquiry";
@@ -49,7 +63,10 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Row label={confirmValues?.newName ? "المالك الحالي" : "الإسم"} icon={<MdPerson size={18} />}>
+            <Row
+              label={confirmValues?.newName ? "المالك الحالي" : "الإسم"}
+              icon={<MdPerson size={18} />}
+            >
               {confirmValues?.name || "—"}
             </Row>
             {confirmValues?.newName && (
@@ -60,100 +77,189 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
             <Row label="رقم الموبايل" dir="ltr" icon={<MdPhone size={18} />}>
               {confirmValues?.phone || "—"}
             </Row>
-            {confirmValues?.serviceType === "services" && (confirmValues?.selectedService === "change-phone" || confirmValues?.selectedService === "transfer-name") && (
-              <Row label="الرقم الجديد" dir="ltr" icon={<MdPhone size={18} />}>
-                {confirmValues?.newPhone || "—"}
-              </Row>
-            )}
-            <Row label="نوع الطلب" className="md:col-span-2" icon={<MdDescription size={18} />}>
+            {confirmValues?.serviceType === "services" &&
+              (confirmValues?.selectedService === "change-phone" ||
+                confirmValues?.selectedService === "transfer-name") && (
+                <Row
+                  label="الرقم الجديد"
+                  dir="ltr"
+                  icon={<MdPhone size={18} />}
+                >
+                  {confirmValues?.newPhone || "—"}
+                </Row>
+              )}
+            <Row
+              label="نوع الطلب"
+              className="md:col-span-2"
+              icon={<MdDescription size={18} />}
+            >
               {describeServiceType(confirmValues?.serviceType)}
             </Row>
 
             {confirmValues?.serviceType === "inquiry" && (
-              <Row label="نوع الاستشارة" className="md:col-span-2" icon={<MdDescription size={18} />}>
+              <Row
+                label="نوع الاستشارة"
+                className="md:col-span-2"
+                icon={<MdDescription size={18} />}
+              >
                 {describeSelectedInquiry(confirmValues?.selectedInquiry)}
               </Row>
             )}
 
             {confirmValues?.serviceType === "newline" && (
-              <Row label="نوع العرض" className="md:col-span-2" icon={<MdDescription size={18} />}>
+              <Row
+                label="نوع العقد"
+                className="md:col-span-2"
+                icon={<MdDescription size={18} />}
+              >
                 {describeContractPreference(confirmValues?.contractPreference)}
               </Row>
             )}
 
             {confirmValues?.serviceType === "services" && (
-              <Row label="الخدمة المختارة" className="md:col-span-2" icon={<MdDescription size={18} />}>
+              <Row
+                label="الخدمة المختارة"
+                className="md:col-span-2"
+                icon={<MdDescription size={18} />}
+              >
                 {describeSelectedService(confirmValues?.selectedService)}
               </Row>
             )}
 
-            {confirmValues?.serviceType === "newline" && confirmValues?.contractPreference === "without" && (
-              <Row label="التقنية المختارة" className="md:col-span-2" icon={<PiSpeedometerFill size={18} />}>
-                {describeNoContractTechType(confirmValues?.noContractTechType)}
-              </Row>
-            )}
+            {confirmValues?.serviceType === "newline" &&
+              confirmValues?.contractPreference === "without" && (
+                <Row
+                  label="التقنية المختارة"
+                  className="md:col-span-2"
+                  icon={<PiSpeedometerFill size={18} />}
+                >
+                  {describeNoContractTechType(
+                    confirmValues?.noContractTechType,
+                  )}
+                </Row>
+              )}
 
-            {confirmValues?.serviceType === "services" && confirmValues?.internetCompany && (
-              <Row label="شركة الإنترنت" className="md:col-span-2" icon={<FaBuildingCircleCheck size={18} />}>
-                {confirmValues.internetCompany}
-              </Row>
-            )}
+            {confirmValues?.serviceType === "services" &&
+              confirmValues?.internetCompany && (
+                <Row
+                  label="شركة الإنترنت"
+                  className="md:col-span-2"
+                  icon={<FaBuildingCircleCheck size={18} />}
+                >
+                  {confirmValues.internetCompany}
+                </Row>
+              )}
 
-            {confirmValues?.serviceType === "services" && confirmValues?.subscriptionNo && (
-              <Row label="رقم الإشتراك" className="md:col-span-2" icon={<MdOutlineReceiptLong size={18} />}>
-                {confirmValues.subscriptionNo ? confirmValues.subscriptionNo : "—"}
-              </Row>
-            )}
+            {confirmValues?.serviceType === "services" &&
+              confirmValues?.subscriptionNo && (
+                <Row
+                  label="رقم الإشتراك"
+                  className="md:col-span-2"
+                  icon={<MdOutlineReceiptLong size={18} />}
+                >
+                  {confirmValues.subscriptionNo
+                    ? confirmValues.subscriptionNo
+                    : "—"}
+                </Row>
+              )}
 
-            {confirmValues?.serviceType === "services" && confirmValues?.lastInvoiceAmount && (
-              <Row label="قيمة أخر فاتورة" className="md:col-span-2" icon={<MdOutlineReceiptLong size={18} />}>
-                {confirmValues.lastInvoiceAmount ? confirmValues.lastInvoiceAmount : "—"}
-              </Row>
-            )}
+            {confirmValues?.serviceType === "services" &&
+              confirmValues?.lastInvoiceAmount && (
+                <Row
+                  label="قيمة أخر فاتورة"
+                  className="md:col-span-2"
+                  icon={<MdOutlineReceiptLong size={18} />}
+                >
+                  {confirmValues.lastInvoiceAmount
+                    ? confirmValues.lastInvoiceAmount
+                    : "—"}
+                </Row>
+              )}
 
-            {confirmValues?.serviceType === "newline" && confirmValues?.contractPreference === "with" && (
-              <Row label="الباقة المختارة" className="md:col-span-2" icon={<MdSpeed size={18} />}>
-                {describeSelectedPackage(confirmValues?.selectedPackage)}
-              </Row>
-            )}
+            {confirmValues?.serviceType === "newline" &&
+              confirmValues?.contractPreference === "with" && (
+                <Row
+                  label="الباقة المختارة"
+                  className="md:col-span-2"
+                  icon={<MdSpeed size={18} />}
+                >
+                  {describeSelectedPackage(confirmValues?.selectedPackage)}
+                </Row>
+              )}
 
             {!isInquiry && (
-              <Row label={confirmValues?.selectedService === "transfer-address" ? "العنوان القديم" : "العنوان"} dir="ltr" className="md:col-span-2" icon={<MdHome size={18} />}>
+              <Row
+                label={
+                  confirmValues?.selectedService === "transfer-address"
+                    ? "العنوان القديم"
+                    : "العنوان"
+                }
+                dir="ltr"
+                className="md:col-span-2"
+                icon={<MdHome size={18} />}
+              >
                 {confirmValues?.address || "—"}
               </Row>
             )}
 
-            {confirmValues?.serviceType === "services" && confirmValues?.selectedService === "transfer-address" && (
-              <Row label="العنوان الجديد" dir="ltr" className="md:col-span-2" icon={<MdHome size={18} />}>
-                {confirmValues?.newAddress || "—"}
-              </Row>
-            )}
+            {confirmValues?.serviceType === "services" &&
+              confirmValues?.selectedService === "transfer-address" && (
+                <Row
+                  label="العنوان الجديد"
+                  dir="ltr"
+                  className="md:col-span-2"
+                  icon={<MdHome size={18} />}
+                >
+                  {confirmValues?.newAddress || "—"}
+                </Row>
+              )}
 
             {(confirmValues?.note || "").trim() && (
-              <Row label="ملاحظة" className="md:col-span-2" icon={<MdDescription size={18} />}>
+              <Row
+                label="ملاحظة"
+                className="md:col-span-2"
+                icon={<MdDescription size={18} />}
+              >
                 {confirmValues?.note}
               </Row>
             )}
 
-            {!isInquiry && (() => {
-              const newFiles = confirmValues?.invoiceFiles || [];
-              const existingUrls = confirmValues?.invoiceFileUrls || [];
-              const total = newFiles.length + existingUrls.length;
-              return (
-                <Row label="الصور المرفقة" className="md:col-span-2" icon={<MdOutlineReceiptLong size={18} />}>
-                  {total > 0 ? (
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {existingUrls.map((url, idx) => (
-                        <img key={`saved-${idx}`} src={url} alt={`مرفق ${idx + 1}`} className="w-14 h-14 object-cover rounded-lg border border-gray-200" />
-                      ))}
-                      {newFiles.map((file, idx) => (
-                        <img key={`new-${idx}`} src={URL.createObjectURL(file)} alt={`جديد ${idx + 1}`} className="w-14 h-14 object-cover rounded-lg border-2 border-green-300" />
-                      ))}
-                    </div>
-                  ) : "—"}
-                </Row>
-              );
-            })()}
+            {!isInquiry &&
+              (() => {
+                const newFiles = confirmValues?.invoiceFiles || [];
+                const existingUrls = confirmValues?.invoiceFileUrls || [];
+                const total = newFiles.length + existingUrls.length;
+                return (
+                  <Row
+                    label="الصور المرفقة"
+                    className="md:col-span-2"
+                    icon={<MdOutlineReceiptLong size={18} />}
+                  >
+                    {total > 0 ? (
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {existingUrls.map((url, idx) => (
+                          <img
+                            key={`saved-${idx}`}
+                            src={url}
+                            alt={`مرفق ${idx + 1}`}
+                            className="w-14 h-14 object-cover rounded-lg border border-gray-200"
+                          />
+                        ))}
+                        {newFiles.map((file, idx) => (
+                          <img
+                            key={`new-${idx}`}
+                            src={URL.createObjectURL(file)}
+                            alt={`جديد ${idx + 1}`}
+                            className="w-14 h-14 object-cover rounded-lg border-2 border-green-300"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </Row>
+                );
+              })()}
           </div>
 
           <div className="flex flex-col md:flex-row gap-3 md:gap-4">

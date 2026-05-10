@@ -238,7 +238,7 @@ const Step4 = ({ values, errors, touched }) => {
             ? "اختر الخدمة المناسبة لك"
             : showInquiryCards
               ? "عن ماذا تريد الإستفسار؟"
-              : "اختر نوع العرض"
+              : "اختر نوع العقد"
         }
         subTitle={
           showServiceCards

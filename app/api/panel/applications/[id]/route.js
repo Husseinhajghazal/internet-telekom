@@ -14,6 +14,8 @@ const ALLOWED_STATUSES = [
   "TECHNICAL_PROBLEM",
   "TRYING_TO_PERSUADE",
   "ACTIVATED",
+  "WAITING_FOR_PORT",
+  "UNDER_INSTALLATION",
 ];
 
 export async function PATCH(request, { params }) {
@@ -79,6 +81,14 @@ export async function PATCH(request, { params }) {
 
     if (body.whatsappStatus !== undefined) {
       data.whatsappStatus = body.whatsappStatus;
+    }
+
+    if (body.reminderSent !== undefined) {
+      data.reminderSent = body.reminderSent;
+    }
+
+    if (body.status !== undefined) {
+      data.reminderSent = false;
     }
 
     if (Object.keys(data).length === 0) {

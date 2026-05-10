@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   MdSave,
@@ -10,7 +10,19 @@ import {
   MdClose,
   MdContentCopy,
   MdDone,
+  MdCalendarMonth,
+  MdDescription,
+  MdHome,
+  MdOutlineReceiptLong,
+  MdPerson,
+  MdPhone,
+  MdSpeed,
+  MdUpdate,
+  MdOutlinePinDrop,
+  MdCancel,
 } from "react-icons/md";
+import { FaBuildingCircleCheck, FaIdCard } from "react-icons/fa6";
+import { PiSpeedometerFill } from "react-icons/pi";
 import { TbFileInvoiceFilled } from "react-icons/tb";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
@@ -20,12 +32,20 @@ import {
   formatPhoneNumber,
   formatBirthDate,
   validateTC,
+  describeServiceType,
+  describeContractPreference,
+  describeSelectedService,
+  describeSelectedPackage,
+  describeNoContractTechType,
+  describeSelectedInquiry,
+  formatDate,
+  describeStatus,
+  statusBadgeClass,
 } from "@/utils/general";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "newline", label: "خط جديد" },
   { value: "services", label: "خدمات" },
-  { value: "inquiry", label: "استشارات" },
 ];
 
 const CONTRACT_PREF_OPTIONS = [
@@ -78,6 +98,26 @@ const PKG_SPEEDS = {
   family: ["16", "24", "50", "100"],
   vip: ["16", "24", "50", "100", "200", "500", "1000"],
 };
+
+const ACCENT = "#18a2e3";
+const ACCENT_DARK = "#0d8bc9";
+
+const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
+  <div
+    className={`rounded-2xl border border-gray-100 bg-white/80 p-3 md:p-4 text-right space-y-1 shadow-sm shadow-slate-100/50 ${className}`}
+  >
+    <div className="flex items-center justify-end gap-2 text-xs text-gray-500 font-bold">
+      {icon && <span style={{ color: ACCENT }}>{icon}</span>}
+      <span>{label}</span>
+    </div>
+    <div
+      dir={dir}
+      className="text-gray-800 font-semibold text-sm whitespace-pre-wrap wrap-break-word"
+    >
+      {children}
+    </div>
+  </div>
+);
 
 const formatDisplayDateFromIso = (value) => {
   if (!value) return "";
@@ -141,6 +181,19 @@ const INITIAL_FORM_DATA = {
 export default function EditApplicationPage() {
   const { id } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromView = searchParams.get("from");
+
+  const backPath =
+    fromView === "services"
+      ? "/panel/services"
+      : fromView === "expiring"
+        ? "/panel/expiring"
+        : fromView === "internet"
+          ? "/panel"
+          : fromView
+            ? "/panel"
+            : "/panel/added";
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -158,7 +211,6 @@ export default function EditApplicationPage() {
   };
   const [userRole, setUserRole] = useState(null);
   const [editDates, setEditDates] = useState(false);
-  const [pkgType, setPkgType] = useState("");
   const [pkgDuration, setPkgDuration] = useState("");
   const [pkgSpeed, setPkgSpeed] = useState("");
 
@@ -168,7 +220,7 @@ export default function EditApplicationPage() {
   const [copiedField, setCopiedField] = useState(null);
 
   const copyPhone = (value, field) => {
-    const digits = value.replace(/\D/g, "");
+    const digits = (value || "").replace(/\D/g, "").replace(/^0/, "");
     if (!digits) return;
     navigator.clipboard.writeText(digits);
     setCopiedField(field);
@@ -280,7 +332,6 @@ export default function EditApplicationPage() {
         setFormData(loadedData);
         originalData.current = loadedData;
         const pkgParts = (data.selectedPackage || "").split("-");
-        setPkgType(pkgParts[0] || "");
         setPkgDuration(pkgParts[1] || "");
         setPkgSpeed(pkgParts[2] || "");
       } catch (err) {
@@ -345,19 +396,43 @@ export default function EditApplicationPage() {
       finalValue = finalValue.replace(/\D/g, "").substring(0, 11);
     }
 
+    const NO_UPPERCASE = new Set([
+      "phone",
+      "phone2",
+      "newPhone",
+      "birthDate",
+      "delayedUntil",
+      "createdAt",
+      "completedAt",
+      "nationalNumber",
+      "newNationalNumber",
+      "discountCount",
+      "lastInvoiceAmount",
+    ]);
+    if (
+      (type === "text" || type === "textarea") &&
+      !NO_UPPERCASE.has(name) &&
+      typeof finalValue === "string"
+    ) {
+      finalValue = finalValue.toUpperCase();
+    }
+
     setFormData((prev) => {
       let updates = { [name]: finalValue };
 
-      if (name === "serviceType" && finalValue === "services") {
-        updates.selectedService = "upgrade";
+      if (name === "contractPreference") {
+        updates.internetCompany = "";
+        updates.noContractTechType = "";
+        updates.selectedPackage = "";
+        setPkgDuration("");
+        setPkgSpeed("");
       }
 
-      if (
-        name === "contractPreference" &&
-        finalValue === "without" &&
-        prev.serviceType === "newline"
-      ) {
-        updates.internetCompany = "Turknet";
+      if (name === "internetCompany") {
+        updates.selectedPackage = "";
+        updates.noContractTechType = "";
+        setPkgDuration("");
+        setPkgSpeed("");
       }
 
       return { ...prev, ...updates };
@@ -365,24 +440,19 @@ export default function EditApplicationPage() {
   };
 
   const handlePkgChange = (field, value) => {
-    let newType = pkgType,
-      newDuration = pkgDuration,
+    let newDuration = pkgDuration,
       newSpeed = pkgSpeed;
-    if (field === "type") {
-      newType = value;
-      newDuration = PKG_DURATIONS[value]?.[0]?.value || "";
-      newSpeed = "";
-    } else if (field === "duration") {
+    if (field === "duration") {
       newDuration = value;
+      newSpeed = "";
     } else if (field === "speed") {
       newSpeed = value;
     }
-    setPkgType(newType);
     setPkgDuration(newDuration);
     setPkgSpeed(newSpeed);
     const newPkg =
-      newType && newDuration && newSpeed
-        ? `${newType}-${newDuration}-${newSpeed}`
+      pkgType && newDuration && newSpeed
+        ? `${pkgType}-${newDuration}-${newSpeed}`
         : "";
     setFormData((prev) => ({ ...prev, selectedPackage: newPkg }));
   };
@@ -392,6 +462,22 @@ export default function EditApplicationPage() {
   const handleSave = (e) => {
     e.preventDefault();
 
+    if (!formData.phone?.trim()) {
+      showToast("رقم الهاتف مطلوب");
+      return;
+    }
+    if (!formData.address?.trim()) {
+      showToast("العنوان مطلوب");
+      return;
+    }
+    if (!formData.addressCode?.trim()) {
+      showToast("كود العنوان (BBK) مطلوب");
+      return;
+    }
+    if (formData.status === "DELAYED" && !formData.delayedUntil?.trim()) {
+      showToast("تاريخ التأجيل مطلوب عند اختيار حالة مؤجل");
+      return;
+    }
     if (
       formData.nationalNumber.length === 11 &&
       !validateTC(formData.nationalNumber)
@@ -487,13 +573,32 @@ export default function EditApplicationPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "فشل الحفظ");
       originalData.current = { ...formData, invoiceFiles: [] };
-      router.push("/panel");
+      router.push(backPath);
     } catch (err) {
       showToast(err.message || "حدث خطأ أثناء الحفظ");
     } finally {
       setSaving(false);
     }
   };
+
+  const pkgType =
+    formData.internetCompany === "Göknet"
+      ? "family"
+      : formData.internetCompany === "Türk Telekom"
+        ? "vip"
+        : "";
+
+  const topType =
+    formData.serviceType === "newline"
+      ? "newline"
+      : formData.serviceType === "services" &&
+          formData.selectedService === "upgrade"
+        ? "switch"
+        : formData.serviceType === "services"
+          ? "services"
+          : formData.serviceType === "inquiry"
+            ? "inquiry"
+            : "";
 
   if (loading) {
     return (
@@ -544,7 +649,7 @@ export default function EditApplicationPage() {
           </h1>
           <button
             type="button"
-            onClick={() => handleNavAway(() => router.push("/panel"))}
+            onClick={() => handleNavAway(() => router.push(backPath))}
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-800 transition"
           >
             العودة للقائمة
@@ -755,289 +860,320 @@ export default function EditApplicationPage() {
                 />
               </div>
             )}
-            <div>
-              <label className={labelClass}>هل لديك إنترنت؟</label>
-              <select
-                name="hasInternet"
-                value={formData.hasInternet}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="">غير محدد</option>
-                <option value="yes">نعم</option>
-                <option value="no">لا</option>
-              </select>
-            </div>
-            <div>
-              <label className={labelClass}>نوع الطلب</label>
-              <select
-                name="serviceType"
-                value={formData.serviceType}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="">غير محدد</option>
-                {SERVICE_TYPE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {formData.serviceType === "newline" && (
-              <div>
-                <label className={labelClass}>نوع العرض</label>
-                <select
-                  name="contractPreference"
-                  value={formData.contractPreference}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  <option value="">غير محدد</option>
-                  {CONTRACT_PREF_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            {formData.serviceType === "services" && (
-              <div>
-                <label className={labelClass}>الخدمة المختارة</label>
-                <select
-                  name="selectedService"
-                  value={formData.selectedService}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  <option value="">غير محدد</option>
-                  {SELECTED_SERVICE_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            {formData.serviceType === "newline" &&
-              formData.contractPreference === "with" && (
-                <>
+            {formData.status !== "DELAYED" && (
+              <>
+                <div>
+                  <label className={labelClass}>نوع الطلب</label>
+                  <select
+                    value={topType}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const updates = {
+                        selectedPackage: "",
+                        noContractTechType: "",
+                        contractPreference: "",
+                        internetCompany: "",
+                      };
+                      if (val === "newline") {
+                        updates.serviceType = "newline";
+                        updates.selectedService = "";
+                      } else if (val === "switch") {
+                        updates.serviceType = "services";
+                        updates.selectedService = "upgrade";
+                      } else {
+                        updates.serviceType = "services";
+                        updates.selectedService =
+                          formData.selectedService === "upgrade"
+                            ? ""
+                            : formData.selectedService;
+                      }
+                      setPkgDuration("");
+                      setPkgSpeed("");
+                      setFormData((prev) => ({ ...prev, ...updates }));
+                    }}
+                    className={inputClass}
+                  >
+                    <option value="">غير محدد</option>
+                    {fromView !== "services" && (
+                      <>
+                        <option value="newline">خط إنترنت جديد</option>
+                        <option value="switch">تغيير لشركة آخرى</option>
+                      </>
+                    )}
+                    {fromView !== "internet" && (
+                      <option value="services">خدمات</option>
+                    )}
+                  </select>
+                </div>
+                {formData.serviceType === "newline" && (
                   <div>
-                    <label className={labelClass}>نوع الباقة</label>
+                    <label className={labelClass}>نوع العقد</label>
                     <select
-                      value={pkgType}
-                      onChange={(e) => handlePkgChange("type", e.target.value)}
+                      name="contractPreference"
+                      value={formData.contractPreference}
+                      onChange={handleChange}
                       className={inputClass}
                     >
                       <option value="">غير محدد</option>
-                      {PKG_TYPES.map((opt) => (
+                      {CONTRACT_PREF_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
                           {opt.label}
                         </option>
                       ))}
                     </select>
                   </div>
-                  {pkgType && (
-                    <div>
-                      <label className={labelClass}>مدة الباقة</label>
-                      <select
-                        value={pkgDuration}
-                        onChange={(e) =>
-                          handlePkgChange("duration", e.target.value)
-                        }
-                        className={inputClass}
-                      >
-                        <option value="">غير محدد</option>
-                        {(PKG_DURATIONS[pkgType] || []).map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                  {pkgType && pkgDuration && (
-                    <div>
-                      <label className={labelClass}>سرعة الباقة</label>
-                      <select
-                        value={pkgSpeed}
-                        onChange={(e) =>
-                          handlePkgChange("speed", e.target.value)
-                        }
-                        className={inputClass}
-                      >
-                        <option value="">غير محدد</option>
-                        {(PKG_SPEEDS[pkgType] || []).map((s) => (
-                          <option key={s} value={s}>
-                            {s} ميجا
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </>
-              )}
-            {((formData.serviceType === "newline" &&
-              formData.contractPreference === "without") ||
-              (formData.serviceType === "services" &&
-                formData.selectedService === "upgrade")) && (
-              <div>
-                <label className={labelClass}>نوع التقنية</label>
-                <select
-                  name="noContractTechType"
-                  value={formData.noContractTechType}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  <option value="">غير محدد</option>
-                  {TECH_TYPE_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {formData.serviceType === "inquiry" && (
-              <div>
-                <label className={labelClass}>الاستفسار</label>
-                <select
-                  name="selectedInquiry"
-                  value={formData.selectedInquiry}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  <option value="">غير محدد</option>
-                  {INQUIRY_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {((formData.serviceType === "services" &&
-              formData.selectedService === "upgrade") ||
-              (formData.serviceType === "newline" &&
-                formData.contractPreference === "without")) && (
-              <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-center gap-3">
-                  <input
-                    name="electronicApproval"
-                    id="electronicApproval"
-                    type="checkbox"
-                    checked={formData.electronicApproval}
-                    onChange={handleChange}
-                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="electronicApproval"
-                    className="text-sm font-semibold text-gray-700 cursor-pointer"
-                  >
-                    موافقة الكترونية
-                  </label>
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    name="approvalViaShipping"
-                    id="approvalViaShipping"
-                    type="checkbox"
-                    checked={formData.approvalViaShipping}
-                    onChange={handleChange}
-                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="approvalViaShipping"
-                    className="text-sm font-semibold text-gray-700 cursor-pointer"
-                  >
-                    موافقة عبر الشحن
-                  </label>
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    name="paidByUserName"
-                    id="paidByUserName"
-                    type="checkbox"
-                    checked={formData.paidByUserName}
-                    onChange={handleChange}
-                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="paidByUserName"
-                    className="text-sm font-semibold text-gray-700 cursor-pointer"
-                  >
-                    مدفوع من {formData.name}
-                  </label>
-                </div>
-                {!formData.paidByUserName && (
+                )}
+                {(topType === "switch" || topType === "services") && (
                   <div>
-                    <label className={labelClass}>إسم الشخص الذي دفع</label>
-                    <input
-                      name="paidByName"
-                      type="text"
-                      value={formData.paidByName}
+                    <label className={labelClass}>الخدمة المختارة</label>
+                    <select
+                      name="selectedService"
+                      value={formData.selectedService}
                       onChange={handleChange}
                       className={inputClass}
-                      placeholder="أدخل إسم الشخص الدافع"
-                    />
+                    >
+                      <option value="">غير محدد</option>
+                      {(topType === "switch"
+                        ? SELECTED_SERVICE_OPTIONS.filter(
+                            (o) => o.value === "upgrade",
+                          )
+                        : SELECTED_SERVICE_OPTIONS.filter(
+                            (o) => o.value !== "upgrade",
+                          )
+                      ).map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
                 <div>
-                  <label className={labelClass}>عدد الخصومات</label>
-                  <input
-                    name="discountCount"
-                    type="text"
-                    value={formData.discountCount}
+                  <label className={labelClass}>شركة الإنترنت</label>
+                  <select
+                    name="internetCompany"
+                    value={formData.internetCompany}
                     onChange={handleChange}
                     className={inputClass}
-                    placeholder="مثال: 3"
+                  >
+                    <option value="">غير محدد</option>
+                    {formData.serviceType === "newline" &&
+                    formData.contractPreference === "with" ? (
+                      <>
+                        <option value="Göknet">Göknet</option>
+                        <option value="Türk Telekom">Türk Telekom</option>
+                      </>
+                    ) : formData.serviceType === "newline" &&
+                      formData.contractPreference === "without" ? (
+                      <>
+                        <option value="Turknet">Turknet</option>
+                        <option value="Göknet">Göknet</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Göknet">Göknet</option>
+                        <option value="Türk Telekom">Türk Telekom</option>
+                        <option value="Turknet">Turknet</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+                {formData.serviceType === "newline" &&
+                  formData.contractPreference === "with" && (
+                    <>
+                      {pkgType && (
+                        <div>
+                          <label className={labelClass}>مدة العقد</label>
+                          <select
+                            value={pkgDuration}
+                            onChange={(e) =>
+                              handlePkgChange("duration", e.target.value)
+                            }
+                            className={inputClass}
+                          >
+                            <option value="">غير محدد</option>
+                            {(PKG_DURATIONS[pkgType] || []).map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      {pkgType && pkgDuration && (
+                        <div>
+                          <label className={labelClass}>سرعة الباقة</label>
+                          <select
+                            value={pkgSpeed}
+                            onChange={(e) =>
+                              handlePkgChange("speed", e.target.value)
+                            }
+                            className={inputClass}
+                          >
+                            <option value="">غير محدد</option>
+                            {(PKG_SPEEDS[pkgType] || []).map((s) => (
+                              <option key={s} value={s}>
+                                {s} ميجا
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </>
+                  )}
+                {((formData.serviceType === "newline" &&
+                  formData.contractPreference === "without") ||
+                  (formData.serviceType === "services" &&
+                    formData.selectedService === "upgrade")) && (
+                  <div>
+                    <label className={labelClass}>نوع التقنية</label>
+                    <select
+                      name="noContractTechType"
+                      value={formData.noContractTechType}
+                      onChange={handleChange}
+                      className={inputClass}
+                    >
+                      <option value="">غير محدد</option>
+                      {(formData.internetCompany === "Göknet"
+                        ? TECH_TYPE_OPTIONS.filter(
+                            (t) => t.value !== "gigafiber",
+                          )
+                        : TECH_TYPE_OPTIONS
+                      ).map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {formData.serviceType === "inquiry" && (
+                  <div>
+                    <label className={labelClass}>الاستفسار</label>
+                    <select
+                      name="selectedInquiry"
+                      value={formData.selectedInquiry}
+                      onChange={handleChange}
+                      className={inputClass}
+                    >
+                      <option value="">غير محدد</option>
+                      {INQUIRY_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {(formData.serviceType === "services" ||
+                  (formData.serviceType === "newline" &&
+                    formData.contractPreference === "without")) && (
+                  <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {(formData.serviceType === "newline" ||
+                      formData.selectedService === "upgrade") && (
+                      <>
+                        <div className="flex items-center gap-3">
+                          <input
+                            name="electronicApproval"
+                            id="electronicApproval"
+                            type="checkbox"
+                            checked={formData.electronicApproval}
+                            onChange={handleChange}
+                            className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                          />
+                          <label
+                            htmlFor="electronicApproval"
+                            className="text-sm font-semibold text-gray-700 cursor-pointer"
+                          >
+                            موافقة الكترونية
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            name="approvalViaShipping"
+                            id="approvalViaShipping"
+                            type="checkbox"
+                            checked={formData.approvalViaShipping}
+                            onChange={handleChange}
+                            className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                          />
+                          <label
+                            htmlFor="approvalViaShipping"
+                            className="text-sm font-semibold text-gray-700 cursor-pointer"
+                          >
+                            موافقة عبر الشحن
+                          </label>
+                        </div>
+                      </>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <input
+                        name="paidByUserName"
+                        id="paidByUserName"
+                        type="checkbox"
+                        checked={formData.paidByUserName}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                      />
+                      <label
+                        htmlFor="paidByUserName"
+                        className="text-sm font-semibold text-gray-700 cursor-pointer"
+                      >
+                        مدفوع من {formData.name}
+                      </label>
+                    </div>
+                    {!formData.paidByUserName && (
+                      <div>
+                        <label className={labelClass}>إسم الشخص الذي دفع</label>
+                        <input
+                          name="paidByName"
+                          type="text"
+                          value={formData.paidByName}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="أدخل إسم الشخص الدافع"
+                        />
+                      </div>
+                    )}
+                    {(formData.serviceType === "newline" ||
+                      formData.selectedService === "upgrade") && (
+                      <div>
+                        <label className={labelClass}>عدد الخصومات</label>
+                        <input
+                          name="discountCount"
+                          type="text"
+                          value={formData.discountCount}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="مثال: 3"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div>
+                  <label className={labelClass}>رقم الإشتراك</label>
+                  <input
+                    name="subscriptionNo"
+                    type="text"
+                    value={formData.subscriptionNo}
+                    onChange={handleChange}
+                    className={inputClass}
                   />
                 </div>
-              </div>
-            )}
-
-            <div>
-              <label className={labelClass}>شركة الإنترنت</label>
-              <input
-                name="internetCompany"
-                type="text"
-                list="internetCompany-options"
-                value={formData.internetCompany}
-                onChange={handleChange}
-                className={inputClass}
-              />
-              <datalist id="internetCompany-options">
-                <option value="Türk Telekom" />
-                <option value="Göknet" />
-                <option value="Turknet" />
-              </datalist>
-            </div>
-
-            <div>
-              <label className={labelClass}>رقم الإشتراك</label>
-              <input
-                name="subscriptionNo"
-                type="text"
-                value={formData.subscriptionNo}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            {formData.serviceType === "services" && (
-              <div>
-                <label className={labelClass}>قيمة آخر فاتورة</label>
-                <input
-                  name="lastInvoiceAmount"
-                  type="text"
-                  value={formData.lastInvoiceAmount}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </div>
+                {formData.serviceType === "services" && (
+                  <div>
+                    <label className={labelClass}>قيمة آخر فاتورة</label>
+                    <input
+                      name="lastInvoiceAmount"
+                      type="text"
+                      value={formData.lastInvoiceAmount}
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             <div className="md:col-span-2">
@@ -1095,7 +1231,8 @@ export default function EditApplicationPage() {
               </div>
             )}
 
-            {formData.serviceType === "services" &&
+            {formData.status !== "DELAYED" &&
+              formData.serviceType === "services" &&
               formData.selectedService === "transfer-address" && (
                 <div className="md:col-span-2">
                   <label className={labelClass}>العنوان الجديد</label>
@@ -1111,7 +1248,8 @@ export default function EditApplicationPage() {
                 </div>
               )}
 
-            {formData.serviceType === "services" &&
+            {formData.status !== "DELAYED" &&
+              formData.serviceType === "services" &&
               formData.selectedService === "transfer-address" && (
                 <>
                   <div>
@@ -1161,7 +1299,8 @@ export default function EditApplicationPage() {
                 </>
               )}
 
-            {formData.serviceType === "services" &&
+            {formData.status !== "DELAYED" &&
+              formData.serviceType === "services" &&
               formData.selectedService === "transfer-name" && (
                 <>
                   <div>
@@ -1196,7 +1335,8 @@ export default function EditApplicationPage() {
                   </div>
                 </>
               )}
-            {formData.serviceType === "services" &&
+            {formData.status !== "DELAYED" &&
+              formData.serviceType === "services" &&
               formData.selectedService === "change-phone" && (
                 <div>
                   <label className={labelClass}>رقم الموبايل الجديد</label>
@@ -1212,16 +1352,18 @@ export default function EditApplicationPage() {
                 </div>
               )}
 
-            <div className="md:col-span-2">
-              <label className={labelClass}>ملاحظة</label>
-              <textarea
-                name="note"
-                rows={3}
-                value={formData.note}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
+            {formData.status !== "DELAYED" && (
+              <div className="md:col-span-2">
+                <label className={labelClass}>ملاحظة</label>
+                <textarea
+                  name="note"
+                  rows={3}
+                  value={formData.note}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+            )}
 
             <div className="md:col-span-2">
               <label className={labelClass}>
@@ -1237,116 +1379,118 @@ export default function EditApplicationPage() {
               />
             </div>
 
-            <div className="md:col-span-2 space-y-4">
-              <div className="flex items-center justify-between">
-                <label className={labelClass + " mb-0!"}>الصور المرفقة</label>
-                {formData.invoiceFiles.length +
-                  formData.invoiceFileUrls.length <
-                  5 && (
-                  <label
-                    htmlFor="admin-invoice-upload"
-                    className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
-                  >
-                    <TbFileInvoiceFilled size={18} />
-                    إضافة صورة
-                  </label>
+            {formData.status !== "DELAYED" && (
+              <div className="md:col-span-2 space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className={labelClass + " mb-0!"}>الصور المرفقة</label>
+                  {formData.invoiceFiles.length +
+                    formData.invoiceFileUrls.length <
+                    5 && (
+                    <label
+                      htmlFor="admin-invoice-upload"
+                      className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
+                    >
+                      <TbFileInvoiceFilled size={18} />
+                      إضافة صورة
+                    </label>
+                  )}
+                </div>
+
+                <input
+                  type="file"
+                  id="admin-invoice-upload"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={async (e) => {
+                    let newFiles = Array.from(e.target.files);
+                    const currentTotal =
+                      formData.invoiceFiles.length +
+                      formData.invoiceFileUrls.length;
+                    const allowed = 5 - currentTotal;
+                    if (allowed <= 0) return;
+                    if (newFiles.length > allowed)
+                      newFiles = newFiles.slice(0, allowed);
+
+                    const { compressImage } = await import("@/utils/general");
+                    const compressedFiles = await Promise.all(
+                      newFiles.map((file) => compressImage(file)),
+                    );
+
+                    setFormData((prev) => ({
+                      ...prev,
+                      invoiceFiles: [...prev.invoiceFiles, ...compressedFiles],
+                    }));
+                    e.target.value = "";
+                  }}
+                />
+
+                {(formData.invoiceFiles.length > 0 ||
+                  formData.invoiceFileUrls.length > 0) && (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                    {formData.invoiceFileUrls.map((url, idx) => (
+                      <div
+                        key={`saved-${idx}`}
+                        className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-50 flex flex-col justify-between"
+                      >
+                        <img
+                          src={url}
+                          alt={`Saved ${idx}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newUrls = [...formData.invoiceFileUrls];
+                              newUrls.splice(idx, 1);
+                              setFormData((prev) => ({
+                                ...prev,
+                                invoiceFileUrls: newUrls,
+                              }));
+                            }}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            title="حذف"
+                          >
+                            <MdClose size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {formData.invoiceFiles.map((_file, idx) => (
+                      <div
+                        key={`new-${idx}`}
+                        className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between"
+                      >
+                        <img
+                          src={blobUrls[idx]}
+                          alt={`New ${idx}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newFiles = [...formData.invoiceFiles];
+                              newFiles.splice(idx, 1);
+                              setFormData((prev) => ({
+                                ...prev,
+                                invoiceFiles: newFiles,
+                              }));
+                            }}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            title="حذف"
+                          >
+                            <MdClose size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
-
-              <input
-                type="file"
-                id="admin-invoice-upload"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={async (e) => {
-                  let newFiles = Array.from(e.target.files);
-                  const currentTotal =
-                    formData.invoiceFiles.length +
-                    formData.invoiceFileUrls.length;
-                  const allowed = 5 - currentTotal;
-                  if (allowed <= 0) return;
-                  if (newFiles.length > allowed)
-                    newFiles = newFiles.slice(0, allowed);
-
-                  const { compressImage } = await import("@/utils/general");
-                  const compressedFiles = await Promise.all(
-                    newFiles.map((file) => compressImage(file)),
-                  );
-
-                  setFormData((prev) => ({
-                    ...prev,
-                    invoiceFiles: [...prev.invoiceFiles, ...compressedFiles],
-                  }));
-                  e.target.value = "";
-                }}
-              />
-
-              {(formData.invoiceFiles.length > 0 ||
-                formData.invoiceFileUrls.length > 0) && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                  {formData.invoiceFileUrls.map((url, idx) => (
-                    <div
-                      key={`saved-${idx}`}
-                      className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-50 flex flex-col justify-between"
-                    >
-                      <img
-                        src={url}
-                        alt={`Saved ${idx}`}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newUrls = [...formData.invoiceFileUrls];
-                            newUrls.splice(idx, 1);
-                            setFormData((prev) => ({
-                              ...prev,
-                              invoiceFileUrls: newUrls,
-                            }));
-                          }}
-                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                          title="حذف"
-                        >
-                          <MdClose size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-
-                  {formData.invoiceFiles.map((_file, idx) => (
-                    <div
-                      key={`new-${idx}`}
-                      className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between"
-                    >
-                      <img
-                        src={blobUrls[idx]}
-                        alt={`New ${idx}`}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newFiles = [...formData.invoiceFiles];
-                            newFiles.splice(idx, 1);
-                            setFormData((prev) => ({
-                              ...prev,
-                              invoiceFiles: newFiles,
-                            }));
-                          }}
-                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                          title="حذف"
-                        >
-                          <MdClose size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
           <div className="pt-4 border-t border-gray-100 flex justify-end">
@@ -1369,16 +1513,342 @@ export default function EditApplicationPage() {
         </form>
       </main>
 
-      <AdminConfirmDialog
-        open={confirmOpen}
-        kind="activate"
-        title="تأكيد حفظ التعديلات"
-        message="هل أنت متأكد من حفظ تعديلات هذا الطلب؟"
-        confirmLabel="نعم، حفظ"
-        cancelLabel="رجوع"
-        onConfirm={doSave}
-        onCancel={() => setConfirmOpen(false)}
-      />
+      {confirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-3 sm:p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            onClick={() => setConfirmOpen(false)}
+            aria-hidden
+          />
+          <div
+            className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden flex flex-col"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="flex items-start justify-between gap-3 p-4 md:p-5 text-white"
+              style={{
+                background: `linear-gradient(to left, ${ACCENT_DARK}, ${ACCENT})`,
+              }}
+            >
+              <div className="text-right space-y-1 min-w-0 flex-1">
+                <div className="inline-flex items-center gap-2 text-white/90 text-sm font-medium">
+                  <MdDescription size={20} />
+                  مراجعة البيانات قبل الحفظ
+                </div>
+                <h2 className="text-xl md:text-2xl font-extrabold tracking-tight">
+                  تأكد من صحة البيانات قبل الحفظ
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="text-white hover:bg-white/15 rounded-xl p-1 transition shrink-0"
+              >
+                <MdCancel size={26} />
+              </button>
+            </div>
+
+            <div
+              className="overflow-y-auto p-4 md:p-6 space-y-4 bg-linear-to-b from-slate-50/50 to-white"
+              dir="rtl"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Row
+                  label={formData.newName ? "الإسم واللقب القديم" : "الإسم"}
+                  icon={<MdPerson size={18} />}
+                >
+                  {formData.name || "—"}
+                </Row>
+
+                {formData.newName && (
+                  <Row
+                    label="الإسم واللقب الجديد"
+                    icon={<MdPerson size={18} />}
+                  >
+                    {formData.newName}
+                  </Row>
+                )}
+
+                <Row
+                  label={
+                    formData.newName
+                      ? "الرقم الوطني القديم (TC)"
+                      : "الرقم الوطني (TC)"
+                  }
+                  icon={<FaIdCard size={18} />}
+                >
+                  {formData.nationalNumber || "—"}
+                </Row>
+
+                {formData.newNationalNumber && (
+                  <Row
+                    label="الرقم الوطني الجديد (TC)"
+                    icon={<FaIdCard size={18} />}
+                  >
+                    {formData.newNationalNumber}
+                  </Row>
+                )}
+
+                <Row label="المواليد" icon={<MdCalendarMonth size={18} />}>
+                  {formData.birthDate || "—"}
+                </Row>
+
+                <Row
+                  label={
+                    formData.newName ? "رقم الموبايل القديم" : "رقم الموبايل"
+                  }
+                  icon={<MdPhone size={18} />}
+                >
+                  <span dir="ltr" className="inline-block">
+                    {formData.phone || "—"}
+                  </span>
+                </Row>
+
+                {formData.newPhone && (
+                  <Row label="رقم الموبايل الجديد" icon={<MdPhone size={18} />}>
+                    <span dir="ltr" className="inline-block">
+                      {formData.newPhone}
+                    </span>
+                  </Row>
+                )}
+
+                <Row label="رقم الموبايل 2" icon={<MdPhone size={18} />}>
+                  <span dir="ltr" className="inline-block">
+                    {formData.phone2 || "—"}
+                  </span>
+                </Row>
+
+                <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${statusBadgeClass(formData.status)}`}
+                  >
+                    {describeStatus(formData.status)}
+                  </span>
+                </Row>
+
+                {formData.status === "DELAYED" && formData.delayedUntil && (
+                  <Row
+                    label="تاريخ التأجيل"
+                    icon={<MdCalendarMonth size={18} />}
+                  >
+                    <span className="inline-flex items-center gap-1.5 text-orange-700 font-bold">
+                      {formData.delayedUntil}
+                    </span>
+                  </Row>
+                )}
+
+                <Row label="تاريخ التسجيل" icon={<MdCalendarMonth size={18} />}>
+                  {formData.createdAt || "—"}
+                </Row>
+
+                <Row label="تاريخ التفعيل" icon={<MdUpdate size={18} />}>
+                  {formData.completedAt || "—"}
+                </Row>
+
+                <Row label="نوع الطلب" icon={<MdDescription size={18} />}>
+                  {describeServiceType(formData.serviceType)}
+                </Row>
+
+                {formData.serviceType === "newline" && (
+                  <Row label="نوع العقد" icon={<MdDescription size={18} />}>
+                    {describeContractPreference(formData.contractPreference)}
+                  </Row>
+                )}
+
+                {formData.serviceType === "services" && (
+                  <Row
+                    label="الخدمة المختارة"
+                    icon={<MdDescription size={18} />}
+                  >
+                    {describeSelectedService(formData.selectedService)}
+                  </Row>
+                )}
+
+                {formData.serviceType === "newline" &&
+                  formData.contractPreference === "with" && (
+                    <Row label="الباقة المختارة" icon={<MdSpeed size={18} />}>
+                      {describeSelectedPackage(formData.selectedPackage)}
+                    </Row>
+                  )}
+
+                {((formData.serviceType === "newline" &&
+                  formData.contractPreference === "without") ||
+                  (formData.serviceType === "services" &&
+                    formData.selectedService === "upgrade")) && (
+                  <Row
+                    label="نوع التقنية"
+                    icon={<PiSpeedometerFill size={18} />}
+                  >
+                    {formData.noContractTechType
+                      ? describeNoContractTechType(formData.noContractTechType)
+                      : "—"}
+                  </Row>
+                )}
+
+                {formData.serviceType === "inquiry" && (
+                  <Row label="الاستفسار" icon={<MdDescription size={18} />}>
+                    {describeSelectedInquiry(formData.selectedInquiry)}
+                  </Row>
+                )}
+
+                <Row
+                  label="شركة الإنترنت"
+                  icon={<FaBuildingCircleCheck size={18} />}
+                >
+                  {formData.internetCompany || "—"}
+                </Row>
+
+                <Row
+                  label="رقم الإشتراك"
+                  icon={<MdOutlineReceiptLong size={18} />}
+                >
+                  {formData.subscriptionNo || "—"}
+                </Row>
+
+                <Row
+                  label={
+                    formData.selectedService === "transfer-address"
+                      ? "كود العنوان الحالي (BBK)"
+                      : "كود العنوان (BBK)"
+                  }
+                  icon={<MdOutlinePinDrop size={18} />}
+                >
+                  {formData.addressCode || "—"}
+                </Row>
+
+                <Row label="نوع العنوان" icon={<MdHome size={18} />}>
+                  {formData.originalAddress ? "الأساسي" : "مجاور"}
+                </Row>
+
+                <Row
+                  label={
+                    formData.selectedService === "transfer-address"
+                      ? "العنوان الحالي"
+                      : "العنوان"
+                  }
+                  dir="ltr"
+                  className="sm:col-span-2"
+                  icon={<MdHome size={18} />}
+                >
+                  {formData.address || "—"}
+                </Row>
+
+                {formData.selectedService === "transfer-address" && (
+                  <>
+                    <Row
+                      label="كود العنوان الجديد (BBK)"
+                      icon={<MdOutlinePinDrop size={18} />}
+                    >
+                      {formData.newAddressCode || "—"}
+                    </Row>
+                    <Row label="نوع العنوان الجديد" icon={<MdHome size={18} />}>
+                      {formData.newOriginalAddress ? "الأساسي" : "مجاور"}
+                    </Row>
+                    <Row
+                      label="العنوان الجديد"
+                      dir="ltr"
+                      className="sm:col-span-2"
+                      icon={<MdHome size={18} />}
+                    >
+                      {formData.newAddress || "—"}
+                    </Row>
+                  </>
+                )}
+
+                {(formData.note || "").trim() && (
+                  <Row
+                    label="ملاحظة"
+                    className="sm:col-span-2"
+                    icon={<MdDescription size={18} />}
+                  >
+                    {formData.note}
+                  </Row>
+                )}
+
+                {((formData.serviceType === "services" &&
+                  formData.selectedService === "upgrade") ||
+                  (formData.serviceType === "newline" &&
+                    formData.contractPreference === "without")) && (
+                  <>
+                    <Row
+                      label="موافقة الكترونية"
+                      icon={<MdDescription size={18} />}
+                    >
+                      {formData.electronicApproval ? "نعم" : "لا"}
+                    </Row>
+                    <Row
+                      label="موافقة عبر الشحن"
+                      icon={<MdDescription size={18} />}
+                    >
+                      {formData.approvalViaShipping ? "نعم" : "لا"}
+                    </Row>
+                    <Row
+                      label={`مدفوع من ${formData.name}`}
+                      icon={<MdDescription size={18} />}
+                    >
+                      {formData.paidByUserName ? "نعم" : "لا"}
+                    </Row>
+                    {!formData.paidByUserName && (
+                      <Row label="إسم الدافع" icon={<MdPerson size={18} />}>
+                        {formData.paidByName || "—"}
+                      </Row>
+                    )}
+                    {(formData.serviceType === "newline" ||
+                      formData.selectedService === "upgrade") && (
+                      <Row
+                        label="عدد الخصومات"
+                        icon={<MdOutlineReceiptLong size={18} />}
+                      >
+                        {formData.discountCount || "—"}
+                      </Row>
+                    )}
+                  </>
+                )}
+
+                {formData.createdBy && (
+                  <Row
+                    label="من الذي سجل الطلب"
+                    icon={<MdPerson size={18} />}
+                    className="sm:col-span-2"
+                  >
+                    <span className="font-bold text-indigo-800">
+                      {formData.createdBy}
+                    </span>
+                  </Row>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-gray-100 bg-gray-50/90 flex gap-2 justify-center">
+              <Button
+                variant="primary"
+                type="button"
+                onClick={doSave}
+                disabled={saving}
+                className="rounded-xl! min-w-32"
+                icon={
+                  saving ? (
+                    <MdOutlineRefresh size={18} className="animate-spin" />
+                  ) : (
+                    <MdSave size={18} />
+                  )
+                }
+              >
+                {saving ? "جاري الحفظ..." : "نعم، حفظ"}
+              </Button>
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="rounded-xl! min-w-32"
+              >
+                رجوع
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AdminConfirmDialog
         open={leaveConfirmOpen}

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiList, FiStar, FiUser, FiInbox, FiClock } from "react-icons/fi";
-import { MdDelete, MdPerson } from "react-icons/md";
+import { FiStar, FiUser, FiInbox, FiClock, FiWifi } from "react-icons/fi";
+import { MdDelete, MdMiscellaneousServices, MdPerson } from "react-icons/md";
 
 export default function MobileAdminNav({ userRole }) {
   const pathname = usePathname();
@@ -12,22 +12,32 @@ export default function MobileAdminNav({ userRole }) {
 
   useEffect(() => {
     let cancelled = false;
+    const CACHE_KEY = "adminExpiringCount";
+    const TTL = 6 * 60 * 60 * 1000;
     const fetchCount = async () => {
       try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+        if (cached && Date.now() - cached.ts < TTL) {
+          if (!cancelled) setExpiringCount(cached.count);
+          return;
+        }
         const res = await fetch("/api/panel/applications?view=expiring&page=1");
         if (!res.ok) return;
         const json = await res.json();
-        if (!cancelled) setExpiringCount(json.total ?? 0);
+        const count = json.total ?? 0;
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ count, ts: Date.now() }));
+        if (!cancelled) setExpiringCount(count);
       } catch {}
     };
     fetchCount();
     return () => {
       cancelled = true;
     };
-  }, [pathname]);
+  }, []);
 
   const navItems = [
-    { name: "الطلبات", href: "/panel", icon: FiList },
+    { name: "إنترنت", href: "/panel", icon: FiWifi },
+    { name: "خدمات", href: "/panel/services", icon: MdMiscellaneousServices },
     { name: "المضافة", href: "/panel/added", icon: FiInbox },
     { name: "تجديد", href: "/panel/expiring", icon: FiClock },
   ];
@@ -90,10 +100,4 @@ export default function MobileAdminNav({ userRole }) {
       })}
     </nav>
   );
-}
-
-// simple helper to avoid hydration warning for default styling
-function isMobileDevice() {
-  if (typeof window === "undefined") return true;
-  return window.innerWidth < 640;
 }

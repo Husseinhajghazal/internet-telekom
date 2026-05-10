@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   MdCalendarMonth,
   MdCancel,
+  MdContentCopy,
   MdDescription,
+  MdDone,
   MdHome,
   MdOutlineReceiptLong,
   MdPerson,
@@ -56,6 +58,37 @@ export default function ApplicationDetailModal({
   isDeletedMode,
 }) {
   const router = useRouter();
+  const [copiedField, setCopiedField] = useState(null);
+
+  const copyText = (value, field) => {
+    if (!value) return;
+    navigator.clipboard.writeText(value);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const copyPhone = (value, field) => {
+    const digits = (value || "").replace(/\D/g, "").replace(/^0/, "");
+    if (!digits) return;
+    navigator.clipboard.writeText(digits);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const CopyBtn = ({ field, onCopy }) => (
+    <button
+      type="button"
+      onClick={onCopy}
+      className="inline-flex items-center justify-center w-6 h-6 rounded-md text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 transition-colors shrink-0"
+      title="نسخ"
+    >
+      {copiedField === field ? (
+        <MdDone size={15} className="text-emerald-500" />
+      ) : (
+        <MdContentCopy size={15} />
+      )}
+    </button>
+  );
 
   useEffect(() => {
     const onKey = (e) => {
@@ -123,12 +156,24 @@ export default function ApplicationDetailModal({
               label={application.newName ? "الإسم واللقب القديم" : "الإسم"}
               icon={<MdPerson size={18} />}
             >
-              {application.name}
+              <div className="flex items-center gap-2">
+                <span className="flex-1">{application.name}</span>
+                <CopyBtn
+                  field="name"
+                  onCopy={() => copyText(application.name, "name")}
+                />
+              </div>
             </Row>
 
             {application.newName && (
               <Row label="الإسم واللقب الجديد" icon={<MdPerson size={18} />}>
-                {application.newName}
+                <div className="flex items-center gap-2">
+                  <span className="flex-1">{application.newName}</span>
+                  <CopyBtn
+                    field="newName"
+                    onCopy={() => copyText(application.newName, "newName")}
+                  />
+                </div>
               </Row>
             )}
 
@@ -140,7 +185,19 @@ export default function ApplicationDetailModal({
               }
               icon={<FaIdCard size={18} />}
             >
-              {application.nationalNumber ? application.nationalNumber : "—"}
+              {application.nationalNumber ? (
+                <div className="flex items-center gap-2">
+                  <span className="flex-1">{application.nationalNumber}</span>
+                  <CopyBtn
+                    field="nationalNumber"
+                    onCopy={() =>
+                      copyText(application.nationalNumber, "nationalNumber")
+                    }
+                  />
+                </div>
+              ) : (
+                "—"
+              )}
             </Row>
 
             {application.newNationalNumber && (
@@ -148,7 +205,20 @@ export default function ApplicationDetailModal({
                 label="الرقم الوطني الجديد (TC)"
                 icon={<FaIdCard size={18} />}
               >
-                {application.newNationalNumber}
+                <div className="flex items-center gap-2">
+                  <span className="flex-1">
+                    {application.newNationalNumber}
+                  </span>
+                  <CopyBtn
+                    field="newNationalNumber"
+                    onCopy={() =>
+                      copyText(
+                        application.newNationalNumber,
+                        "newNationalNumber",
+                      )
+                    }
+                  />
+                </div>
               </Row>
             )}
 
@@ -166,23 +236,45 @@ export default function ApplicationDetailModal({
               }
               icon={<MdPhone size={18} />}
             >
-              <span dir="ltr" className="inline-block">
-                {application.phone}
-              </span>
+              <div className="flex items-center gap-2">
+                <span dir="ltr" className="inline-block flex-1">
+                  {application.phone}
+                </span>
+                <CopyBtn
+                  field="phone"
+                  onCopy={() => copyPhone(application.phone, "phone")}
+                />
+              </div>
             </Row>
 
             {application.newPhone && (
               <Row label="رقم الموبايل الجديد" icon={<MdPhone size={18} />}>
-                <span dir="ltr" className="inline-block">
-                  {application.newPhone}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span dir="ltr" className="inline-block flex-1">
+                    {application.newPhone}
+                  </span>
+                  <CopyBtn
+                    field="newPhone"
+                    onCopy={() => copyPhone(application.newPhone, "newPhone")}
+                  />
+                </div>
               </Row>
             )}
 
             <Row label="رقم الموبايل 2" icon={<MdPhone size={18} />}>
-              <span dir="ltr" className="inline-block">
-                {application.phone2 ? application.phone2 : "—"}
-              </span>
+              {application.phone2 ? (
+                <div className="flex items-center gap-2">
+                  <span dir="ltr" className="inline-block flex-1">
+                    {application.phone2}
+                  </span>
+                  <CopyBtn
+                    field="phone2"
+                    onCopy={() => copyPhone(application.phone2, "phone2")}
+                  />
+                </div>
+              ) : (
+                "—"
+              )}
             </Row>
             <Row label="حالة الطلب" icon={<MdSpeed size={18} />}>
               <span
@@ -204,18 +296,14 @@ export default function ApplicationDetailModal({
             <Row label="تاريخ التفعيل" icon={<MdUpdate size={18} />}>
               {completedAtLabel}
             </Row>
-            <Row label="هل لديك إنترنت؟" icon={<MdWifi size={18} />}>
-              {application.hasInternet === "yes"
-                ? "نعم"
-                : application.hasInternet === "no"
-                  ? "لا"
-                  : "—"}
-            </Row>
             <Row label="نوع الطلب" icon={<MdDescription size={18} />}>
-              {describeServiceType(application.serviceType)}
+              {describeServiceType(
+                application.serviceType,
+                application.selectedService,
+              )}
             </Row>
             {application.serviceType === "newline" && (
-              <Row label="نوع العرض" icon={<MdDescription size={18} />}>
+              <Row label="نوع العقد" icon={<MdDescription size={18} />}>
                 {describeContractPreference(application.contractPreference)}
               </Row>
             )}
@@ -252,16 +340,43 @@ export default function ApplicationDetailModal({
               {application.internetCompany ? application.internetCompany : "—"}
             </Row>
             <Row label="رقم الإشتراك" icon={<MdOutlineReceiptLong size={18} />}>
-              {application.subscriptionNo ? application.subscriptionNo : "—"}
+              {application.subscriptionNo ? (
+                <div className="flex items-center gap-2">
+                  <span className="flex-1">{application.subscriptionNo}</span>
+                  <CopyBtn
+                    field="subscriptionNo"
+                    onCopy={() =>
+                      copyText(application.subscriptionNo, "subscriptionNo")
+                    }
+                  />
+                </div>
+              ) : (
+                "—"
+              )}
             </Row>
             {application.serviceType === "services" && (
               <Row
                 label="قيمة أخر فاتورة"
                 icon={<MdOutlineReceiptLong size={18} />}
               >
-                {application.lastInvoiceAmount
-                  ? application.lastInvoiceAmount
-                  : "—"}
+                {application.lastInvoiceAmount ? (
+                  <div className="flex items-center gap-2">
+                    <span className="flex-1">
+                      {application.lastInvoiceAmount}
+                    </span>
+                    <CopyBtn
+                      field="lastInvoiceAmount"
+                      onCopy={() =>
+                        copyText(
+                          application.lastInvoiceAmount,
+                          "lastInvoiceAmount",
+                        )
+                      }
+                    />
+                  </div>
+                ) : (
+                  "—"
+                )}
               </Row>
             )}
             <Row
@@ -272,7 +387,19 @@ export default function ApplicationDetailModal({
               }
               icon={<MdOutlinePinDrop size={18} />}
             >
-              {application.addressCode ? application.addressCode : "—"}
+              {application.addressCode ? (
+                <div className="flex items-center gap-2">
+                  <span className="flex-1">{application.addressCode}</span>
+                  <CopyBtn
+                    field="addressCode"
+                    onCopy={() =>
+                      copyText(application.addressCode, "addressCode")
+                    }
+                  />
+                </div>
+              ) : (
+                "—"
+              )}
             </Row>
             <Row label="نوع العنوان" icon={<MdHome size={18} />}>
               {application.originalAddress ? "الأساسي" : "مجاور"}
@@ -280,7 +407,20 @@ export default function ApplicationDetailModal({
             {!application.originalAddress &&
               application.originalAddressText && (
                 <Row label="العنوان الأساسي" icon={<MdHome size={18} />}>
-                  {application.originalAddressText}
+                  <div className="flex items-center gap-2">
+                    <span className="flex-1">
+                      {application.originalAddressText}
+                    </span>
+                    <CopyBtn
+                      field="originalAddressText"
+                      onCopy={() =>
+                        copyText(
+                          application.originalAddressText,
+                          "originalAddressText",
+                        )
+                      }
+                    />
+                  </div>
                 </Row>
               )}
             <Row
@@ -293,7 +433,17 @@ export default function ApplicationDetailModal({
               className="sm:col-span-2"
               icon={<MdHome size={18} />}
             >
-              {application.address ? application.address : "—"}
+              {application.address ? (
+                <div className="flex items-start gap-2">
+                  <span className="flex-1">{application.address}</span>
+                  <CopyBtn
+                    field="address"
+                    onCopy={() => copyText(application.address, "address")}
+                  />
+                </div>
+              ) : (
+                "—"
+              )}
             </Row>
 
             {application.selectedService === "transfer-address" && (
@@ -315,7 +465,20 @@ export default function ApplicationDetailModal({
                       label="العنوان الأساسي الجديد"
                       icon={<MdHome size={18} />}
                     >
-                      {application.newOriginalAddressText}
+                      <div className="flex items-center gap-2">
+                        <span className="flex-1">
+                          {application.newOriginalAddressText}
+                        </span>
+                        <CopyBtn
+                          field="newOriginalAddressText"
+                          onCopy={() =>
+                            copyText(
+                              application.newOriginalAddressText,
+                              "newOriginalAddressText",
+                            )
+                          }
+                        />
+                      </div>
                     </Row>
                   )}
                 <Row
@@ -324,7 +487,19 @@ export default function ApplicationDetailModal({
                   className="sm:col-span-2"
                   icon={<MdHome size={18} />}
                 >
-                  {application.newAddress ? application.newAddress : "—"}
+                  {application.newAddress ? (
+                    <div className="flex items-start gap-2">
+                      <span className="flex-1">{application.newAddress}</span>
+                      <CopyBtn
+                        field="newAddress"
+                        onCopy={() =>
+                          copyText(application.newAddress, "newAddress")
+                        }
+                      />
+                    </div>
+                  ) : (
+                    "—"
+                  )}
                 </Row>
               </>
             )}
@@ -338,23 +513,27 @@ export default function ApplicationDetailModal({
               </Row>
             ) : null}
 
-            {((application.serviceType === "services" &&
-              application.selectedService === "upgrade") ||
+            {(application.serviceType === "services" ||
               (application.serviceType === "newline" &&
                 application.contractPreference === "without")) && (
               <>
-                <Row
-                  label="موافقة الكترونية"
-                  icon={<MdDescription size={18} />}
-                >
-                  {application.electronicApproval ? "نعم" : "لا"}
-                </Row>
-                <Row
-                  label="موافقة عبر الشحن"
-                  icon={<MdDescription size={18} />}
-                >
-                  {application.approvalViaShipping ? "نعم" : "لا"}
-                </Row>
+                {(application.serviceType === "newline" ||
+                  application.selectedService === "upgrade") && (
+                  <>
+                    <Row
+                      label="موافقة الكترونية"
+                      icon={<MdDescription size={18} />}
+                    >
+                      {application.electronicApproval ? "نعم" : "لا"}
+                    </Row>
+                    <Row
+                      label="موافقة عبر الشحن"
+                      icon={<MdDescription size={18} />}
+                    >
+                      {application.approvalViaShipping ? "نعم" : "لا"}
+                    </Row>
+                  </>
+                )}
                 <Row
                   label={`مدفوع من ${application.name}`}
                   icon={<MdDescription size={18} />}
@@ -366,12 +545,15 @@ export default function ApplicationDetailModal({
                     {application.paidByName || "—"}
                   </Row>
                 )}
-                <Row
-                  label="عدد الخصومات"
-                  icon={<MdOutlineReceiptLong size={18} />}
-                >
-                  {application.discountCount || "—"}
-                </Row>
+                {(application.serviceType === "newline" ||
+                  application.selectedService === "upgrade") && (
+                  <Row
+                    label="عدد الخصومات"
+                    icon={<MdOutlineReceiptLong size={18} />}
+                  >
+                    {application.discountCount || "—"}
+                  </Row>
+                )}
               </>
             )}
 
