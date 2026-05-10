@@ -36,14 +36,12 @@ const ReviewsSection = () => {
   const [reviews, setReviews] = React.useState(staticReviews);
 
   React.useEffect(() => {
-    fetch("/api/reviews")
+    fetch("/api/reviews?limit=12&page=1")
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.length > 0) {
-          setReviews(data);
-        }
+        if (data?.reviews?.length > 0) setReviews(data.reviews);
       })
-      .catch((err) => console.log(err));
+      .catch(console.error);
   }, []);
 
   const reversedReviews = [...reviews].reverse();
@@ -90,6 +88,21 @@ const ReviewsSection = () => {
           <ScrollRow items={reviews} direction="right" speed={40} />
           <ScrollRow items={reversedReviews} direction="left" speed={45} />
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex justify-center mt-10 px-4"
+        >
+          <a
+            href="/reviews"
+            className="inline-flex items-center gap-2 text-sm font-bold text-[#18a2e3] border border-[#18a2e3]/30 px-6 py-2.5 rounded-2xl hover:bg-[#18a2e3]/5 hover:border-[#18a2e3]/60 transition"
+          >
+            عرض كل التقييمات
+            <span className="text-base leading-none">←</span>
+          </a>
+        </motion.div>
       </div>
     </section>
   );
