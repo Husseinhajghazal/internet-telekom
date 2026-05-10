@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -42,6 +42,7 @@ import {
   describeStatus,
   statusBadgeClass,
 } from "@/utils/general";
+import { useNavigationGuard } from "@/components/admin/NavigationGuardContext";
 
 const SERVICE_TYPE_OPTIONS = [
   { value: "newline", label: "خط جديد" },
@@ -54,7 +55,6 @@ const CONTRACT_PREF_OPTIONS = [
 ];
 
 const SELECTED_SERVICE_OPTIONS = [
-  { value: "upgrade", label: "تحويل من عقد لبدون عقد" },
   { value: "cancel", label: "إلغاء الاشتراك" },
   { value: "transfer-name", label: "نقل ملكية" },
   { value: "transfer-address", label: "نقل خط الإنترنت لعنوان آخر" },
@@ -247,6 +247,18 @@ export default function EditApplicationPage() {
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [isDirty]);
+
+  // Register the dirty guard with the NavigationGuardContext so sidebar/mobile nav
+  // links will prompt before navigating away with unsaved changes.
+  const navGuard = useNavigationGuard();
+  const isDirtyRef = useRef(isDirty);
+  isDirtyRef.current = isDirty;
+
+  useEffect(() => {
+    if (!navGuard) return;
+    const unregister = navGuard.registerGuard(() => isDirtyRef.current);
+    return unregister;
+  }, [navGuard]);
 
   const handleNavAway = (callback) => {
     if (isDirty) {
@@ -592,8 +604,8 @@ export default function EditApplicationPage() {
     formData.serviceType === "newline"
       ? "newline"
       : formData.serviceType === "services" &&
-          formData.selectedService === "upgrade"
-        ? "switch"
+          (formData.selectedService === "upgrade" || formData.selectedService === "shurn")
+        ? "change-company"
         : formData.serviceType === "services"
           ? "services"
           : formData.serviceType === "inquiry"
@@ -617,9 +629,23 @@ export default function EditApplicationPage() {
   const labelClass = "block text-sm font-semibold text-gray-700 mb-2";
 
   const ADDED_STATUSES = ["NOT_COMPLETED", "COMPLETED"];
-  const editAllowedStatuses = ADDED_STATUSES.includes(formData.status)
+  const SERVICES_ONLY_STATUSES = [
+    "UNDER_INSTALLATION",
+    "UNDER_FREEZING",
+    "UNDER_CANCELING",
+    "UNDER_CHANGE",
+    "UNDER_TRANSFER",
+  ];
+
+  let editAllowedStatuses = ADDED_STATUSES.includes(formData.status)
     ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
     : Object.keys(STATUS_LABELS).filter((s) => !ADDED_STATUSES.includes(s));
+
+  if (formData.serviceType !== "services") {
+    editAllowedStatuses = editAllowedStatuses.filter(
+      (s) => !SERVICES_ONLY_STATUSES.includes(s)
+    );
+  }
 
   return (
     <div className="min-h-svh bg-linear-to-br from-slate-50 via-cyan-50/30 to-white overflow-x-hidden">
@@ -873,19 +899,17 @@ export default function EditApplicationPage() {
                         noContractTechType: "",
                         contractPreference: "",
                         internetCompany: "",
+                        selectedService: "",
                       };
                       if (val === "newline") {
                         updates.serviceType = "newline";
-                        updates.selectedService = "";
-                      } else if (val === "switch") {
+                      } else if (val === "change-company") {
                         updates.serviceType = "services";
                         updates.selectedService = "upgrade";
-                      } else {
+                      } else if (val === "services") {
                         updates.serviceType = "services";
-                        updates.selectedService =
-                          formData.selectedService === "upgrade"
-                            ? ""
-                            : formData.selectedService;
+                      } else {
+                        updates.serviceType = "";
                       }
                       setPkgDuration("");
                       setPkgSpeed("");
@@ -897,7 +921,7 @@ export default function EditApplicationPage() {
                     {fromView !== "services" && (
                       <>
                         <option value="newline">خط إنترنت جديد</option>
-                        <option value="switch">تغيير لشركة آخرى</option>
+                        <option value="change-company">تغيير لشركة ٱخر</option>
                       </>
                     )}
                     {fromView !== "internet" && (
@@ -923,7 +947,21 @@ export default function EditApplicationPage() {
                     </select>
                   </div>
                 )}
-                {(topType === "switch" || topType === "services") && (
+                {topType === "change-company" && (
+                  <div>
+                    <label className={labelClass}>الخدمة المختارة</label>
+                    <select
+                      name="selectedService"
+                      value={formData.selectedService}
+                      onChange={handleChange}
+                      className={inputClass}
+                    >
+                      <option value="upgrade">تحويل من عقد لبدون عقد</option>
+                      <option value="shurn">خدمة شورن</option>
+                    </select>
+                  </div>
+                )}
+                {topType === "services" && (
                   <div>
                     <label className={labelClass}>الخدمة المختارة</label>
                     <select
@@ -933,14 +971,7 @@ export default function EditApplicationPage() {
                       className={inputClass}
                     >
                       <option value="">غير محدد</option>
-                      {(topType === "switch"
-                        ? SELECTED_SERVICE_OPTIONS.filter(
-                            (o) => o.value === "upgrade",
-                          )
-                        : SELECTED_SERVICE_OPTIONS.filter(
-                            (o) => o.value !== "upgrade",
-                          )
-                      ).map((opt) => (
+                      {SELECTED_SERVICE_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
                           {opt.label}
                         </option>
@@ -948,36 +979,6 @@ export default function EditApplicationPage() {
                     </select>
                   </div>
                 )}
-                <div>
-                  <label className={labelClass}>شركة الإنترنت</label>
-                  <select
-                    name="internetCompany"
-                    value={formData.internetCompany}
-                    onChange={handleChange}
-                    className={inputClass}
-                  >
-                    <option value="">غير محدد</option>
-                    {formData.serviceType === "newline" &&
-                    formData.contractPreference === "with" ? (
-                      <>
-                        <option value="Göknet">Göknet</option>
-                        <option value="Türk Telekom">Türk Telekom</option>
-                      </>
-                    ) : formData.serviceType === "newline" &&
-                      formData.contractPreference === "without" ? (
-                      <>
-                        <option value="Turknet">Turknet</option>
-                        <option value="Göknet">Göknet</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value="Göknet">Göknet</option>
-                        <option value="Türk Telekom">Türk Telekom</option>
-                        <option value="Turknet">Turknet</option>
-                      </>
-                    )}
-                  </select>
-                </div>
                 {formData.serviceType === "newline" &&
                   formData.contractPreference === "with" && (
                     <>
@@ -1065,7 +1066,8 @@ export default function EditApplicationPage() {
                     </select>
                   </div>
                 )}
-                {(formData.serviceType === "services" ||
+                {((formData.serviceType === "services" &&
+                  formData.selectedService !== "shurn") ||
                   (formData.serviceType === "newline" &&
                     formData.contractPreference === "without")) && (
                   <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1151,17 +1153,7 @@ export default function EditApplicationPage() {
                     )}
                   </div>
                 )}
-                <div>
-                  <label className={labelClass}>رقم الإشتراك</label>
-                  <input
-                    name="subscriptionNo"
-                    type="text"
-                    value={formData.subscriptionNo}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
-                </div>
-                {formData.serviceType === "services" && (
+                {formData.serviceType === "services" && formData.selectedService !== "upgrade" && (
                   <div>
                     <label className={labelClass}>قيمة آخر فاتورة</label>
                     <input
@@ -1175,6 +1167,68 @@ export default function EditApplicationPage() {
                 )}
               </>
             )}
+            <div>
+              <label className={labelClass}>شركة الإنترنت</label>
+              <select
+                name="internetCompany"
+                value={formData.internetCompany}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="">غير محدد</option>
+                {formData.serviceType === "newline" &&
+                formData.contractPreference === "with" ? (
+                  <>
+                    <option value="Göknet">Göknet</option>
+                    <option value="Türk Telekom">Türk Telekom</option>
+                  </>
+                ) : formData.serviceType === "newline" &&
+                  formData.contractPreference === "without" ? (
+                  <>
+                    <option value="Turknet">Turknet</option>
+                  </>
+                ) : formData.selectedService === "shurn" ? (
+                  <>
+                    <option value="Göknet">Göknet</option>
+                    <option value="Turknet">Turknet</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="Göknet">Göknet</option>
+                    <option value="Türk Telekom">Türk Telekom</option>
+                    <option value="Turknet">Turknet</option>
+                    <option value="Turkcell Superonline">Turkcell Superonline</option>
+                    <option value="Vodafone Net">Vodafone Net</option>
+                    <option value="Türksat Kablonet">Türksat Kablonet</option>
+                    <option value="Millenicom">Millenicom</option>
+                    <option value="Netspeed">Netspeed</option>
+                    <option value="D-Smart Net">D-Smart Net</option>
+                    <option value="Digiturk İnternet">Digiturk İnternet</option>
+                    <option value="GIBIRNet">GIBIRNet</option>
+                    <option value="Comnet">Comnet</option>
+                    <option value="Turkcell Fiber">Turkcell Fiber</option>
+                    <option value="FixNet">FixNet</option>
+                    <option value="Oris Telekom">Oris Telekom</option>
+                    <option value="İnternet Kutusu">İnternet Kutusu</option>
+                    <option value="Niobe Telekom">Niobe Telekom</option>
+                    <option value="PoyrazNet">PoyrazNet</option>
+                    <option value="Smile ADSL">Smile ADSL</option>
+                    <option value="Bimcell Ev İnterneti">Bimcell Ev İnterneti</option>
+                    <option value="Telenet">Telenet</option>
+                  </>
+                )}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>رقم الإشتراك</label>
+              <input
+                name="subscriptionNo"
+                type="text"
+                value={formData.subscriptionNo}
+                onChange={handleChange}
+                className={inputClass}
+              />
+            </div>
 
             <div className="md:col-span-2">
               <label className={labelClass}>العنوان</label>
@@ -1514,7 +1568,7 @@ export default function EditApplicationPage() {
       </main>
 
       {confirmOpen && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-3 sm:p-4">
+        <div className="fixed inset-0 z-100 flex items-end md:items-center justify-center p-3 sm:p-4">
           <div
             className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
             onClick={() => setConfirmOpen(false)}

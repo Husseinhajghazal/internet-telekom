@@ -15,7 +15,16 @@ import {
   MdInfoOutline,
 } from "react-icons/md";
 import Link from "next/link";
-import { formatDate } from "@/utils/general";
+import {
+  formatDate,
+  describeStatus,
+  describeServiceType,
+  describeContractPreference,
+  describeSelectedService,
+  describeNoContractTechType,
+  describeSelectedInquiry,
+  describeSelectedPackage,
+} from "@/utils/general";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 
@@ -82,21 +91,11 @@ const FIELD_LABELS = {
   delayedUntil: "تاريخ التأجيل",
   completedAt: "تاريخ التفعيل",
   whatsappStatus: "حالة الواتساب",
+  selectedInquiry: "الاستفسار المختار",
+  hasInternet: "يوجد إنترنت",
 };
 
 const VALUE_MAPS = {
-  status: {
-    NEW: "جديد",
-    UNDER_REVIEW: "قيد المراجعة",
-    UNDER_OBSERVATION: "تحت المراقبة",
-    DELAYED: "مؤجل",
-    NOT_COMPLETED: "غير مكتمل",
-    REJECTED: "مرفوض",
-    COMPLETED: "مكتمل",
-    TECHNICAL_PROBLEM: "مشكلة تقنية",
-    TRYING_TO_PERSUADE: "تجديد الطلب",
-    ACTIVATED: "مفعل",
-  },
   whatsappStatus: {
     NOT_ADDED: "غير مضاف",
     ADDED: "مضاف",
@@ -104,23 +103,6 @@ const VALUE_MAPS = {
   hasInternet: {
     yes: "نعم",
     no: "لا",
-  },
-  serviceType: {
-    newline: "خط جديد",
-    services: "خدمات",
-  },
-  contractPreference: {
-    with: "مع عقد إشتراك",
-    without: "بدون عقد إشتراك",
-  },
-  selectedService: {
-    upgrade: "تحويل من عقد لبدون عقد",
-    cancel: "إلغاء الاشتراك",
-    "transfer-name": "نقل ملكية",
-    "transfer-address": "نقل خط الإنترنت لعنوان آخر",
-    renew: "تجديد الاشتراك",
-    freeze: "تجميد الاشتراك",
-    "change-phone": "تغيير رقم الموبايل المثبت",
   },
 };
 
@@ -130,6 +112,15 @@ const formatLogValue = (key, value) => {
   if (["createdAt", "updatedAt", "completedAt", "delayedUntil"].includes(key)) {
     return formatDate(value, "4");
   }
+
+  if (key === "status") return describeStatus(value);
+  if (key === "serviceType") return describeServiceType(value);
+  if (key === "contractPreference") return describeContractPreference(value);
+  if (key === "selectedService") return describeSelectedService(value);
+  if (key === "noContractTechType") return describeNoContractTechType(value);
+  if (key === "selectedInquiry") return describeSelectedInquiry(value);
+  if (key === "selectedPackage") return describeSelectedPackage(value);
+
   if (VALUE_MAPS[key] && VALUE_MAPS[key][value]) return VALUE_MAPS[key][value];
   return String(value);
 };

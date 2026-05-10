@@ -4,6 +4,7 @@ import { verifySessionToken } from "../../../lib/admin-session";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import MobileAdminNav from "../../../components/admin/MobileAdminNav";
 import PreventClose from "../../../components/admin/PreventClose";
+import { NavigationGuardProvider } from "../../../components/admin/NavigationGuardContext";
 
 export default async function AdminPanelLayout({ children }) {
   const cookieStore = await cookies();
@@ -14,22 +15,24 @@ export default async function AdminPanelLayout({ children }) {
   }
 
   return (
-    <div className="flex bg-slate-50 min-h-svh text-right pb-20 lg:pb-0" dir="rtl">
-      <PreventClose />
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block shrink-0 z-30">
-        <AdminSidebar userRole={sessionUser.role} userName={sessionUser.fullName} />
-      </div>
+    <NavigationGuardProvider>
+      <div className="flex bg-slate-50 min-h-svh text-right pb-20 lg:pb-0" dir="rtl">
+        <PreventClose />
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block shrink-0 z-30">
+          <AdminSidebar userRole={sessionUser.role} userName={sessionUser.fullName} />
+        </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden relative">
-        {children}
-      </div>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden relative">
+          {children}
+        </div>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-100 pb-safe">
-         <MobileAdminNav userRole={sessionUser.role} />
+        {/* Mobile Bottom Navigation */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-100 pb-safe">
+           <MobileAdminNav userRole={sessionUser.role} />
+        </div>
       </div>
-    </div>
+    </NavigationGuardProvider>
   );
 }

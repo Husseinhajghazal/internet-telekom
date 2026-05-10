@@ -14,7 +14,6 @@ import {
   MdPhone,
   MdSpeed,
   MdUpdate,
-  MdWifi,
   MdOutlinePinDrop,
 } from "react-icons/md";
 import { FaBuildingCircleCheck, FaIdCard } from "react-icons/fa6";
@@ -108,14 +107,14 @@ export default function ApplicationDetailModal({
     : "—";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-3 sm:p-4">
+    <div className="fixed inset-0 z-100 flex items-end md:items-center justify-center p-3 sm:p-4">
       <div
         className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden flex flex-col"
+        className="relative w-full top-0 max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="detail-title"
@@ -307,11 +306,16 @@ export default function ApplicationDetailModal({
                 {describeContractPreference(application.contractPreference)}
               </Row>
             )}
-            {application.serviceType === "services" && (
-              <Row label="الخدمة المختارة" icon={<MdDescription size={18} />}>
-                {describeSelectedService(application.selectedService)}
-              </Row>
-            )}
+            {application.serviceType === "services" &&
+              application.selectedService !== "upgrade" &&
+              application.selectedService !== "shurn" && (
+                <Row
+                  label="الخدمة المختارة"
+                  icon={<MdDescription size={18} />}
+                >
+                  {describeSelectedService(application.selectedService)}
+                </Row>
+              )}
             {application.serviceType === "newline" &&
               application.contractPreference === "with" && (
                 <Row label="الباقة المختارة" icon={<MdSpeed size={18} />}>
@@ -354,7 +358,8 @@ export default function ApplicationDetailModal({
                 "—"
               )}
             </Row>
-            {application.serviceType === "services" && (
+            {application.serviceType === "services" &&
+              application.selectedService !== "upgrade" && (
               <Row
                 label="قيمة أخر فاتورة"
                 icon={<MdOutlineReceiptLong size={18} />}
@@ -513,7 +518,8 @@ export default function ApplicationDetailModal({
               </Row>
             ) : null}
 
-            {(application.serviceType === "services" ||
+            {((application.serviceType === "services" &&
+              application.selectedService !== "shurn") ||
               (application.serviceType === "newline" &&
                 application.contractPreference === "without")) && (
               <>

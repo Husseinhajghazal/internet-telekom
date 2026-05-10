@@ -26,6 +26,7 @@ const VALID_STATUSES = [
   "ACTIVATED",
   "WAITING_FOR_PORT",
   "UNDER_INSTALLATION",
+  "UNDER_FREEZING",
 ];
 
 const ADDED_VIEW_STATUSES = ["NOT_COMPLETED", "COMPLETED"];
@@ -85,6 +86,26 @@ function buildWhere(searchParams) {
   if (internetCompanyParam) {
     andConditions.push({
       internetCompany: { contains: internetCompanyParam, mode: "insensitive" },
+    });
+  }
+
+  const selectedServiceParam = searchParams.get("selectedService")?.trim();
+  if (selectedServiceParam) {
+    andConditions.push({ selectedService: selectedServiceParam });
+  }
+
+  const topTypeParam = searchParams.get("topType")?.trim();
+  if (topTypeParam === "newline") {
+    andConditions.push({ serviceType: "newline" });
+  } else if (topTypeParam === "switch") {
+    andConditions.push({
+      serviceType: "services",
+      selectedService: { in: ["upgrade", "shurn"] },
+    });
+  } else if (topTypeParam === "services") {
+    andConditions.push({
+      serviceType: "services",
+      selectedService: { notIn: ["upgrade", "shurn"] },
     });
   }
 
@@ -172,13 +193,14 @@ function buildWhere(searchParams) {
       OR: [
         { serviceType: "newline" },
         { serviceType: "services", selectedService: "upgrade" },
+        { serviceType: "services", selectedService: "shurn" },
       ],
     });
   } else if (serviceTypeParam === "services") {
     andConditions.push({
       OR: [
         { serviceType: "inquiry" },
-        { serviceType: "services", NOT: { selectedService: "upgrade" } },
+        { serviceType: "services", selectedService: { notIn: ["upgrade", "shurn"] } },
       ],
     });
   }
@@ -248,7 +270,22 @@ export async function GET(request) {
           if (Number.isInteger(idx) && idx > 0 && idx <= 2147483647)
             orCond.push({ appIndex: idx });
         }
-        searchAnd = [{ OR: orCond }];
+        searchAnd.push({ OR: orCond });
+      }
+
+      const topTypeParam = searchParams.get("topType")?.trim();
+      if (topTypeParam === "newline") {
+        searchAnd.push({ serviceType: "newline" });
+      } else if (topTypeParam === "switch") {
+        searchAnd.push({
+          serviceType: "services",
+          selectedService: { in: ["upgrade", "shurn"] },
+        });
+      } else if (topTypeParam === "services") {
+        searchAnd.push({
+          serviceType: "services",
+          selectedService: { notIn: ["upgrade", "shurn"] },
+        });
       }
 
       const [allActivated, dueDelayed] = await Promise.all([

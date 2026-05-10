@@ -48,6 +48,14 @@ import { formatDate, describeStatus, statusBadgeClass } from "@/utils/general";
 import { STATUS_LABELS } from "@/utils/data";
 import { useRouter } from "next/navigation";
 
+const SERVICES_ONLY_STATUSES = [
+  "UNDER_INSTALLATION",
+  "UNDER_FREEZING",
+  "UNDER_CANCELING",
+  "UNDER_CHANGE",
+  "UNDER_TRANSFER",
+];
+
 const ACCENT = "#18a2e3";
 const ACCENT_DARK = "#0d8bc9";
 
@@ -538,6 +546,12 @@ ${reviewLink}
   const [debouncedCompany, setDebouncedCompany] = useState(
     () => getStoredFilters()?.internetCompanyFilter ?? "",
   );
+  const [selectedServiceFilter, setSelectedServiceFilter] = useState(
+    () => getStoredFilters()?.selectedServiceFilter ?? "",
+  );
+  const [topTypeFilter, setTopTypeFilter] = useState(
+    () => getStoredFilters()?.topTypeFilter ?? "",
+  );
   const [lastClickedAppId, setLastClickedAppId] = useState(() => {
     try {
       return sessionStorage.getItem(`${storageKey}_last`) || null;
@@ -563,6 +577,8 @@ ${reviewLink}
           dateFrom,
           dateTo,
           internetCompanyFilter,
+          selectedServiceFilter,
+          topTypeFilter,
           page,
         }),
       );
@@ -575,6 +591,8 @@ ${reviewLink}
     dateFrom,
     dateTo,
     internetCompanyFilter,
+    selectedServiceFilter,
+    topTypeFilter,
     page,
   ]);
 
@@ -589,6 +607,8 @@ ${reviewLink}
     setSearchInput("");
     setDebouncedQ("");
     setStatusFilter("");
+    setSelectedServiceFilter("");
+    setTopTypeFilter("");
     setDateField(isDeletedMode ? "updatedAt" : "createdAt");
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000;
@@ -634,18 +654,24 @@ ${reviewLink}
         }
       }
       if (debouncedCompany) params.set("internetCompany", debouncedCompany);
+      if (isServicesMode && selectedServiceFilter)
+        params.set("selectedService", selectedServiceFilter);
+      if (isExpiringMode && topTypeFilter) params.set("topType", topTypeFilter);
       return params.toString();
     },
     [
       isDeletedMode,
       isAddedMode,
       isExpiringMode,
+      isServicesMode,
       debouncedQ,
       statusFilter,
       dateField,
       dateFrom,
       dateTo,
       debouncedCompany,
+      selectedServiceFilter,
+      topTypeFilter,
     ],
   );
 
@@ -971,6 +997,8 @@ ${reviewLink}
     setStatusFilter("");
     setInternetCompanyFilter("");
     setDebouncedCompany("");
+    setSelectedServiceFilter("");
+    setTopTypeFilter("");
     setDateField("createdAt");
     setDateFrom("");
     setDateTo("");
@@ -982,7 +1010,9 @@ ${reviewLink}
     Boolean(statusFilter) ||
     Boolean(dateFrom) ||
     Boolean(dateTo) ||
-    Boolean(internetCompanyFilter);
+    Boolean(internetCompanyFilter) ||
+    Boolean(selectedServiceFilter) ||
+    Boolean(topTypeFilter);
 
   return (
     <div className="space-y-8">
@@ -1095,9 +1125,9 @@ ${reviewLink}
             onClick={clearFilters}
             disabled={!mounted || !hasActiveFilters}
             title="مسح الفلاتر"
-            className="w-8 h-8 flex items-center justify-center rounded-xl text-gray-600 hover:text-red-500 hover:bg-red-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
+            className="px-2 whitespace-nowrap flex items-center justify-center rounded-xl text-red-500 bg-red-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <RxReset size={18} />
+            مسح الفلاتر
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
@@ -1122,24 +1152,67 @@ ${reviewLink}
               />
             </div>
           </div>
-          <div className="lg:col-span-2">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              شركة الإنترنت
-            </label>
-            <select
-              value={internetCompanyFilter}
-              onChange={(e) => {
-                setInternetCompanyFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-            >
-              <option value="">كل الشركات</option>
-              <option value="Türk Telekom">Türk Telekom</option>
-              <option value="Göknet">Göknet</option>
-              <option value="Turknet">Turknet</option>
-            </select>
-          </div>
+          {!isExpiringMode && isServicesMode ? (
+            <div className="lg:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                نوع الخدمة
+              </label>
+              <select
+                value={selectedServiceFilter}
+                onChange={(e) => {
+                  setSelectedServiceFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+              >
+                <option value="">كل الخدمات</option>
+                <option value="cancel">إلغاء الاشتراك</option>
+                <option value="transfer-name">نقل ملكية</option>
+                <option value="transfer-address">نقل خط لعنوان آخر</option>
+                <option value="renew">تجديد الاشتراك</option>
+                <option value="freeze">تجميد الاشتراك</option>
+                <option value="change-phone">تغيير رقم الموبايل</option>
+              </select>
+            </div>
+          ) : isExpiringMode ? (
+            <div className="lg:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                نوع الطلب
+              </label>
+              <select
+                value={topTypeFilter}
+                onChange={(e) => {
+                  setTopTypeFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+              >
+                <option value="">كل الأنواع</option>
+                <option value="newline">خط إنترنت جديد</option>
+                <option value="switch">تغيير لشركة أخرى</option>
+                <option value="services">خدمات</option>
+              </select>
+            </div>
+          ) : (
+            <div className="lg:col-span-2">
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                شركة الإنترنت
+              </label>
+              <select
+                value={internetCompanyFilter}
+                onChange={(e) => {
+                  setInternetCompanyFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+              >
+                <option value="">كل الشركات</option>
+                <option value="Türk Telekom">Türk Telekom</option>
+                <option value="Göknet">Göknet</option>
+                <option value="Turknet">Turknet</option>
+              </select>
+            </div>
+          )}
           {!isDeletedMode && !isExpiringMode && (
             <div className="lg:col-span-2">
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
@@ -1155,11 +1228,12 @@ ${reviewLink}
               >
                 <option value="">كل الحالات</option>
                 {Object.entries(STATUS_LABELS)
-                  .filter(([key]) =>
-                    isAddedMode
+                  .filter(([key]) => {
+                    if (!isServicesMode && SERVICES_ONLY_STATUSES.includes(key)) return false;
+                    return isAddedMode
                       ? key === "NOT_COMPLETED" || key === "COMPLETED"
-                      : key !== "NOT_COMPLETED" && key !== "COMPLETED",
-                  )
+                      : key !== "NOT_COMPLETED" && key !== "COMPLETED";
+                  })
                   .map(([key, label]) => (
                     <option key={key} value={key}>
                       {label}
@@ -1628,7 +1702,10 @@ ${reviewLink}
               : isAddedMode
                 ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
                 : Object.keys(STATUS_LABELS).filter(
-                    (s) => s !== "NOT_COMPLETED" && s !== "COMPLETED",
+                    (s) =>
+                      s !== "NOT_COMPLETED" &&
+                      s !== "COMPLETED" &&
+                      (isServicesMode || !SERVICES_ONLY_STATUSES.includes(s))
                   )
           }
         />

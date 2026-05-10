@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import GuardedLink from "./GuardedLink";
 import { FiStar, FiUser, FiInbox, FiClock, FiWifi } from "react-icons/fi";
 import { MdDelete, MdMiscellaneousServices, MdPerson } from "react-icons/md";
 
@@ -70,7 +70,7 @@ export default function MobileAdminNav({ userRole }) {
           expiringCount !== null &&
           expiringCount > 0;
         return (
-          <Link
+          <GuardedLink
             key={item.name}
             href={item.href}
             className={`flex flex-col items-center justify-center gap-1.5 w-16 sm:w-20 p-2 rounded-xl transition-all shrink-0 snap-center ${
@@ -95,7 +95,7 @@ export default function MobileAdminNav({ userRole }) {
               )}
             </div>
             <span className="truncate w-full text-center">{item.name}</span>
-          </Link>
+          </GuardedLink>
         );
       })}
     </nav>

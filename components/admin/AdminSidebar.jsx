@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import GuardedLink from "./GuardedLink";
 import {
   FiChevronRight,
   FiChevronLeft,
@@ -160,7 +161,7 @@ export default function AdminSidebar({ userRole, userName }) {
             expiringCount !== null &&
             expiringCount > 0;
           return (
-            <Link
+            <GuardedLink
               key={item.name}
               href={item.href}
               title={isCollapsed ? item.name : undefined}
@@ -196,7 +197,7 @@ export default function AdminSidebar({ userRole, userName }) {
                   </span>
                 )}
               </div>
-            </Link>
+            </GuardedLink>
           );
         })}
       </nav>

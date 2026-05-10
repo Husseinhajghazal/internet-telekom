@@ -138,14 +138,16 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                   {describeContractPreference(application.contractPreference)}
                 </Row>
               )}
-              {application.serviceType === "services" && (
-                <Row
-                  label="الخدمة المختارة"
-                  icon={<MdOutlineDescription size={18} />}
-                >
-                  {describeSelectedService(application.selectedService)}
-                </Row>
-              )}
+              {application.serviceType === "services" &&
+                application.selectedService !== "upgrade" &&
+                application.selectedService !== "shurn" && (
+                  <Row
+                    label="الخدمة المختارة"
+                    icon={<MdOutlineDescription size={18} />}
+                  >
+                    {describeSelectedService(application.selectedService)}
+                  </Row>
+                )}
               {application.serviceType === "newline" &&
                 application.contractPreference === "with" && (
                   <Row label="الباقة المختارة" icon={<MdSpeed size={18} />}>

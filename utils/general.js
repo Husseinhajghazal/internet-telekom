@@ -3,7 +3,8 @@ import { STATUS_LABELS } from "./data";
 
 const describeServiceType = (serviceType = "", selectedService = "") => {
   if (serviceType === "newline") return "خط إنترنت جديد";
-  if (serviceType === "services" && selectedService === "upgrade") return "تغيير لشركة آخرى";
+  if (serviceType === "services" && selectedService === "upgrade") return "تحويل من عقد لبدون عقد";
+  if (serviceType === "services" && selectedService === "shurn") return "خدمة شورن";
   if (serviceType === "services") return "خدمات";
   if (serviceType === "inquiry") return "استشارات";
   return serviceType || "—";
@@ -338,6 +339,14 @@ const statusBadgeClass = (status) => {
       return "bg-yellow-100 text-yellow-900 ring-1 ring-yellow-200/60";
     case "UNDER_INSTALLATION":
       return "bg-teal-100 text-teal-900 ring-1 ring-teal-200/60";
+    case "UNDER_FREEZING":
+      return "bg-cyan-100 text-cyan-900 ring-1 ring-cyan-200/60";
+    case "UNDER_CANCELING":
+      return "bg-pink-100 text-pink-900 ring-1 ring-pink-200/60";
+    case "UNDER_CHANGE":
+      return "bg-indigo-100 text-indigo-900 ring-1 ring-indigo-200/60";
+    case "UNDER_TRANSFER":
+      return "bg-violet-100 text-violet-900 ring-1 ring-violet-200/60";
     default:
       return "bg-gray-100 text-gray-800";
   }
