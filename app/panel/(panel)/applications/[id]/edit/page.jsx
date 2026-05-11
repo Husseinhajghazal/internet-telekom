@@ -632,7 +632,8 @@ export default function EditApplicationPage() {
       ? "newline"
       : formData.serviceType === "services" &&
           (formData.selectedService === "upgrade" ||
-            formData.selectedService === "shurn")
+            formData.selectedService === "shurn" ||
+            formData.selectedService === "shurn-turknet")
         ? "change-company"
         : formData.serviceType === "services"
           ? "services"
@@ -923,382 +924,401 @@ export default function EditApplicationPage() {
                 />
               </div>
             )}
-            {formData.status !== "DELAYED" && (
-              <>
-                <div>
-                  <label className={labelClass}>نوع الطلب</label>
-                  <select
-                    value={topType}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      const updates = {
-                        selectedPackage: "",
-                        noContractTechType: "",
-                        contractPreference: "",
-                        internetCompany: "",
-                        selectedService: "",
-                      };
-                      if (val === "newline") {
-                        updates.serviceType = "newline";
-                      } else if (val === "change-company") {
-                        updates.serviceType = "services";
-                        updates.selectedService = "upgrade";
-                      } else if (val === "services") {
-                        updates.serviceType = "services";
-                      } else {
-                        updates.serviceType = "";
-                      }
-                      setPkgDuration("");
-                      setPkgSpeed("");
-                      setFormData((prev) => ({ ...prev, ...updates }));
-                    }}
-                    className={inputClass}
-                  >
-                    <option value="">غير محدد</option>
-                    {fromView !== "services" && (
-                      <>
-                        <option value="newline">خط إنترنت جديد</option>
-                        <option value="change-company">تحويل لشركة ٱخرى</option>
-                      </>
-                    )}
-                    {fromView !== "internet" && (
-                      <option value="services">خدمات</option>
-                    )}
-                  </select>
-                </div>
-                {formData.serviceType === "newline" && (
-                  <div>
-                    <label className={labelClass}>نوع العقد</label>
-                    <select
-                      name="contractPreference"
-                      value={formData.contractPreference}
-                      onChange={handleChange}
-                      className={inputClass}
-                    >
-                      <option value="">غير محدد</option>
-                      {CONTRACT_PREF_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+            <div>
+              <label className={labelClass}>نوع الطلب</label>
+              <select
+                value={topType}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const updates = {
+                    selectedPackage: "",
+                    noContractTechType: "",
+                    contractPreference: "",
+                    internetCompany: "",
+                    selectedService: "",
+                  };
+                  if (val === "newline") {
+                    updates.serviceType = "newline";
+                  } else if (val === "change-company") {
+                    updates.serviceType = "services";
+                    updates.selectedService = "upgrade";
+                  } else if (val === "services") {
+                    updates.serviceType = "services";
+                  } else {
+                    updates.serviceType = "";
+                  }
+                  setPkgDuration("");
+                  setPkgSpeed("");
+                  setFormData((prev) => ({ ...prev, ...updates }));
+                }}
+                className={inputClass}
+              >
+                <option value="">غير محدد</option>
+                {fromView !== "services" && (
+                  <>
+                    <option value="newline">خط إنترنت جديد</option>
+                    <option value="change-company">تحويل لشركة ٱخرى</option>
+                  </>
                 )}
-                {topType === "change-company" && (
-                  <div>
-                    <label className={labelClass}>الخدمة المختارة</label>
-                    <select
-                      name="selectedService"
-                      value={formData.selectedService}
-                      onChange={handleChange}
-                      className={inputClass}
-                    >
-                      <option value="upgrade">تحويل من عقد لبدون عقد</option>
-                      <option value="shurn">خدمة شورن لجوك نت</option>
-                    </select>
-                  </div>
+                {fromView !== "internet" && (
+                  <option value="services">خدمات</option>
                 )}
-                {topType === "services" && (
-                  <div>
-                    <label className={labelClass}>الخدمة المختارة</label>
-                    <select
-                      name="selectedService"
-                      value={formData.selectedService}
-                      onChange={handleChange}
-                      className={inputClass}
-                    >
-                      <option value="">غير محدد</option>
-                      {SELECTED_SERVICE_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+              </select>
+            </div>
+            {formData.serviceType === "newline" && (
+              <div>
+                <label className={labelClass}>نوع العقد</label>
+                <select
+                  name="contractPreference"
+                  value={formData.contractPreference}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">غير محدد</option>
+                  {CONTRACT_PREF_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {topType === "change-company" && (
+              <div>
+                <label className={labelClass}>الخدمة المختارة</label>
+                <select
+                  name="selectedService"
+                  value={formData.selectedService}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="upgrade">تحويل من عقد لبدون عقد</option>
+                  <option value="shurn">خدمة شورن لGöknet</option>
+                  <option value="shurn-turknet">خدمة شورن لTurknet</option>
+                </select>
+              </div>
+            )}
+            {topType === "services" && (
+              <div>
+                <label className={labelClass}>الخدمة المختارة</label>
+                <select
+                  name="selectedService"
+                  value={formData.selectedService}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">غير محدد</option>
+                  {SELECTED_SERVICE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div>
+              <label className={labelClass}>شركة الإنترنت</label>
+              <select
+                name="internetCompany"
+                value={formData.internetCompany}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="">غير محدد</option>
+                {formData.selectedService === "shurn" ? (
+                  <>
+                    <option value="Türk Telekom">Türk Telekom</option>
+                    <option value="Turknet">Turknet</option>
+                    <option value="Turkcell Superonline">
+                      Turkcell Superonline
+                    </option>
+                    <option value="Vodafone Net">Vodafone Net</option>
+                    <option value="Türksat Kablonet">Türksat Kablonet</option>
+                    <option value="Millenicom">Millenicom</option>
+                    <option value="Netspeed">Netspeed</option>
+                    <option value="D-Smart Net">D-Smart Net</option>
+                    <option value="Digiturk İnternet">Digiturk İnternet</option>
+                    <option value="GIBIRNet">GIBIRNet</option>
+                    <option value="Comnet">Comnet</option>
+                    <option value="Turkcell Fiber">Turkcell Fiber</option>
+                    <option value="FixNet">FixNet</option>
+                    <option value="Oris Telekom">Oris Telekom</option>
+                    <option value="İnternet Kutusu">İnternet Kutusu</option>
+                    <option value="Niobe Telekom">Niobe Telekom</option>
+                    <option value="PoyrazNet">PoyrazNet</option>
+                    <option value="Smile ADSL">Smile ADSL</option>
+                    <option value="Bimcell Ev İnterneti">
+                      Bimcell Ev İnterneti
+                    </option>
+                    <option value="Telenet">Telenet</option>
+                  </>
+                ) : formData.selectedService === "shurn-turknet" ? (
+                  <>
+                    <option value="Göknet">Göknet</option>
+                    <option value="Türk Telekom">Türk Telekom</option>
+                    <option value="Turkcell Superonline">
+                      Turkcell Superonline
+                    </option>
+                    <option value="Vodafone Net">Vodafone Net</option>
+                    <option value="Türksat Kablonet">Türksat Kablonet</option>
+                    <option value="Millenicom">Millenicom</option>
+                    <option value="Netspeed">Netspeed</option>
+                    <option value="D-Smart Net">D-Smart Net</option>
+                    <option value="Digiturk İnternet">Digiturk İnternet</option>
+                    <option value="GIBIRNet">GIBIRNet</option>
+                    <option value="Comnet">Comnet</option>
+                    <option value="Turkcell Fiber">Turkcell Fiber</option>
+                    <option value="FixNet">FixNet</option>
+                    <option value="Oris Telekom">Oris Telekom</option>
+                    <option value="İnternet Kutusu">İnternet Kutusu</option>
+                    <option value="Niobe Telekom">Niobe Telekom</option>
+                    <option value="PoyrazNet">PoyrazNet</option>
+                    <option value="Smile ADSL">Smile ADSL</option>
+                    <option value="Bimcell Ev İnterneti">
+                      Bimcell Ev İnterneti
+                    </option>
+                    <option value="Telenet">Telenet</option>
+                  </>
+                ) : formData.selectedService === "upgrade" ? (
+                  <option value="Turknet">Turknet</option>
+                ) : formData.serviceType === "newline" &&
+                  formData.contractPreference === "without" ? (
+                  <option value="Turknet">Turknet</option>
+                ) : formData.serviceType === "newline" &&
+                  formData.contractPreference === "with" ? (
+                  <>
+                    <option value="Göknet">Göknet</option>
+                    <option value="Türk Telekom">Türk Telekom</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="Göknet">Göknet</option>
+                    <option value="Türk Telekom">Türk Telekom</option>
+                    <option value="Turknet">Turknet</option>
+                    <option value="Turkcell Superonline">
+                      Turkcell Superonline
+                    </option>
+                    <option value="Vodafone Net">Vodafone Net</option>
+                    <option value="Türksat Kablonet">Türksat Kablonet</option>
+                    <option value="Millenicom">Millenicom</option>
+                    <option value="Netspeed">Netspeed</option>
+                    <option value="D-Smart Net">D-Smart Net</option>
+                    <option value="Digiturk İnternet">Digiturk İnternet</option>
+                    <option value="GIBIRNet">GIBIRNet</option>
+                    <option value="Comnet">Comnet</option>
+                    <option value="Turkcell Fiber">Turkcell Fiber</option>
+                    <option value="FixNet">FixNet</option>
+                    <option value="Oris Telekom">Oris Telekom</option>
+                    <option value="İnternet Kutusu">İnternet Kutusu</option>
+                    <option value="Niobe Telekom">Niobe Telekom</option>
+                    <option value="PoyrazNet">PoyrazNet</option>
+                    <option value="Smile ADSL">Smile ADSL</option>
+                    <option value="Bimcell Ev İnterneti">
+                      Bimcell Ev İnterneti
+                    </option>
+                    <option value="Telenet">Telenet</option>
+                  </>
                 )}
-                <div>
-                  <label className={labelClass}>شركة الإنترنت</label>
-                  <select
-                    name="internetCompany"
-                    value={formData.internetCompany}
-                    onChange={handleChange}
-                    className={inputClass}
-                  >
-                    <option value="">غير محدد</option>
-                    {formData.selectedService === "shurn" ? (
-                      <>
-                        <option value="Türk Telekom">Türk Telekom</option>
-                        <option value="Turknet">Turknet</option>
-                        <option value="Turkcell Superonline">
-                          Turkcell Superonline
-                        </option>
-                        <option value="Vodafone Net">Vodafone Net</option>
-                        <option value="Türksat Kablonet">
-                          Türksat Kablonet
-                        </option>
-                        <option value="Millenicom">Millenicom</option>
-                        <option value="Netspeed">Netspeed</option>
-                        <option value="D-Smart Net">D-Smart Net</option>
-                        <option value="Digiturk İnternet">
-                          Digiturk İnternet
-                        </option>
-                        <option value="GIBIRNet">GIBIRNet</option>
-                        <option value="Comnet">Comnet</option>
-                        <option value="Turkcell Fiber">Turkcell Fiber</option>
-                        <option value="FixNet">FixNet</option>
-                        <option value="Oris Telekom">Oris Telekom</option>
-                        <option value="İnternet Kutusu">İnternet Kutusu</option>
-                        <option value="Niobe Telekom">Niobe Telekom</option>
-                        <option value="PoyrazNet">PoyrazNet</option>
-                        <option value="Smile ADSL">Smile ADSL</option>
-                        <option value="Bimcell Ev İnterneti">
-                          Bimcell Ev İnterneti
-                        </option>
-                        <option value="Telenet">Telenet</option>
-                      </>
-                    ) : formData.selectedService === "upgrade" ? (
-                      <option value="Turknet">Turknet</option>
-                    ) : formData.serviceType === "newline" &&
-                      formData.contractPreference === "without" ? (
-                      <option value="Turknet">Turknet</option>
-                    ) : formData.serviceType === "newline" &&
-                      formData.contractPreference === "with" ? (
-                      <>
-                        <option value="Göknet">Göknet</option>
-                        <option value="Türk Telekom">Türk Telekom</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value="Göknet">Göknet</option>
-                        <option value="Türk Telekom">Türk Telekom</option>
-                        <option value="Turknet">Turknet</option>
-                        <option value="Turkcell Superonline">
-                          Turkcell Superonline
-                        </option>
-                        <option value="Vodafone Net">Vodafone Net</option>
-                        <option value="Türksat Kablonet">
-                          Türksat Kablonet
-                        </option>
-                        <option value="Millenicom">Millenicom</option>
-                        <option value="Netspeed">Netspeed</option>
-                        <option value="D-Smart Net">D-Smart Net</option>
-                        <option value="Digiturk İnternet">
-                          Digiturk İnternet
-                        </option>
-                        <option value="GIBIRNet">GIBIRNet</option>
-                        <option value="Comnet">Comnet</option>
-                        <option value="Turkcell Fiber">Turkcell Fiber</option>
-                        <option value="FixNet">FixNet</option>
-                        <option value="Oris Telekom">Oris Telekom</option>
-                        <option value="İnternet Kutusu">İnternet Kutusu</option>
-                        <option value="Niobe Telekom">Niobe Telekom</option>
-                        <option value="PoyrazNet">PoyrazNet</option>
-                        <option value="Smile ADSL">Smile ADSL</option>
-                        <option value="Bimcell Ev İnterneti">
-                          Bimcell Ev İnterneti
-                        </option>
-                        <option value="Telenet">Telenet</option>
-                      </>
-                    )}
-                  </select>
-                </div>
-                {formData.serviceType === "newline" &&
-                  formData.contractPreference === "with" && (
-                    <>
-                      {pkgType && (
-                        <div>
-                          <label className={labelClass}>مدة العقد</label>
-                          <select
-                            value={pkgDuration}
-                            onChange={(e) =>
-                              handlePkgChange("duration", e.target.value)
-                            }
-                            className={inputClass}
-                          >
-                            <option value="">غير محدد</option>
-                            {(PKG_DURATIONS[pkgType] || []).map((opt) => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                      {pkgType && pkgDuration && (
-                        <div>
-                          <label className={labelClass}>سرعة الباقة</label>
-                          <select
-                            value={pkgSpeed}
-                            onChange={(e) =>
-                              handlePkgChange("speed", e.target.value)
-                            }
-                            className={inputClass}
-                          >
-                            <option value="">غير محدد</option>
-                            {(PKG_SPEEDS[pkgType] || []).map((s) => (
-                              <option key={s} value={s}>
-                                {s} ميجا
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </>
+              </select>
+            </div>
+            {formData.serviceType === "newline" &&
+              formData.contractPreference === "with" && (
+                <>
+                  {pkgType && (
+                    <div>
+                      <label className={labelClass}>مدة العقد</label>
+                      <select
+                        value={pkgDuration}
+                        onChange={(e) =>
+                          handlePkgChange("duration", e.target.value)
+                        }
+                        className={inputClass}
+                      >
+                        <option value="">غير محدد</option>
+                        {(PKG_DURATIONS[pkgType] || []).map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   )}
-                {((formData.serviceType === "newline" &&
-                  formData.contractPreference === "without") ||
-                  (formData.serviceType === "services" &&
-                    formData.selectedService === "upgrade")) && (
-                  <div>
-                    <label className={labelClass}>نوع التقنية</label>
-                    <select
-                      name="noContractTechType"
-                      value={formData.noContractTechType}
-                      onChange={handleChange}
-                      className={inputClass}
-                    >
-                      <option value="">غير محدد</option>
-                      {(formData.internetCompany === "Göknet"
-                        ? TECH_TYPE_OPTIONS.filter(
-                            (t) => t.value !== "gigafiber",
-                          )
-                        : TECH_TYPE_OPTIONS
-                      ).map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                <div>
-                  <label className={labelClass}>رقم الإشتراك</label>
-                  <input
-                    name="subscriptionNo"
-                    type="text"
-                    value={formData.subscriptionNo}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
-                </div>
-                {formData.serviceType === "inquiry" && (
-                  <div>
-                    <label className={labelClass}>الاستفسار</label>
-                    <select
-                      name="selectedInquiry"
-                      value={formData.selectedInquiry}
-                      onChange={handleChange}
-                      className={inputClass}
-                    >
-                      <option value="">غير محدد</option>
-                      {INQUIRY_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                {((formData.serviceType === "services" &&
-                  formData.selectedService !== "shurn") ||
-                  (formData.serviceType === "newline" &&
-                    formData.contractPreference === "without")) && (
-                  <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(formData.serviceType === "newline" ||
-                      formData.selectedService === "upgrade") && (
-                      <>
-                        <div className="flex items-center gap-3">
-                          <input
-                            name="electronicApproval"
-                            id="electronicApproval"
-                            type="checkbox"
-                            checked={formData.electronicApproval}
-                            onChange={handleChange}
-                            className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
-                          />
-                          <label
-                            htmlFor="electronicApproval"
-                            className="text-sm font-semibold text-gray-700 cursor-pointer"
-                          >
-                            موافقة الكترونية
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <input
-                            name="approvalViaShipping"
-                            id="approvalViaShipping"
-                            type="checkbox"
-                            checked={formData.approvalViaShipping}
-                            onChange={handleChange}
-                            className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
-                          />
-                          <label
-                            htmlFor="approvalViaShipping"
-                            className="text-sm font-semibold text-gray-700 cursor-pointer"
-                          >
-                            موافقة عبر الشحن
-                          </label>
-                        </div>
-                      </>
-                    )}
+                  {pkgType && pkgDuration && (
+                    <div>
+                      <label className={labelClass}>سرعة الباقة</label>
+                      <select
+                        value={pkgSpeed}
+                        onChange={(e) =>
+                          handlePkgChange("speed", e.target.value)
+                        }
+                        className={inputClass}
+                      >
+                        <option value="">غير محدد</option>
+                        {(PKG_SPEEDS[pkgType] || []).map((s) => (
+                          <option key={s} value={s}>
+                            {s} ميجا
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </>
+              )}
+            {((formData.serviceType === "newline" &&
+              formData.contractPreference === "without") ||
+              (formData.serviceType === "services" &&
+                (formData.selectedService === "upgrade" ||
+                  formData.selectedService === "shurn" ||
+                  formData.selectedService === "shurn-turknet"))) && (
+              <div>
+                <label className={labelClass}>نوع التقنية</label>
+                <select
+                  name="noContractTechType"
+                  value={formData.noContractTechType}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">غير محدد</option>
+                  {(formData.internetCompany === "Göknet" ||
+                  formData.selectedService === "shurn"
+                    ? TECH_TYPE_OPTIONS.filter((t) => t.value !== "gigafiber")
+                    : TECH_TYPE_OPTIONS
+                  ).map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div>
+              <label className={labelClass}>رقم الإشتراك</label>
+              <input
+                name="subscriptionNo"
+                type="text"
+                value={formData.subscriptionNo}
+                onChange={handleChange}
+                className={inputClass}
+              />
+            </div>
+            {formData.serviceType === "inquiry" && (
+              <div>
+                <label className={labelClass}>الاستفسار</label>
+                <select
+                  name="selectedInquiry"
+                  value={formData.selectedInquiry}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  <option value="">غير محدد</option>
+                  {INQUIRY_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {((formData.serviceType === "services" &&
+              formData.selectedService !== "shurn") ||
+              (formData.serviceType === "newline" &&
+                formData.contractPreference === "without")) && (
+              <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {(formData.serviceType === "newline" ||
+                  formData.selectedService === "upgrade" ||
+                  formData.selectedService === "shurn-turknet") && (
+                  <>
                     <div className="flex items-center gap-3">
                       <input
-                        name="paidByUserName"
-                        id="paidByUserName"
+                        name="electronicApproval"
+                        id="electronicApproval"
                         type="checkbox"
-                        checked={formData.paidByUserName}
+                        checked={formData.electronicApproval}
                         onChange={handleChange}
                         className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
                       />
                       <label
-                        htmlFor="paidByUserName"
+                        htmlFor="electronicApproval"
                         className="text-sm font-semibold text-gray-700 cursor-pointer"
                       >
-                        مدفوع من {formData.name}
+                        موافقة الكترونية
                       </label>
                     </div>
-                    {!formData.paidByUserName && (
-                      <div>
-                        <label className={labelClass}>إسم الشخص الذي دفع</label>
-                        <input
-                          name="paidByName"
-                          type="text"
-                          value={formData.paidByName}
-                          onChange={handleChange}
-                          className={inputClass}
-                          placeholder="أدخل إسم الشخص الدافع"
-                        />
-                      </div>
-                    )}
-                    {(formData.serviceType === "newline" ||
-                      formData.selectedService === "upgrade") && (
-                      <div>
-                        <label className={labelClass}>عدد الخصومات</label>
-                        <input
-                          name="discountCount"
-                          type="text"
-                          value={formData.discountCount}
-                          onChange={handleChange}
-                          className={inputClass}
-                          placeholder="مثال: 3"
-                        />
-                      </div>
-                    )}
-                  </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        name="approvalViaShipping"
+                        id="approvalViaShipping"
+                        type="checkbox"
+                        checked={formData.approvalViaShipping}
+                        onChange={handleChange}
+                        className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                      />
+                      <label
+                        htmlFor="approvalViaShipping"
+                        className="text-sm font-semibold text-gray-700 cursor-pointer"
+                      >
+                        موافقة عبر الشحن
+                      </label>
+                    </div>
+                  </>
                 )}
-                {topType === "services" && (
+                <div className="flex items-center gap-3">
+                  <input
+                    name="paidByUserName"
+                    id="paidByUserName"
+                    type="checkbox"
+                    checked={formData.paidByUserName}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="paidByUserName"
+                    className="text-sm font-semibold text-gray-700 cursor-pointer"
+                  >
+                    مدفوع من {formData.name}
+                  </label>
+                </div>
+                {!formData.paidByUserName && (
                   <div>
-                    <label className={labelClass}>قيمة آخر فاتورة</label>
+                    <label className={labelClass}>إسم الشخص الذي دفع</label>
                     <input
-                      name="lastInvoiceAmount"
+                      name="paidByName"
                       type="text"
-                      value={formData.lastInvoiceAmount}
+                      value={formData.paidByName}
                       onChange={handleChange}
                       className={inputClass}
+                      placeholder="أدخل إسم الشخص الدافع"
                     />
                   </div>
                 )}
-              </>
+                {(formData.serviceType === "newline" ||
+                  formData.selectedService === "upgrade" ||
+                  formData.selectedService === "shurn-turknet") && (
+                  <div>
+                    <label className={labelClass}>عدد الخصومات</label>
+                    <input
+                      name="discountCount"
+                      type="text"
+                      value={formData.discountCount}
+                      onChange={handleChange}
+                      className={inputClass}
+                      placeholder="مثال: 3"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            {topType === "services" && (
+              <div>
+                <label className={labelClass}>قيمة آخر فاتورة</label>
+                <input
+                  name="lastInvoiceAmount"
+                  type="text"
+                  value={formData.lastInvoiceAmount}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
             )}
 
             <div className="md:col-span-2">
@@ -1356,8 +1376,7 @@ export default function EditApplicationPage() {
               </div>
             )}
 
-            {formData.status !== "DELAYED" &&
-              formData.serviceType === "services" &&
+            {formData.serviceType === "services" &&
               formData.selectedService === "transfer-address" && (
                 <div className="md:col-span-2">
                   <label className={labelClass}>العنوان الجديد</label>
@@ -1373,8 +1392,7 @@ export default function EditApplicationPage() {
                 </div>
               )}
 
-            {formData.status !== "DELAYED" &&
-              formData.serviceType === "services" &&
+            {formData.serviceType === "services" &&
               formData.selectedService === "transfer-address" && (
                 <>
                   <div>
@@ -1424,8 +1442,7 @@ export default function EditApplicationPage() {
                 </>
               )}
 
-            {formData.status !== "DELAYED" &&
-              formData.serviceType === "services" &&
+            {formData.serviceType === "services" &&
               formData.selectedService === "transfer-name" && (
                 <>
                   <div>
@@ -1460,8 +1477,7 @@ export default function EditApplicationPage() {
                   </div>
                 </>
               )}
-            {formData.status !== "DELAYED" &&
-              formData.serviceType === "services" &&
+            {formData.serviceType === "services" &&
               (formData.selectedService === "change-phone" ||
                 formData.selectedService === "transfer-name") && (
                 <div>
@@ -1478,18 +1494,16 @@ export default function EditApplicationPage() {
                 </div>
               )}
 
-            {formData.status !== "DELAYED" && (
-              <div className="md:col-span-2">
-                <label className={labelClass}>ملاحظة</label>
-                <textarea
-                  name="note"
-                  rows={3}
-                  value={formData.note}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              </div>
-            )}
+            <div className="md:col-span-2">
+              <label className={labelClass}>ملاحظة</label>
+              <textarea
+                name="note"
+                rows={3}
+                value={formData.note}
+                onChange={handleChange}
+                className={inputClass}
+              />
+            </div>
 
             <div className="md:col-span-2">
               <label className={labelClass}>
@@ -1798,7 +1812,9 @@ export default function EditApplicationPage() {
                 {((formData.serviceType === "newline" &&
                   formData.contractPreference === "without") ||
                   (formData.serviceType === "services" &&
-                    formData.selectedService === "upgrade")) && (
+                    (formData.selectedService === "upgrade" ||
+                      formData.selectedService === "shurn" ||
+                      formData.selectedService === "shurn-turknet"))) && (
                   <Row
                     label="نوع التقنية"
                     icon={<PiSpeedometerFill size={18} />}
@@ -1890,7 +1906,8 @@ export default function EditApplicationPage() {
                 )}
 
                 {((formData.serviceType === "services" &&
-                  formData.selectedService === "upgrade") ||
+                  (formData.selectedService === "upgrade" ||
+                    formData.selectedService === "shurn-turknet")) ||
                   (formData.serviceType === "newline" &&
                     formData.contractPreference === "without")) && (
                   <>
@@ -1918,7 +1935,8 @@ export default function EditApplicationPage() {
                       </Row>
                     )}
                     {(formData.serviceType === "newline" ||
-                      formData.selectedService === "upgrade") && (
+                      formData.selectedService === "upgrade" ||
+                      formData.selectedService === "shurn-turknet") && (
                       <Row
                         label="عدد الخصومات"
                         icon={<MdOutlineReceiptLong size={18} />}

@@ -140,7 +140,8 @@ const ApplicationInfoView = ({ application, loading, error }) => {
               )}
               {application.serviceType === "services" &&
                 application.selectedService !== "upgrade" &&
-                application.selectedService !== "shurn" && (
+                application.selectedService !== "shurn" &&
+                application.selectedService !== "shurn-turknet" && (
                   <Row
                     label="الخدمة المختارة"
                     icon={<MdOutlineDescription size={18} />}

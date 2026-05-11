@@ -4,7 +4,8 @@ import { STATUS_LABELS } from "./data";
 const describeServiceType = (serviceType = "", selectedService = "") => {
   if (serviceType === "newline") return "خط إنترنت جديد";
   if (serviceType === "services" && selectedService === "upgrade") return "تحويل من عقد لبدون عقد";
-  if (serviceType === "services" && selectedService === "shurn") return "خدمة شورن لجوك نت";
+  if (serviceType === "services" && selectedService === "shurn") return "خدمة شورن لGöknet";
+  if (serviceType === "services" && selectedService === "shurn-turknet") return "خدمة شورن لTurknet";
   if (serviceType === "services") return "خدمات";
   if (serviceType === "inquiry") return "استشارات";
   return serviceType || "—";
@@ -48,6 +49,8 @@ const describeSelectedService = (selectedService = "") => {
     freeze: "تجميد الاشتراك",
     upgrade: "تحويل من عقد لبدون عقد",
     "change-phone": "تغيير رقم الموبايل المثبت",
+    shurn: "خدمة شورن لGöknet",
+    "shurn-turknet": "خدمة شورن لTurknet",
   };
   return map[selectedService] || selectedService || "—";
 };

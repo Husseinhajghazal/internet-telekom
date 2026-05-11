@@ -308,7 +308,8 @@ export default function ApplicationDetailModal({
             )}
             {application.serviceType === "services" &&
               application.selectedService !== "upgrade" &&
-              application.selectedService !== "shurn" && (
+              application.selectedService !== "shurn" &&
+              application.selectedService !== "shurn-turknet" && (
                 <Row
                   label="الخدمة المختارة"
                   icon={<MdDescription size={18} />}
@@ -325,7 +326,9 @@ export default function ApplicationDetailModal({
             {((application.serviceType === "newline" &&
               application.contractPreference === "without") ||
               (application.serviceType === "services" &&
-                application.selectedService === "upgrade")) && (
+                (application.selectedService === "upgrade" ||
+                  application.selectedService === "shurn" ||
+                  application.selectedService === "shurn-turknet"))) && (
               <Row label="نوع التقنية" icon={<PiSpeedometerFill size={18} />}>
                 {application.noContractTechType
                   ? describeNoContractTechType(application.noContractTechType)
@@ -524,7 +527,8 @@ export default function ApplicationDetailModal({
                 application.contractPreference === "without")) && (
               <>
                 {(application.serviceType === "newline" ||
-                  application.selectedService === "upgrade") && (
+                  application.selectedService === "upgrade" ||
+                  application.selectedService === "shurn-turknet") && (
                   <>
                     <Row
                       label="موافقة الكترونية"
@@ -552,7 +556,8 @@ export default function ApplicationDetailModal({
                   </Row>
                 )}
                 {(application.serviceType === "newline" ||
-                  application.selectedService === "upgrade") && (
+                  application.selectedService === "upgrade" ||
+                  application.selectedService === "shurn-turknet") && (
                   <Row
                     label="عدد الخصومات"
                     icon={<MdOutlineReceiptLong size={18} />}

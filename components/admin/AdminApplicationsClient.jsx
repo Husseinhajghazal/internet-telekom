@@ -1203,6 +1203,7 @@ ${reviewLink}
                 <option value="">كل الأنواع</option>
                 <option value="newline">خط إنترنت جديد</option>
                 <option value="switch">تحويل لشركة ٱخرى</option>
+                {isAddedMode && <option value="services">خدمات</option>}
               </select>
             </div>
           )}
