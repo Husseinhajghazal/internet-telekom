@@ -54,6 +54,20 @@ const SERVICES_ONLY_STATUSES = [
   "UNDER_CANCELING",
   "UNDER_CHANGE",
   "UNDER_TRANSFER",
+  "UNDER_RENEW",
+];
+
+const SERVICES_PAGE_ALLOWED_STATUSES = [
+  "NEW",
+  "UNDER_REVIEW",
+  "UNDER_OBSERVATION",
+  "UNDER_TRANSFER",
+  "UNDER_RENEW",
+  "UNDER_FREEZING",
+  "UNDER_CANCELING",
+  "UNDER_CHANGE",
+  "TECHNICAL_PROBLEM",
+  "REJECTED",
 ];
 
 const ACCENT = "#18a2e3";
@@ -211,7 +225,7 @@ const ActionMenu = ({
               </button>
             )}
 
-            {!isDeletedMode && isAddedMode && (
+            {!isDeletedMode && app.status !== "ACTIVATED" && (
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -483,14 +497,17 @@ ${reviewLink}
       return;
     }
     const expiryDate = app.expiresAt ? formatDate(app.expiresAt, "1") : "";
-    const text = `مرحبا ${app.newName || app.name} 🌹
-نود تذكيرك بأن اشتراكك لدى إنترنت تيليكوم سينتهي في تاريخ ${expiryDate} 📅
-يرجى التواصل معنا في أقرب وقت لتجديد اشتراكك وضمان استمرارية الخدمة 🙏
+    const text = `مرحبا ${app.newName || app.name} 🌺
+نود تذكيرك بأن عقد إشتراكك للإنترنت المنزلي قد أنتهى بتاريخ ${expiryDate} يرجى التواصل معنا في أسرع وقت لمساعدتكم في تجديد الإشتراك لأفضل عرض متوفر وضمان استمرار الخدمة وتجنب مضاعفة الفاتورة. 
 
 رقم صاحب الطلب: ${app.phone || "-"}
 شركة الإنترنت: ${app.internetCompany || "-"}
 رقم الإشتراك: ${app.subscriptionNo || "-"}
 العنوان: ${app.address || "-"}
+
+نحن في انتظارك 🙏
+شركة إنترنت تيليكوم 🌐
+
 `;
     window.open(
       `https://wa.me/90${digits}?text=${encodeURIComponent(text)}`,
@@ -511,11 +528,13 @@ ${reviewLink}
       return;
     }
     window.open(`https://wa.me/90${digits}`, "_blank");
-    fetch(`/api/panel/applications/${app.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ whatsappStatus: "ADDED" }),
-    }).then(() => load(page));
+    if (isAddedMode) {
+      fetch(`/api/panel/applications/${app.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ whatsappStatus: "ADDED" }),
+      }).then(() => load(page));
+    }
   };
 
   const [searchInput, setSearchInput] = useState(
@@ -607,12 +626,12 @@ ${reviewLink}
     setSearchInput("");
     setDebouncedQ("");
     setStatusFilter("");
+    setInternetCompanyFilter("");
+    setDebouncedCompany("");
     setSelectedServiceFilter("");
     setTopTypeFilter("");
     setDateField(isDeletedMode ? "updatedAt" : "createdAt");
-    const now = new Date();
-    const offset = now.getTimezoneOffset() * 60000;
-    setDateFrom(new Date(now - offset).toISOString().slice(0, 10));
+    setDateFrom("");
     setDateTo("");
     setPage(1);
     setLastClickedAppId(null);
@@ -656,7 +675,8 @@ ${reviewLink}
       if (debouncedCompany) params.set("internetCompany", debouncedCompany);
       if (isServicesMode && selectedServiceFilter)
         params.set("selectedService", selectedServiceFilter);
-      if (isExpiringMode && topTypeFilter) params.set("topType", topTypeFilter);
+      if (!isServicesMode && topTypeFilter)
+        params.set("topType", topTypeFilter);
       return params.toString();
     },
     [
@@ -1114,46 +1134,39 @@ ${reviewLink}
       </div>
 
       {/* Search & filters */}
+      {/* Search & filters */}
       <div className="rounded-3xl border border-cyan-100/80 bg-white/95 p-4 md:p-6 shadow-md shadow-cyan-500/5 text-right space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-gray-800 font-bold">
-            <MdFilterList style={{ color: ACCENT }} size={22} />
-            <span>بحث وتصفية</span>
-          </div>
-          <button
-            type="button"
-            onClick={clearFilters}
-            disabled={!mounted || !hasActiveFilters}
-            title="مسح الفلاتر"
-            className="px-2 whitespace-nowrap flex items-center justify-center rounded-xl text-red-500 bg-red-50 transition disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            مسح الفلاتر
-          </button>
+        <div className="flex items-center gap-2 text-gray-800 font-bold border-b border-gray-100 pb-3">
+          <MdFilterList style={{ color: ACCENT }} size={22} />
+          <span>بحث وتصفية</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4">
-          <div
-            className={`${isDeletedMode ? "lg:col-span-4" : "lg:col-span-2"} relative`}
-          >
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              بحث (الإسم، رقم الطلب، الموبايل)
-            </label>
-            <div className="relative">
-              <MdSearch
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                size={20}
-              />
-              <input
-                type="search"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="ابحث…"
-                className="w-full rounded-2xl border border-gray-200 bg-slate-50/80 py-2.5 pr-10 pl-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-500/20"
-                dir="rtl"
-              />
-            </div>
+
+        {/* Search Input (Above all filters) */}
+        <div className="relative">
+          <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+            بحث (الإسم، رقم الطلب، الموبايل)
+          </label>
+          <div className="relative">
+            <MdSearch
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+              size={20}
+            />
+            <input
+              type="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="ابحث…"
+              className="w-full rounded-2xl border border-gray-200 bg-slate-50/80 py-2.5 pr-10 pl-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-500/20"
+              dir="rtl"
+            />
           </div>
-          {!isExpiringMode && isServicesMode ? (
-            <div className="lg:col-span-2">
+        </div>
+
+        {/* Dropdown Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          {/* Service Type / Top Type */}
+          {isServicesMode ? (
+            <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
                 نوع الخدمة
               </label>
@@ -1174,8 +1187,8 @@ ${reviewLink}
                 <option value="change-phone">تغيير رقم الموبايل</option>
               </select>
             </div>
-          ) : isExpiringMode ? (
-            <div className="lg:col-span-2">
+          ) : (
+            <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
                 نوع الطلب
               </label>
@@ -1189,32 +1202,34 @@ ${reviewLink}
               >
                 <option value="">كل الأنواع</option>
                 <option value="newline">خط إنترنت جديد</option>
-                <option value="switch">تغيير لشركة أخرى</option>
-                <option value="services">خدمات</option>
-              </select>
-            </div>
-          ) : (
-            <div className="lg:col-span-2">
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                شركة الإنترنت
-              </label>
-              <select
-                value={internetCompanyFilter}
-                onChange={(e) => {
-                  setInternetCompanyFilter(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-              >
-                <option value="">كل الشركات</option>
-                <option value="Türk Telekom">Türk Telekom</option>
-                <option value="Göknet">Göknet</option>
-                <option value="Turknet">Turknet</option>
+                <option value="switch">تحويل لشركة ٱخرى</option>
               </select>
             </div>
           )}
+
+          {/* Company */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              شركة الإنترنت
+            </label>
+            <select
+              value={internetCompanyFilter}
+              onChange={(e) => {
+                setInternetCompanyFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+            >
+              <option value="">كل الشركات</option>
+              <option value="Türk Telekom">Türk Telekom</option>
+              <option value="Göknet">Göknet</option>
+              <option value="Turknet">Turknet</option>
+            </select>
+          </div>
+
+          {/* Status */}
           {!isDeletedMode && !isExpiringMode && (
-            <div className="lg:col-span-2">
+            <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
                 حالة الطلب
               </label>
@@ -1229,7 +1244,10 @@ ${reviewLink}
                 <option value="">كل الحالات</option>
                 {Object.entries(STATUS_LABELS)
                   .filter(([key]) => {
-                    if (!isServicesMode && SERVICES_ONLY_STATUSES.includes(key)) return false;
+                    if (isServicesMode)
+                      return SERVICES_PAGE_ALLOWED_STATUSES.includes(key);
+                    if (!isServicesMode && SERVICES_ONLY_STATUSES.includes(key))
+                      return false;
                     return isAddedMode
                       ? key === "NOT_COMPLETED" || key === "COMPLETED"
                       : key !== "NOT_COMPLETED" && key !== "COMPLETED";
@@ -1242,10 +1260,14 @@ ${reviewLink}
               </select>
             </div>
           )}
-          {!isExpiringMode && (
-            <div className="lg:col-span-2">
+        </div>
+
+        {/* Date Filters */}
+        {!isExpiringMode && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 pt-2 border-t border-gray-50">
+            <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                تصفية حسب
+                تصفية حسب التواريخ
               </label>
               <select
                 value={dateField}
@@ -1267,9 +1289,7 @@ ${reviewLink}
                 )}
               </select>
             </div>
-          )}
-          {!isExpiringMode && (
-            <div className="lg:col-span-2">
+            <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
                 من تاريخ
               </label>
@@ -1283,9 +1303,7 @@ ${reviewLink}
                 className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
               />
             </div>
-          )}
-          {!isExpiringMode && (
-            <div className="lg:col-span-2">
+            <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">
                 إلى تاريخ
               </label>
@@ -1299,7 +1317,21 @@ ${reviewLink}
                 className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
               />
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Reset Button (Below date filters) */}
+        <div className="flex justify-end pt-3">
+          <button
+            type="button"
+            onClick={resetFilters}
+            disabled={!mounted || !hasActiveFilters}
+            title="مسح الفلاتر"
+            className="inline-flex w-full md:w-fit justify-center items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold bg-white border border-cyan-300 text-cyan-700 hover:bg-cyan-50/50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <RxReset size={18} />
+            مسح الفلاتر
+          </button>
         </div>
       </div>
 
@@ -1701,12 +1733,14 @@ ${reviewLink}
               ? Object.keys(STATUS_LABELS)
               : isAddedMode
                 ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
-                : Object.keys(STATUS_LABELS).filter(
-                    (s) =>
-                      s !== "NOT_COMPLETED" &&
-                      s !== "COMPLETED" &&
-                      (isServicesMode || !SERVICES_ONLY_STATUSES.includes(s))
-                  )
+                : isServicesMode
+                  ? SERVICES_PAGE_ALLOWED_STATUSES
+                  : Object.keys(STATUS_LABELS).filter(
+                      (s) =>
+                        s !== "NOT_COMPLETED" &&
+                        s !== "COMPLETED" &&
+                        !SERVICES_ONLY_STATUSES.includes(s),
+                    )
           }
         />
       )}

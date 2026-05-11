@@ -93,6 +93,17 @@ const FIELD_LABELS = {
   whatsappStatus: "حالة الواتساب",
   selectedInquiry: "الاستفسار المختار",
   hasInternet: "يوجد إنترنت",
+  originalAddress: "العنوان الحالي هو الأساسي",
+  originalAddressText: "العنوان الأساسي الحالي",
+  invoiceFileUrl: "مرفقات الفاتورة",
+  lastInvoiceAmount: "قيمة آخر فاتورة",
+  newOriginalAddress: "العنوان الجديد هو الأساسي",
+  newOriginalAddressText: "العنوان الأساسي الجديد",
+  adminNoteViewed: "تمت مشاهدة ملاحظة المشترك",
+  createdAt: "تاريخ التسجيل",
+  updatedAt: "تاريخ التحديث",
+  lastUpdatedBy: "آخر من قام بالتحديث",
+  reminderSent: "تم إرسال تذكير",
 };
 
 const VALUE_MAPS = {

@@ -107,6 +107,8 @@ function buildWhere(searchParams) {
       serviceType: "services",
       selectedService: { notIn: ["upgrade", "shurn"] },
     });
+  } else if (topTypeParam === "inquiry") {
+    andConditions.push({ serviceType: "inquiry" });
   }
 
   const q = searchParams.get("q")?.trim();
@@ -212,17 +214,7 @@ function buildWhere(searchParams) {
     if (view === "added") {
       andConditions.push({ status: { in: ADDED_VIEW_STATUSES } });
     } else {
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
-      andConditions.push({
-        OR: [
-          { status: { notIn: [...ADDED_VIEW_STATUSES, "DELAYED"] } },
-          {
-            status: "DELAYED",
-            OR: [{ delayedUntil: null }, { delayedUntil: { gt: todayEnd } }],
-          },
-        ],
-      });
+      andConditions.push({ status: { notIn: ADDED_VIEW_STATUSES } });
     }
   }
 
@@ -285,6 +277,13 @@ export async function GET(request) {
         searchAnd.push({
           serviceType: "services",
           selectedService: { notIn: ["upgrade", "shurn"] },
+        });
+      }
+
+      const internetCompanyParam = searchParams.get("internetCompany")?.trim();
+      if (internetCompanyParam) {
+        searchAnd.push({
+          internetCompany: { contains: internetCompanyParam, mode: "insensitive" },
         });
       }
 

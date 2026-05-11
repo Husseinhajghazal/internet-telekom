@@ -218,6 +218,7 @@ const STATUS_LABELS = {
   UNDER_CANCELING: "قيد الألغاء",
   UNDER_CHANGE: "قيد التغير",
   UNDER_TRANSFER: "قيد النقل",
+  UNDER_RENEW: "قيد التجديد",
   TECHNICAL_PROBLEM: "مشكلة تقنية",
   TRYING_TO_PERSUADE: "تجديد الطلب",
   DELAYED: "مؤجل",

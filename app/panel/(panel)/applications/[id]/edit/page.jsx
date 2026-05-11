@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -20,6 +20,7 @@ import {
   MdUpdate,
   MdOutlinePinDrop,
   MdCancel,
+  MdError,
 } from "react-icons/md";
 import { FaBuildingCircleCheck, FaIdCard } from "react-icons/fa6";
 import { PiSpeedometerFill } from "react-icons/pi";
@@ -38,16 +39,10 @@ import {
   describeSelectedPackage,
   describeNoContractTechType,
   describeSelectedInquiry,
-  formatDate,
   describeStatus,
   statusBadgeClass,
 } from "@/utils/general";
 import { useNavigationGuard } from "@/components/admin/NavigationGuardContext";
-
-const SERVICE_TYPE_OPTIONS = [
-  { value: "newline", label: "خط جديد" },
-  { value: "services", label: "خدمات" },
-];
 
 const CONTRACT_PREF_OPTIONS = [
   { value: "with", label: "مع عقد إشتراك" },
@@ -80,10 +75,6 @@ const TECH_TYPE_OPTIONS = [
   { value: "gigafiber", label: "GigaFiber" },
 ];
 
-const PKG_TYPES = [
-  { value: "family", label: "Göknet" },
-  { value: "vip", label: "Türk Telekom" },
-];
 const PKG_DURATIONS = {
   family: [
     { value: "18", label: "18 شهر" },
@@ -248,6 +239,30 @@ export default function EditApplicationPage() {
     return () => window.removeEventListener("beforeunload", handler);
   }, [isDirty]);
 
+  // Auto-select internetCompany based on service rules
+  useEffect(() => {
+    setFormData((prev) => {
+      let newCompany = prev.internetCompany;
+      if (prev.selectedService === "upgrade") {
+        newCompany = "Turknet";
+      } else if (
+        prev.serviceType === "newline" &&
+        prev.contractPreference === "without"
+      ) {
+        newCompany = "Turknet";
+      }
+
+      if (newCompany !== prev.internetCompany) {
+        return { ...prev, internetCompany: newCompany };
+      }
+      return prev;
+    });
+  }, [
+    formData.selectedService,
+    formData.serviceType,
+    formData.contractPreference,
+  ]);
+
   // Register the dirty guard with the NavigationGuardContext so sidebar/mobile nav
   // links will prompt before navigating away with unsaved changes.
   const navGuard = useNavigationGuard();
@@ -368,12 +383,23 @@ export default function EditApplicationPage() {
 
     fetchUsers();
     if (id === "new") {
-      originalData.current = { ...INITIAL_FORM_DATA };
+      const defaultServiceType =
+        fromView === "internet"
+          ? "newline"
+          : fromView === "services"
+            ? "services"
+            : "";
+      const initialData = {
+        ...INITIAL_FORM_DATA,
+        serviceType: defaultServiceType,
+      };
+      setFormData(initialData);
+      originalData.current = initialData;
       setLoading(false);
     } else if (id) {
       fetchApp();
     }
-  }, [id]);
+  }, [id, fromView]);
 
   // Memoize blob URLs to prevent memory leaks from URL.createObjectURL
   const blobUrls = useMemo(() => {
@@ -519,6 +545,7 @@ export default function EditApplicationPage() {
 
       const payloadData = {
         ...formData,
+        serviceType: parseEmptyToNull(formData.serviceType),
         contractPreference: parseEmptyToNull(formData.contractPreference),
         selectedService: parseEmptyToNull(formData.selectedService),
         selectedPackage: parseEmptyToNull(formData.selectedPackage),
@@ -604,7 +631,8 @@ export default function EditApplicationPage() {
     formData.serviceType === "newline"
       ? "newline"
       : formData.serviceType === "services" &&
-          (formData.selectedService === "upgrade" || formData.selectedService === "shurn")
+          (formData.selectedService === "upgrade" ||
+            formData.selectedService === "shurn")
         ? "change-company"
         : formData.serviceType === "services"
           ? "services"
@@ -629,21 +657,30 @@ export default function EditApplicationPage() {
   const labelClass = "block text-sm font-semibold text-gray-700 mb-2";
 
   const ADDED_STATUSES = ["NOT_COMPLETED", "COMPLETED"];
-  const SERVICES_ONLY_STATUSES = [
+  const INTERNET_ONLY_STATUSES = [
+    "WAITING_FOR_PORT",
     "UNDER_INSTALLATION",
+    "ACTIVATED",
+  ];
+  const SERVICES_ONLY_STATUSES = [
     "UNDER_FREEZING",
     "UNDER_CANCELING",
     "UNDER_CHANGE",
     "UNDER_TRANSFER",
+    "UNDER_RENEW",
   ];
 
   let editAllowedStatuses = ADDED_STATUSES.includes(formData.status)
     ? ["NOT_COMPLETED", "COMPLETED", "NEW"]
     : Object.keys(STATUS_LABELS).filter((s) => !ADDED_STATUSES.includes(s));
 
-  if (formData.serviceType !== "services") {
+  if (fromView === "services") {
     editAllowedStatuses = editAllowedStatuses.filter(
-      (s) => !SERVICES_ONLY_STATUSES.includes(s)
+      (s) => !INTERNET_ONLY_STATUSES.includes(s),
+    );
+  } else if (fromView === "internet" || fromView === "expiring") {
+    editAllowedStatuses = editAllowedStatuses.filter(
+      (s) => !SERVICES_ONLY_STATUSES.includes(s),
     );
   }
 
@@ -921,7 +958,7 @@ export default function EditApplicationPage() {
                     {fromView !== "services" && (
                       <>
                         <option value="newline">خط إنترنت جديد</option>
-                        <option value="change-company">تغيير لشركة ٱخر</option>
+                        <option value="change-company">تحويل لشركة ٱخرى</option>
                       </>
                     )}
                     {fromView !== "internet" && (
@@ -957,7 +994,7 @@ export default function EditApplicationPage() {
                       className={inputClass}
                     >
                       <option value="upgrade">تحويل من عقد لبدون عقد</option>
-                      <option value="shurn">خدمة شورن</option>
+                      <option value="shurn">خدمة شورن لجوك نت</option>
                     </select>
                   </div>
                 )}
@@ -979,6 +1016,92 @@ export default function EditApplicationPage() {
                     </select>
                   </div>
                 )}
+                <div>
+                  <label className={labelClass}>شركة الإنترنت</label>
+                  <select
+                    name="internetCompany"
+                    value={formData.internetCompany}
+                    onChange={handleChange}
+                    className={inputClass}
+                  >
+                    <option value="">غير محدد</option>
+                    {formData.selectedService === "shurn" ? (
+                      <>
+                        <option value="Türk Telekom">Türk Telekom</option>
+                        <option value="Turknet">Turknet</option>
+                        <option value="Turkcell Superonline">
+                          Turkcell Superonline
+                        </option>
+                        <option value="Vodafone Net">Vodafone Net</option>
+                        <option value="Türksat Kablonet">
+                          Türksat Kablonet
+                        </option>
+                        <option value="Millenicom">Millenicom</option>
+                        <option value="Netspeed">Netspeed</option>
+                        <option value="D-Smart Net">D-Smart Net</option>
+                        <option value="Digiturk İnternet">
+                          Digiturk İnternet
+                        </option>
+                        <option value="GIBIRNet">GIBIRNet</option>
+                        <option value="Comnet">Comnet</option>
+                        <option value="Turkcell Fiber">Turkcell Fiber</option>
+                        <option value="FixNet">FixNet</option>
+                        <option value="Oris Telekom">Oris Telekom</option>
+                        <option value="İnternet Kutusu">İnternet Kutusu</option>
+                        <option value="Niobe Telekom">Niobe Telekom</option>
+                        <option value="PoyrazNet">PoyrazNet</option>
+                        <option value="Smile ADSL">Smile ADSL</option>
+                        <option value="Bimcell Ev İnterneti">
+                          Bimcell Ev İnterneti
+                        </option>
+                        <option value="Telenet">Telenet</option>
+                      </>
+                    ) : formData.selectedService === "upgrade" ? (
+                      <option value="Turknet">Turknet</option>
+                    ) : formData.serviceType === "newline" &&
+                      formData.contractPreference === "without" ? (
+                      <option value="Turknet">Turknet</option>
+                    ) : formData.serviceType === "newline" &&
+                      formData.contractPreference === "with" ? (
+                      <>
+                        <option value="Göknet">Göknet</option>
+                        <option value="Türk Telekom">Türk Telekom</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Göknet">Göknet</option>
+                        <option value="Türk Telekom">Türk Telekom</option>
+                        <option value="Turknet">Turknet</option>
+                        <option value="Turkcell Superonline">
+                          Turkcell Superonline
+                        </option>
+                        <option value="Vodafone Net">Vodafone Net</option>
+                        <option value="Türksat Kablonet">
+                          Türksat Kablonet
+                        </option>
+                        <option value="Millenicom">Millenicom</option>
+                        <option value="Netspeed">Netspeed</option>
+                        <option value="D-Smart Net">D-Smart Net</option>
+                        <option value="Digiturk İnternet">
+                          Digiturk İnternet
+                        </option>
+                        <option value="GIBIRNet">GIBIRNet</option>
+                        <option value="Comnet">Comnet</option>
+                        <option value="Turkcell Fiber">Turkcell Fiber</option>
+                        <option value="FixNet">FixNet</option>
+                        <option value="Oris Telekom">Oris Telekom</option>
+                        <option value="İnternet Kutusu">İnternet Kutusu</option>
+                        <option value="Niobe Telekom">Niobe Telekom</option>
+                        <option value="PoyrazNet">PoyrazNet</option>
+                        <option value="Smile ADSL">Smile ADSL</option>
+                        <option value="Bimcell Ev İnterneti">
+                          Bimcell Ev İnterneti
+                        </option>
+                        <option value="Telenet">Telenet</option>
+                      </>
+                    )}
+                  </select>
+                </div>
                 {formData.serviceType === "newline" &&
                   formData.contractPreference === "with" && (
                     <>
@@ -1048,6 +1171,16 @@ export default function EditApplicationPage() {
                     </select>
                   </div>
                 )}
+                <div>
+                  <label className={labelClass}>رقم الإشتراك</label>
+                  <input
+                    name="subscriptionNo"
+                    type="text"
+                    value={formData.subscriptionNo}
+                    onChange={handleChange}
+                    className={inputClass}
+                  />
+                </div>
                 {formData.serviceType === "inquiry" && (
                   <div>
                     <label className={labelClass}>الاستفسار</label>
@@ -1153,7 +1286,7 @@ export default function EditApplicationPage() {
                     )}
                   </div>
                 )}
-                {formData.serviceType === "services" && formData.selectedService !== "upgrade" && (
+                {topType === "services" && (
                   <div>
                     <label className={labelClass}>قيمة آخر فاتورة</label>
                     <input
@@ -1167,68 +1300,6 @@ export default function EditApplicationPage() {
                 )}
               </>
             )}
-            <div>
-              <label className={labelClass}>شركة الإنترنت</label>
-              <select
-                name="internetCompany"
-                value={formData.internetCompany}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="">غير محدد</option>
-                {formData.serviceType === "newline" &&
-                formData.contractPreference === "with" ? (
-                  <>
-                    <option value="Göknet">Göknet</option>
-                    <option value="Türk Telekom">Türk Telekom</option>
-                  </>
-                ) : formData.serviceType === "newline" &&
-                  formData.contractPreference === "without" ? (
-                  <>
-                    <option value="Turknet">Turknet</option>
-                  </>
-                ) : formData.selectedService === "shurn" ? (
-                  <>
-                    <option value="Göknet">Göknet</option>
-                    <option value="Turknet">Turknet</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="Göknet">Göknet</option>
-                    <option value="Türk Telekom">Türk Telekom</option>
-                    <option value="Turknet">Turknet</option>
-                    <option value="Turkcell Superonline">Turkcell Superonline</option>
-                    <option value="Vodafone Net">Vodafone Net</option>
-                    <option value="Türksat Kablonet">Türksat Kablonet</option>
-                    <option value="Millenicom">Millenicom</option>
-                    <option value="Netspeed">Netspeed</option>
-                    <option value="D-Smart Net">D-Smart Net</option>
-                    <option value="Digiturk İnternet">Digiturk İnternet</option>
-                    <option value="GIBIRNet">GIBIRNet</option>
-                    <option value="Comnet">Comnet</option>
-                    <option value="Turkcell Fiber">Turkcell Fiber</option>
-                    <option value="FixNet">FixNet</option>
-                    <option value="Oris Telekom">Oris Telekom</option>
-                    <option value="İnternet Kutusu">İnternet Kutusu</option>
-                    <option value="Niobe Telekom">Niobe Telekom</option>
-                    <option value="PoyrazNet">PoyrazNet</option>
-                    <option value="Smile ADSL">Smile ADSL</option>
-                    <option value="Bimcell Ev İnterneti">Bimcell Ev İnterneti</option>
-                    <option value="Telenet">Telenet</option>
-                  </>
-                )}
-              </select>
-            </div>
-            <div>
-              <label className={labelClass}>رقم الإشتراك</label>
-              <input
-                name="subscriptionNo"
-                type="text"
-                value={formData.subscriptionNo}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
 
             <div className="md:col-span-2">
               <label className={labelClass}>العنوان</label>
@@ -1391,7 +1462,8 @@ export default function EditApplicationPage() {
               )}
             {formData.status !== "DELAYED" &&
               formData.serviceType === "services" &&
-              formData.selectedService === "change-phone" && (
+              (formData.selectedService === "change-phone" ||
+                formData.selectedService === "transfer-name") && (
                 <div>
                   <label className={labelClass}>رقم الموبايل الجديد</label>
                   <input
@@ -1433,118 +1505,116 @@ export default function EditApplicationPage() {
               />
             </div>
 
-            {formData.status !== "DELAYED" && (
-              <div className="md:col-span-2 space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className={labelClass + " mb-0!"}>الصور المرفقة</label>
-                  {formData.invoiceFiles.length +
-                    formData.invoiceFileUrls.length <
-                    5 && (
-                    <label
-                      htmlFor="admin-invoice-upload"
-                      className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
-                    >
-                      <TbFileInvoiceFilled size={18} />
-                      إضافة صورة
-                    </label>
-                  )}
-                </div>
-
-                <input
-                  type="file"
-                  id="admin-invoice-upload"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={async (e) => {
-                    let newFiles = Array.from(e.target.files);
-                    const currentTotal =
-                      formData.invoiceFiles.length +
-                      formData.invoiceFileUrls.length;
-                    const allowed = 5 - currentTotal;
-                    if (allowed <= 0) return;
-                    if (newFiles.length > allowed)
-                      newFiles = newFiles.slice(0, allowed);
-
-                    const { compressImage } = await import("@/utils/general");
-                    const compressedFiles = await Promise.all(
-                      newFiles.map((file) => compressImage(file)),
-                    );
-
-                    setFormData((prev) => ({
-                      ...prev,
-                      invoiceFiles: [...prev.invoiceFiles, ...compressedFiles],
-                    }));
-                    e.target.value = "";
-                  }}
-                />
-
-                {(formData.invoiceFiles.length > 0 ||
-                  formData.invoiceFileUrls.length > 0) && (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                    {formData.invoiceFileUrls.map((url, idx) => (
-                      <div
-                        key={`saved-${idx}`}
-                        className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-50 flex flex-col justify-between"
-                      >
-                        <img
-                          src={url}
-                          alt={`Saved ${idx}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newUrls = [...formData.invoiceFileUrls];
-                              newUrls.splice(idx, 1);
-                              setFormData((prev) => ({
-                                ...prev,
-                                invoiceFileUrls: newUrls,
-                              }));
-                            }}
-                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                            title="حذف"
-                          >
-                            <MdClose size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-
-                    {formData.invoiceFiles.map((_file, idx) => (
-                      <div
-                        key={`new-${idx}`}
-                        className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between"
-                      >
-                        <img
-                          src={blobUrls[idx]}
-                          alt={`New ${idx}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newFiles = [...formData.invoiceFiles];
-                              newFiles.splice(idx, 1);
-                              setFormData((prev) => ({
-                                ...prev,
-                                invoiceFiles: newFiles,
-                              }));
-                            }}
-                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                            title="حذف"
-                          >
-                            <MdClose size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            <div className="md:col-span-2 space-y-4">
+              <div className="flex items-center justify-between">
+                <label className={labelClass + " mb-0!"}>الصور المرفقة</label>
+                {formData.invoiceFiles.length +
+                  formData.invoiceFileUrls.length <
+                  5 && (
+                  <label
+                    htmlFor="admin-invoice-upload"
+                    className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
+                  >
+                    <TbFileInvoiceFilled size={18} />
+                    إضافة صورة
+                  </label>
                 )}
               </div>
-            )}
+
+              <input
+                type="file"
+                id="admin-invoice-upload"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={async (e) => {
+                  let newFiles = Array.from(e.target.files);
+                  const currentTotal =
+                    formData.invoiceFiles.length +
+                    formData.invoiceFileUrls.length;
+                  const allowed = 5 - currentTotal;
+                  if (allowed <= 0) return;
+                  if (newFiles.length > allowed)
+                    newFiles = newFiles.slice(0, allowed);
+
+                  const { compressImage } = await import("@/utils/general");
+                  const compressedFiles = await Promise.all(
+                    newFiles.map((file) => compressImage(file)),
+                  );
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    invoiceFiles: [...prev.invoiceFiles, ...compressedFiles],
+                  }));
+                  e.target.value = "";
+                }}
+              />
+
+              {(formData.invoiceFiles.length > 0 ||
+                formData.invoiceFileUrls.length > 0) && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                  {formData.invoiceFileUrls.map((url, idx) => (
+                    <div
+                      key={`saved-${idx}`}
+                      className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-50 flex flex-col justify-between"
+                    >
+                      <img
+                        src={url}
+                        alt={`Saved ${idx}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newUrls = [...formData.invoiceFileUrls];
+                            newUrls.splice(idx, 1);
+                            setFormData((prev) => ({
+                              ...prev,
+                              invoiceFileUrls: newUrls,
+                            }));
+                          }}
+                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          title="حذف"
+                        >
+                          <MdClose size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {formData.invoiceFiles.map((_file, idx) => (
+                    <div
+                      key={`new-${idx}`}
+                      className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between"
+                    >
+                      <img
+                        src={blobUrls[idx]}
+                        alt={`New ${idx}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newFiles = [...formData.invoiceFiles];
+                            newFiles.splice(idx, 1);
+                            setFormData((prev) => ({
+                              ...prev,
+                              invoiceFiles: newFiles,
+                            }));
+                          }}
+                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          title="حذف"
+                        >
+                          <MdClose size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="pt-4 border-t border-gray-100 flex justify-end">
@@ -1709,7 +1779,6 @@ export default function EditApplicationPage() {
                     {describeContractPreference(formData.contractPreference)}
                   </Row>
                 )}
-
                 {formData.serviceType === "services" && (
                   <Row
                     label="الخدمة المختارة"
@@ -1916,8 +1985,8 @@ export default function EditApplicationPage() {
       />
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl text-sm font-bold text-white max-w-sm w-[calc(100%-2rem)] bg-red-500 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <MdClose size={20} className="shrink-0" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-100 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl text-sm font-bold text-white max-w-sm w-[calc(100%-2rem)] bg-red-500 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <MdError size={20} className="shrink-0" />
           <span className="flex-1 text-center">{toast.message}</span>
           <button
             type="button"

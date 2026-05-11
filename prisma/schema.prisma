@@ -24,6 +24,7 @@ enum ApplicationStatus {
   UNDER_CANCELING
   UNDER_CHANGE
   UNDER_TRANSFER
+  UNDER_RENEW
 }
 
 enum WhatsappStatus {

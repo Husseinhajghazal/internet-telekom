@@ -4,7 +4,7 @@ import { STATUS_LABELS } from "./data";
 const describeServiceType = (serviceType = "", selectedService = "") => {
   if (serviceType === "newline") return "خط إنترنت جديد";
   if (serviceType === "services" && selectedService === "upgrade") return "تحويل من عقد لبدون عقد";
-  if (serviceType === "services" && selectedService === "shurn") return "خدمة شورن";
+  if (serviceType === "services" && selectedService === "shurn") return "خدمة شورن لجوك نت";
   if (serviceType === "services") return "خدمات";
   if (serviceType === "inquiry") return "استشارات";
   return serviceType || "—";
@@ -347,6 +347,8 @@ const statusBadgeClass = (status) => {
       return "bg-indigo-100 text-indigo-900 ring-1 ring-indigo-200/60";
     case "UNDER_TRANSFER":
       return "bg-violet-100 text-violet-900 ring-1 ring-violet-200/60";
+    case "UNDER_RENEW":
+      return "bg-fuchsia-100 text-fuchsia-900 ring-1 ring-fuchsia-200/60";
     default:
       return "bg-gray-100 text-gray-800";
   }
