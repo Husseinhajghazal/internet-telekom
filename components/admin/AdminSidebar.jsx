@@ -178,7 +178,7 @@ export default function AdminSidebar({ userRole, userName }) {
                   size={22}
                   className={isActive ? "text-cyan-700" : "text-gray-400"}
                 />
-                {showBadge && isCollapsed && (
+                {showBadge && (
                   <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-sm">
                     {expiringCount > 99 ? "99+" : expiringCount}
                   </span>
@@ -191,11 +191,6 @@ export default function AdminSidebar({ userRole, userName }) {
                 }`}
               >
                 <span className="whitespace-nowrap flex-1">{item.name}</span>
-                {showBadge && (
-                  <span className="ml-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-extrabold flex items-center justify-center ring-1 ring-amber-200/80">
-                    {expiringCount > 99 ? "99+" : expiringCount}
-                  </span>
-                )}
               </div>
             </GuardedLink>
           );
