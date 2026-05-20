@@ -28,7 +28,7 @@ const getSpeedIcon = (speedStr) => {
 const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const SpeedIcon = getSpeedIcon(speed);
-  const oldPrice = Math.ceil(parseInt(price, 10) * 1.25);
+  const oldPrice = Math.ceil(parseInt(price, 10) / 0.65);
 
   return (
     <div
@@ -61,7 +61,7 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
               <SpeedIcon className="text-3xl" />
             </div>
             <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-red-500/40 tracking-wide animate-pulse">
-              خصم 20%
+              خصم 35%
             </span>
           </div>
 
@@ -168,7 +168,7 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
                     الاشتراك الشهري
                   </span>
                   <span className="inline-flex items-center bg-red-500/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full w-fit">
-                    خصم 20%
+                    خصم 35%
                   </span>
                 </div>
                 <div className="flex flex-col items-end gap-0.5">

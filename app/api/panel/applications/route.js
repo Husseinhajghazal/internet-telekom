@@ -115,7 +115,10 @@ function buildWhere(searchParams) {
   } else if (topTypeParam === "services") {
     andConditions.push({
       serviceType: "services",
-      selectedService: { notIn: ["upgrade", "shurn", "shurn-turknet"] },
+      OR: [
+        { selectedService: null },
+        { selectedService: { notIn: ["upgrade", "shurn", "shurn-turknet"] } },
+      ],
     });
   } else if (topTypeParam === "inquiry") {
     andConditions.push({ serviceType: "inquiry" });
@@ -217,6 +220,7 @@ function buildWhere(searchParams) {
     andConditions.push({
       OR: [
         { serviceType: "inquiry" },
+        { serviceType: "services", selectedService: null },
         { serviceType: "services", selectedService: { notIn: ["upgrade", "shurn", "shurn-turknet"] } },
       ],
     });
@@ -291,7 +295,10 @@ export async function GET(request) {
       } else if (topTypeParam === "services") {
         searchAnd.push({
           serviceType: "services",
-          selectedService: { notIn: ["upgrade", "shurn", "shurn-turknet"] },
+          OR: [
+            { selectedService: null },
+            { selectedService: { notIn: ["upgrade", "shurn", "shurn-turknet"] } },
+          ],
         });
       }
 

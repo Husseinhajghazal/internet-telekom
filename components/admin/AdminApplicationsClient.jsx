@@ -67,9 +67,8 @@ const SERVICES_PAGE_ALLOWED_STATUSES = [
   "OPEN_REGISTRATION",
   "TECHNICAL_PROBLEM",
   "TRYING_TO_PERSUADE",
-  "DELAYED",
-  "COMPLETED",
   "REJECTED",
+  "ACTIVATED",
 ];
 
 const ACCENT = "#18a2e3";
@@ -628,7 +627,9 @@ ${reviewLink}
 
   const getTodayISO = () => {
     const now = new Date();
-    return new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    return new Date(now - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
   };
 
   const resetFilters = () => {
@@ -1105,7 +1106,9 @@ ${reviewLink}
                     ? "الطلبات المضافة"
                     : isExpiringMode
                       ? "عقود بانتظار التجديد"
-                      : "الطلبات"}
+                      : isServicesMode
+                        ? "طلبات خدمات"
+                        : "طلبات الإنترنت"}
               </h2>
               <p className="text-sm text-gray-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="inline-flex items-center gap-1">
@@ -1339,7 +1342,11 @@ ${reviewLink}
                       شركة الإنترنت
                     </label>
                     <select
-                      value={topTypeFilter === "switch" ? subTypeFilter : internetCompanyFilter}
+                      value={
+                        topTypeFilter === "switch"
+                          ? subTypeFilter
+                          : internetCompanyFilter
+                      }
                       onChange={(e) => {
                         if (topTypeFilter === "switch") {
                           setSubTypeFilter(e.target.value);
@@ -1386,7 +1393,9 @@ ${reviewLink}
                               <option value="İnternet Kutusu">
                                 İnternet Kutusu
                               </option>
-                              <option value="Niobe Telekom">Niobe Telekom</option>
+                              <option value="Niobe Telekom">
+                                Niobe Telekom
+                              </option>
                               <option value="PoyrazNet">PoyrazNet</option>
                               <option value="Smile ADSL">Smile ADSL</option>
                               <option value="Bimcell Ev İnterneti">
@@ -1455,9 +1464,7 @@ ${reviewLink}
                       className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
                     >
                       <option value="updatedAt">
-                        {isDeletedMode
-                          ? "تاريخ الحذف"
-                          : "تاريخ التسجيل / التحديث"}
+                        {isDeletedMode ? "تاريخ الحذف" : "تاريخ التعديل"}
                       </option>
                       <option value="createdAt">تاريخ التسجيل فقط</option>
                       {!isDeletedMode && !isAddedMode && (

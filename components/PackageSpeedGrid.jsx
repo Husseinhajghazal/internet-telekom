@@ -111,7 +111,7 @@ const PackageSpeedGrid = ({
           const priceTl = getStaticPriceTl(speed);
           const isSelected = selectedPackage === valueKey;
           const displayPrice = priceTl ? priceTl : "—";
-          const oldPrice = priceTl ? Math.ceil(priceTl * 1.25) : null;
+          const oldPrice = priceTl ? Math.ceil(priceTl / 0.65) : null;
           const features = PACKAGE_FEATURES[kind]?.[speed] || [];
           const SpeedIcon = getSpeedIcon(speed);
 
@@ -169,7 +169,7 @@ const PackageSpeedGrid = ({
                     <div className="flex flex-col items-end gap-2">
                       {oldPrice && (
                         <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-red-500/40 tracking-wide animate-pulse">
-                          خصم 20%
+                          خصم 35%
                         </span>
                       )}
                     </div>
@@ -279,7 +279,7 @@ const PackageSpeedGrid = ({
                         </span>
                         {oldPrice && (
                           <span className="inline-flex items-center bg-red-500/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full w-fit">
-                            خصم 20%
+                            خصم 35%
                           </span>
                         )}
                       </div>

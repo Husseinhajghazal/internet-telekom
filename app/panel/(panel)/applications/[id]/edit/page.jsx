@@ -294,7 +294,10 @@ export default function EditApplicationPage() {
     const fetchApp = async () => {
       try {
         const res = await fetch(`/api/panel/applications/${id}`);
-        if (res.status === 401) { router.push("/panel/login"); return; }
+        if (res.status === 401) {
+          router.push("/panel/login");
+          return;
+        }
         const data = await res.json();
         if (!res.ok)
           throw new Error(data.error || "Failed to load application");
@@ -609,7 +612,10 @@ export default function EditApplicationPage() {
         body: payload,
       });
 
-      if (res.status === 401) { router.push("/panel/login"); return; }
+      if (res.status === 401) {
+        router.push("/panel/login");
+        return;
+      }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "فشل الحفظ");
       originalData.current = { ...formData, invoiceFiles: [] };
@@ -679,9 +685,8 @@ export default function EditApplicationPage() {
     "OPEN_REGISTRATION",
     "TECHNICAL_PROBLEM",
     "TRYING_TO_PERSUADE",
-    "DELAYED",
-    "COMPLETED",
     "REJECTED",
+    "ACTIVATED",
   ];
 
   let editAllowedStatuses = ADDED_STATUSES.includes(formData.status)
@@ -1233,89 +1238,89 @@ export default function EditApplicationPage() {
                 formData.selectedService !== "shurn") ||
                 (formData.serviceType === "newline" &&
                   formData.contractPreference === "without")) && (
-              <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {(formData.serviceType === "newline" ||
-                  formData.selectedService === "shurn-turknet") && (
-                  <>
-                    <div className="flex items-center gap-3">
+                <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {(formData.serviceType === "newline" ||
+                    formData.selectedService === "shurn-turknet") && (
+                    <>
+                      <div className="flex items-center gap-3">
+                        <input
+                          name="electronicApproval"
+                          id="electronicApproval"
+                          type="checkbox"
+                          checked={formData.electronicApproval}
+                          onChange={handleChange}
+                          className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                        />
+                        <label
+                          htmlFor="electronicApproval"
+                          className="text-sm font-semibold text-gray-700 cursor-pointer"
+                        >
+                          موافقة الكترونية
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <input
+                          name="approvalViaShipping"
+                          id="approvalViaShipping"
+                          type="checkbox"
+                          checked={formData.approvalViaShipping}
+                          onChange={handleChange}
+                          className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                        />
+                        <label
+                          htmlFor="approvalViaShipping"
+                          className="text-sm font-semibold text-gray-700 cursor-pointer"
+                        >
+                          موافقة عبر الشحن
+                        </label>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <input
+                      name="paidByUserName"
+                      id="paidByUserName"
+                      type="checkbox"
+                      checked={formData.paidByUserName}
+                      onChange={handleChange}
+                      className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                    />
+                    <label
+                      htmlFor="paidByUserName"
+                      className="text-sm font-semibold text-gray-700 cursor-pointer"
+                    >
+                      مدفوع من {formData.name}
+                    </label>
+                  </div>
+                  {!formData.paidByUserName && (
+                    <div>
+                      <label className={labelClass}>إسم الشخص الذي دفع</label>
                       <input
-                        name="electronicApproval"
-                        id="electronicApproval"
-                        type="checkbox"
-                        checked={formData.electronicApproval}
+                        name="paidByName"
+                        type="text"
+                        value={formData.paidByName}
                         onChange={handleChange}
-                        className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                        className={inputClass}
+                        placeholder="أدخل إسم الشخص الدافع"
                       />
-                      <label
-                        htmlFor="electronicApproval"
-                        className="text-sm font-semibold text-gray-700 cursor-pointer"
-                      >
-                        موافقة الكترونية
-                      </label>
                     </div>
-                    <div className="flex items-center gap-3">
+                  )}
+                  {(formData.serviceType === "newline" ||
+                    formData.selectedService === "shurn-turknet") && (
+                    <div>
+                      <label className={labelClass}>عدد الخصومات</label>
                       <input
-                        name="approvalViaShipping"
-                        id="approvalViaShipping"
-                        type="checkbox"
-                        checked={formData.approvalViaShipping}
+                        name="discountCount"
+                        type="text"
+                        value={formData.discountCount}
                         onChange={handleChange}
-                        className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                        className={inputClass}
+                        placeholder="مثال: 3"
                       />
-                      <label
-                        htmlFor="approvalViaShipping"
-                        className="text-sm font-semibold text-gray-700 cursor-pointer"
-                      >
-                        موافقة عبر الشحن
-                      </label>
                     </div>
-                  </>
-                )}
-                <div className="flex items-center gap-3">
-                  <input
-                    name="paidByUserName"
-                    id="paidByUserName"
-                    type="checkbox"
-                    checked={formData.paidByUserName}
-                    onChange={handleChange}
-                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="paidByUserName"
-                    className="text-sm font-semibold text-gray-700 cursor-pointer"
-                  >
-                    مدفوع من {formData.name}
-                  </label>
+                  )}
                 </div>
-                {!formData.paidByUserName && (
-                  <div>
-                    <label className={labelClass}>إسم الشخص الذي دفع</label>
-                    <input
-                      name="paidByName"
-                      type="text"
-                      value={formData.paidByName}
-                      onChange={handleChange}
-                      className={inputClass}
-                      placeholder="أدخل إسم الشخص الدافع"
-                    />
-                  </div>
-                )}
-                {(formData.serviceType === "newline" ||
-                  formData.selectedService === "shurn-turknet") && (
-                  <div>
-                    <label className={labelClass}>عدد الخصومات</label>
-                    <input
-                      name="discountCount"
-                      type="text"
-                      value={formData.discountCount}
-                      onChange={handleChange}
-                      className={inputClass}
-                      placeholder="مثال: 3"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
+              )}
             {topType === "services" && (
               <div>
                 <label className={labelClass}>قيمة آخر فاتورة</label>
@@ -1944,41 +1949,41 @@ export default function EditApplicationPage() {
                     formData.selectedService === "shurn-turknet") ||
                     (formData.serviceType === "newline" &&
                       formData.contractPreference === "without")) && (
-                  <>
-                    <Row
-                      label="موافقة الكترونية"
-                      icon={<MdDescription size={18} />}
-                    >
-                      {formData.electronicApproval ? "نعم" : "لا"}
-                    </Row>
-                    <Row
-                      label="موافقة عبر الشحن"
-                      icon={<MdDescription size={18} />}
-                    >
-                      {formData.approvalViaShipping ? "نعم" : "لا"}
-                    </Row>
-                    <Row
-                      label={`مدفوع من ${formData.name}`}
-                      icon={<MdDescription size={18} />}
-                    >
-                      {formData.paidByUserName ? "نعم" : "لا"}
-                    </Row>
-                    {!formData.paidByUserName && (
-                      <Row label="إسم الدافع" icon={<MdPerson size={18} />}>
-                        {formData.paidByName || "—"}
-                      </Row>
-                    )}
-                    {(formData.serviceType === "newline" ||
-                      formData.selectedService === "shurn-turknet") && (
+                    <>
                       <Row
-                        label="عدد الخصومات"
-                        icon={<MdOutlineReceiptLong size={18} />}
+                        label="موافقة الكترونية"
+                        icon={<MdDescription size={18} />}
                       >
-                        {formData.discountCount || "—"}
+                        {formData.electronicApproval ? "نعم" : "لا"}
                       </Row>
-                    )}
-                  </>
-                )}
+                      <Row
+                        label="موافقة عبر الشحن"
+                        icon={<MdDescription size={18} />}
+                      >
+                        {formData.approvalViaShipping ? "نعم" : "لا"}
+                      </Row>
+                      <Row
+                        label={`مدفوع من ${formData.name}`}
+                        icon={<MdDescription size={18} />}
+                      >
+                        {formData.paidByUserName ? "نعم" : "لا"}
+                      </Row>
+                      {!formData.paidByUserName && (
+                        <Row label="إسم الدافع" icon={<MdPerson size={18} />}>
+                          {formData.paidByName || "—"}
+                        </Row>
+                      )}
+                      {(formData.serviceType === "newline" ||
+                        formData.selectedService === "shurn-turknet") && (
+                        <Row
+                          label="عدد الخصومات"
+                          icon={<MdOutlineReceiptLong size={18} />}
+                        >
+                          {formData.discountCount || "—"}
+                        </Row>
+                      )}
+                    </>
+                  )}
 
                 {formData.createdBy && (
                   <Row

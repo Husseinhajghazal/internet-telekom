@@ -96,7 +96,7 @@ const TechTypeGrid = ({ options, selectedTechType, detailsText }) => {
           const palette = palettes[opt.color] || palettes.blue;
           const SpeedIcon = getValueIcon(opt.value);
           const oldPrice = opt.price
-            ? Math.ceil(parseInt(opt.price, 10) * 1.25)
+            ? Math.ceil(parseInt(opt.price, 10) / 0.65)
             : null;
 
           return (
@@ -153,7 +153,7 @@ const TechTypeGrid = ({ options, selectedTechType, detailsText }) => {
                     <div className="flex flex-col items-end gap-2">
                       {oldPrice && (
                         <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-red-500/40 tracking-wide animate-pulse">
-                          خصم 20%
+                          خصم 35%
                         </span>
                       )}
                     </div>
@@ -271,7 +271,7 @@ const TechTypeGrid = ({ options, selectedTechType, detailsText }) => {
                         </span>
                         {oldPrice && (
                           <span className="inline-flex items-center bg-red-500/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full w-fit">
-                            خصم 20%
+                            خصم 35%
                           </span>
                         )}
                       </div>

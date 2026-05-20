@@ -1,5 +1,6 @@
 import prisma from "../../lib/prisma";
 import ReviewFormClient from "../../components/form/ReviewFormClient";
+import { describeReviewService } from "../../utils/general";
 
 export const metadata = {
   title: "تقييم الخدمة",
@@ -45,5 +46,5 @@ export default async function ReviewPage({ searchParams }) {
     );
   }
 
-  return <ReviewFormClient appId={appId} service={app.service} name={app.newName || app.name} />;
+  return <ReviewFormClient appId={appId} service={describeReviewService(app.serviceType, app.selectedService, app.selectedInquiry, app.contractPreference)} name={app.newName || app.name} />;
 }

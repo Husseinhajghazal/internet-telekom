@@ -55,6 +55,41 @@ const describeSelectedService = (selectedService = "") => {
   return map[selectedService] || selectedService || "—";
 };
 
+const describeReviewService = (serviceType = "", selectedService = "", selectedInquiry = "", contractPreference = "") => {
+  if (serviceType === "newline") {
+    if (contractPreference === "with") return "تركيب خط إنترنت جديد مع عقد إشتراك";
+    if (contractPreference === "without") return "تركيب خط إنترنت جديد بدون عقد إشتراك";
+    return "تركيب خط إنترنت جديد";
+  }
+  if (serviceType === "inquiry") {
+    const inquiryMap = {
+      pricing: "استفسار عن الأسعار والعروض",
+      coverage: "استفسار عن تغطية المنطقة",
+      technical: "استفسار عن مشكلة تقنية",
+      general: "استفسار عام",
+      "transfer-issue": "استفسار عن نقل الخط",
+      "slow-speed": "استفسار عن بطء السرعة",
+      "high-bill": "استفسار عن الفاتورة",
+      "internet-down": "استفسار عن انقطاع الإنترنت",
+    };
+    return inquiryMap[selectedInquiry] || "استشارات";
+  }
+  if (serviceType === "services") {
+    const serviceMap = {
+      cancel: "إلغاء الاشتراك",
+      "transfer-name": "نقل ملكية الاشتراك",
+      "transfer-address": "نقل خط الإنترنت لعنوان آخر",
+      renew: "تجديد الاشتراك",
+      freeze: "تجميد الاشتراك",
+      "change-phone": "تغيير رقم الموبايل",
+      shurn: "تحويل الاشتراك إلى Göknet",
+      "shurn-turknet": "تحويل الاشتراك إلى Turknet",
+    };
+    return serviceMap[selectedService] || "خدمة تقنية";
+  }
+  return "خدمة الإنترنت";
+};
+
 const describeSelectedPackage = (selectedPackage = "") => {
   if (!selectedPackage) return "—";
   const noContractMatch = selectedPackage.match(/^no-contract-(.+)$/);
@@ -425,6 +460,7 @@ export {
   describeNoContractTechType,
   describeSelectedInquiry,
   describeSelectedPackage,
+  describeReviewService,
   describeSelectedService,
   describeServiceType,
   formatPhoneNumber,
