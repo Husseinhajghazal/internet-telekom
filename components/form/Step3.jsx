@@ -14,7 +14,7 @@ const Step3 = ({ values, errors, touched, setFieldValue }) => {
         values.serviceType === "services" &&
         values.selectedService === "shurn-turknet",
       icon: "/animations/no%20transactions.json",
-      title: "تحويل لشركة آخرى",
+      title: "تحويل من عقد لبدون عقد",
       description: "",
       size: "small",
       color: "indigo",
