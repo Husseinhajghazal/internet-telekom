@@ -8,18 +8,15 @@ export async function POST() {
     const cookieStore = await cookies();
     const token = cookieStore.get("admin_session")?.value;
     const data = verifySessionToken(token);
-    if (data?.sid) {
-      await prisma.userSession.update({ where: { id: data.sid }, data: { logoutAt: new Date() } }).catch(() => {});
-    }
-    cookieStore.set("admin_session", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 0,
+    if (!data?.sid) return NextResponse.json({ ok: false }, { status: 401 });
+
+    await prisma.userSession.updateMany({
+      where: { id: data.sid, logoutAt: null },
+      data: { lastSeenAt: new Date() },
     });
+
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json({ error: "فشل تسجيل الخروج." }, { status: 500 });
+    return NextResponse.json({ ok: false }, { status: 500 });
   }
 }

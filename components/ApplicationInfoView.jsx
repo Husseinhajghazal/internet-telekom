@@ -19,7 +19,6 @@ import {
   describeContractPreference,
   describeSelectedPackage,
   describeSelectedService,
-  describeServiceType,
   maskName,
   maskPhone,
   maskAddress,
@@ -32,6 +31,17 @@ import {
 } from "../utils/general";
 
 const ACCENT = "#18a2e3";
+
+const describeServiceType = (serviceType = "", selectedService = "") => {
+  if (serviceType === "newline") return "خط إنترنت جديد";
+  if (serviceType === "services" && selectedService === "shurn")
+    return "تحويل لشركة آخرى";
+  if (serviceType === "services" && selectedService === "shurn-turknet")
+    return "تحويل لشركة آخرى";
+  if (serviceType === "services") return "خدمات";
+  if (serviceType === "inquiry") return "استشارات";
+  return serviceType || "—";
+};
 
 const Row = ({ dir = "rtl", label, icon, children, className = "" }) => (
   <div
@@ -139,7 +149,6 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 </Row>
               )}
               {application.serviceType === "services" &&
-                application.selectedService !== "upgrade" &&
                 application.selectedService !== "shurn" &&
                 application.selectedService !== "shurn-turknet" && (
                   <Row

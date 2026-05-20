@@ -15,6 +15,7 @@ import {
   MdSpeed,
   MdUpdate,
   MdOutlinePinDrop,
+  MdPictureAsPdf,
 } from "react-icons/md";
 import { FaBuildingCircleCheck, FaIdCard } from "react-icons/fa6";
 import { PiSpeedometerFill } from "react-icons/pi";
@@ -55,6 +56,9 @@ export default function ApplicationDetailModal({
   application,
   onClose,
   isDeletedMode,
+  isAddedMode,
+  isServicesMode,
+  isExpiringMode,
 }) {
   const router = useRouter();
   const [copiedField, setCopiedField] = useState(null);
@@ -307,7 +311,6 @@ export default function ApplicationDetailModal({
               </Row>
             )}
             {application.serviceType === "services" &&
-              application.selectedService !== "upgrade" &&
               application.selectedService !== "shurn" &&
               application.selectedService !== "shurn-turknet" && (
                 <Row
@@ -326,8 +329,7 @@ export default function ApplicationDetailModal({
             {((application.serviceType === "newline" &&
               application.contractPreference === "without") ||
               (application.serviceType === "services" &&
-                (application.selectedService === "upgrade" ||
-                  application.selectedService === "shurn" ||
+                (application.selectedService === "shurn" ||
                   application.selectedService === "shurn-turknet"))) && (
               <Row label="نوع التقنية" icon={<PiSpeedometerFill size={18} />}>
                 {application.noContractTechType
@@ -361,8 +363,7 @@ export default function ApplicationDetailModal({
                 "—"
               )}
             </Row>
-            {application.serviceType === "services" &&
-              application.selectedService !== "upgrade" && (
+            {application.serviceType === "services" && (
               <Row
                 label="قيمة أخر فاتورة"
                 icon={<MdOutlineReceiptLong size={18} />}
@@ -527,7 +528,6 @@ export default function ApplicationDetailModal({
                 application.contractPreference === "without")) && (
               <>
                 {(application.serviceType === "newline" ||
-                  application.selectedService === "upgrade" ||
                   application.selectedService === "shurn-turknet") && (
                   <>
                     <Row
@@ -556,7 +556,6 @@ export default function ApplicationDetailModal({
                   </Row>
                 )}
                 {(application.serviceType === "newline" ||
-                  application.selectedService === "upgrade" ||
                   application.selectedService === "shurn-turknet") && (
                   <Row
                     label="عدد الخصومات"
@@ -569,7 +568,7 @@ export default function ApplicationDetailModal({
             )}
 
             <Row
-              label="الصور المرفقة"
+              label="المرفقات"
               className="sm:col-span-2"
               icon={<MdOutlineReceiptLong size={18} />}
             >
@@ -579,21 +578,31 @@ export default function ApplicationDetailModal({
                   {application.invoiceFileUrl
                     .split(",")
                     .filter(Boolean)
-                    .map((url, idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="relative block w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:opacity-80 transition hover:shadow-md ring-2 ring-transparent hover:ring-[#18a2e3]"
-                      >
-                        <img
-                          src={url}
-                          alt={`مرفق ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </a>
-                    ))}
+                    .map((url, idx) => {
+                      const isPdf = url.toLowerCase().includes(".pdf");
+                      return (
+                        <a
+                          key={idx}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative flex items-center justify-center w-24 h-24 rounded-lg overflow-hidden border border-gray-200 hover:opacity-80 transition hover:shadow-md ring-2 ring-transparent hover:ring-[#18a2e3] bg-gray-50"
+                        >
+                          {isPdf ? (
+                            <div className="flex flex-col items-center justify-center gap-1 text-red-500">
+                              <MdPictureAsPdf size={40} />
+                              <span className="text-xs text-gray-500">PDF</span>
+                            </div>
+                          ) : (
+                            <img
+                              src={url}
+                              alt={`مرفق ${idx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </a>
+                      );
+                    })}
                 </div>
               ) : (
                 "—"
@@ -639,9 +648,18 @@ export default function ApplicationDetailModal({
             <Button
               variant="secondary"
               type="button"
-              onClick={() =>
-                router.push(`/panel/applications/${application.id}/edit`)
-              }
+              onClick={() => {
+                const from = isAddedMode
+                  ? ""
+                  : isExpiringMode
+                    ? "expiring"
+                    : isServicesMode
+                      ? "services"
+                      : "internet";
+                router.push(
+                  `/panel/applications/${application.id}/edit${from ? `?from=${from}` : ""}`,
+                );
+              }}
               className="rounded-xl! min-w-30"
             >
               تحرير

@@ -8,6 +8,10 @@ import {
   MdPersonOutline,
   MdOutlineRefresh,
   MdOutlineTag,
+  MdHistory,
+  MdChevronRight,
+  MdChevronLeft,
+  MdClose,
 } from "react-icons/md";
 import Button from "../../components/Button";
 import { formatDate } from "@/utils/general";
@@ -17,6 +21,12 @@ export default function AdminEmployeesClient() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingUsr, setEditingUsr] = useState(null);
+
+  const [sessionsUser, setSessionsUser] = useState(null);
+  const [sessionsData, setSessionsData] = useState([]);
+  const [sessionsTotal, setSessionsTotal] = useState(0);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [sessionsPage, setSessionsPage] = useState(1);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -38,6 +48,38 @@ export default function AdminEmployeesClient() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const fetchSessions = (user, page) => {
+    setSessionsLoading(true);
+    fetch(`/api/panel/users/${user.id}/sessions?page=${page}`)
+      .then((r) => r.json())
+      .then((d) => {
+        setSessionsData(d.sessions ?? []);
+        setSessionsTotal(d.total ?? 0);
+      })
+      .finally(() => setSessionsLoading(false));
+  };
+
+  const openSessions = (user) => {
+    setSessionsUser(user);
+    setSessionsPage(1);
+    fetchSessions(user, 1);
+  };
+
+  const closeSessions = () => setSessionsUser(null);
+
+  const changeSessionsPage = (page) => {
+    setSessionsPage(page);
+    fetchSessions(sessionsUser, page);
+  };
+
+  const formatDuration = (minutes) => {
+    if (minutes === null) return "—";
+    if (minutes < 60) return `${minutes} دقيقة`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h} ساعة ${m} دقيقة` : `${h} ساعة`;
+  };
 
   const openAdd = () => {
     setFormData({ fullName: "", email: "", password: "", role: "EMPLOYEE" });
@@ -184,7 +226,7 @@ export default function AdminEmployeesClient() {
                     الصلاحية
                   </th>
                   <th className="px-4 py-3.5 font-bold whitespace-nowrap">
-                    تاريخ التسجيل
+                    الجلسات
                   </th>
                   <th className="px-4 py-3.5 font-bold whitespace-nowrap text-center">
                     الإجراءات
@@ -205,11 +247,17 @@ export default function AdminEmployeesClient() {
                       <span
                         className={`px-2 py-1.5 rounded-full text-[11px] font-bold ${u.role === "ADMIN" ? "bg-orange-50 text-orange-600 border border-orange-100" : "bg-cyan-50 text-cyan-700 border border-cyan-100"}`}
                       >
-                        {u.role === "ADMIN" ? "أدمن" : "موظف"}
+                        {u.role === "ADMIN" ? "مدير" : "موظف"}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-gray-500 whitespace-nowrap">
-                      {formatDate(u.createdAt)}
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <button
+                        onClick={() => openSessions(u)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100 transition-all"
+                      >
+                        <MdHistory size={16} />
+                        الجلسات
+                      </button>
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       <div className="flex gap-2 justify-center">
@@ -235,12 +283,129 @@ export default function AdminEmployeesClient() {
         </div>
       )}
 
+      {sessionsUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 relative flex flex-col max-h-[90vh]">
+            <div className="p-5 border-b border-gray-100 bg-slate-50 flex items-center justify-between">
+              <h3 className="text-lg font-extrabold text-gray-900 flex items-center gap-2">
+                <MdHistory size={22} className="text-indigo-500" />
+                جلسات {sessionsUser.fullName}
+              </h3>
+              <button
+                onClick={closeSessions}
+                className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-500"
+              >
+                <MdClose size={20} />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto flex-1">
+              {sessionsLoading ? (
+                <div className="py-16 text-center text-gray-500 font-bold">
+                  جاري التحميل...
+                </div>
+              ) : sessionsData.length === 0 ? (
+                <div className="py-16 text-center text-gray-400 font-bold">
+                  لا توجد جلسات مسجلة
+                </div>
+              ) : (
+                <table className="min-w-full text-right text-sm">
+                  <thead
+                    className="text-white"
+                    style={{
+                      background: "linear-gradient(to left, #4f46e5, #6366f1)",
+                    }}
+                  >
+                    <tr>
+                      <th className="px-4 py-3 font-bold whitespace-nowrap">
+                        #
+                      </th>
+                      <th className="px-4 py-3 font-bold whitespace-nowrap">
+                        تاريخ الدخول
+                      </th>
+                      <th className="px-4 py-3 font-bold whitespace-nowrap">
+                        تاريخ الخروج
+                      </th>
+                      <th className="px-4 py-3 font-bold whitespace-nowrap">
+                        المدة
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {sessionsData.map((s, i) => {
+                      const isActive = !s.logoutAt && !s.lastSeenAt;
+                      const isInferred = !s.logoutAt && s.lastSeenAt;
+                      return (
+                        <tr
+                          key={s.id}
+                          className={`hover:bg-indigo-50/30 transition-colors ${i % 2 === 0 ? "bg-white" : "bg-slate-50/40"}`}
+                        >
+                          <td className="px-4 py-3 text-gray-400 text-xs">
+                            {(sessionsPage - 1) * 20 + i + 1}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                            {formatDate(s.loginAt, "2")}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            {s.logoutAt ? (
+                              <span className="text-gray-700">
+                                {formatDate(s.logoutAt, "2")}
+                              </span>
+                            ) : isInferred ? (
+                              <span className="text-amber-600 text-xs font-bold">
+                                آخر نشاط: {formatDate(s.lastSeenAt, "2")}
+                              </span>
+                            ) : (
+                              <span className="text-green-600 text-xs font-bold">
+                                نشط الآن
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                            {isActive ? "—" : formatDuration(s.durationMinutes)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {sessionsTotal > 20 && (
+              <div className="p-4 border-t border-gray-100 flex items-center justify-between text-sm">
+                <span className="text-gray-500 font-bold">
+                  الصفحة {sessionsPage} من {Math.ceil(sessionsTotal / 20)} —
+                  إجمالي: {sessionsTotal}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    disabled={sessionsPage <= 1}
+                    onClick={() => changeSessionsPage(sessionsPage - 1)}
+                    className="p-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <MdChevronRight size={20} />
+                  </button>
+                  <button
+                    disabled={sessionsPage >= Math.ceil(sessionsTotal / 20)}
+                    onClick={() => changeSessionsPage(sessionsPage + 1)}
+                    className="p-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <MdChevronLeft size={20} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {modalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 relative">
             <div className="p-6 border-b border-gray-50 bg-slate-50">
               <h3 className="text-xl font-extrabold text-gray-900">
-                {editingUsr ? "تعديل حساب موظف/أدمن" : "إضافة مستخدم جديد"}
+                {editingUsr ? "تعديل حساب موظف/مدير" : "إضافة مستخدم جديد"}
               </h3>
             </div>
             <form onSubmit={handleSave} className="p-6 space-y-4 text-right">
@@ -302,7 +467,7 @@ export default function AdminEmployeesClient() {
                   className="w-full border border-gray-200 bg-slate-50/50 rounded-2xl p-3 outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition cursor-pointer"
                 >
                   <option value="EMPLOYEE">موظف (EMPLOYEE)</option>
-                  <option value="ADMIN">أدمن (ADMIN)</option>
+                  <option value="ADMIN">مدير (ADMIN)</option>
                 </select>
               </div>
               <div className="flex gap-3 justify-end pt-4" dir="ltr">

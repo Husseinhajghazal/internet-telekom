@@ -4,6 +4,7 @@ import { verifySessionToken } from "../../../lib/admin-session";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import MobileAdminNav from "../../../components/admin/MobileAdminNav";
 import PreventClose from "../../../components/admin/PreventClose";
+import SessionHeartbeat from "../../../components/admin/SessionHeartbeat";
 import { NavigationGuardProvider } from "../../../components/admin/NavigationGuardContext";
 
 export default async function AdminPanelLayout({ children }) {
@@ -18,6 +19,7 @@ export default async function AdminPanelLayout({ children }) {
     <NavigationGuardProvider>
       <div className="flex bg-slate-50 min-h-svh text-right pb-20 lg:pb-0" dir="rtl">
         <PreventClose />
+        <SessionHeartbeat />
         {/* Desktop Sidebar */}
         <div className="hidden lg:block shrink-0 z-30">
           <AdminSidebar userRole={sessionUser.role} userName={sessionUser.fullName} />

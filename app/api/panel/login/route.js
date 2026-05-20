@@ -27,7 +27,8 @@ export async function POST(request) {
       return NextResponse.json({ error: "البريد الإلكتروني أو كلمة المرور غير صحيحة." }, { status: 401 });
     }
 
-    const token = createSessionToken(user);
+    const session = await prisma.userSession.create({ data: { userId: user.id } });
+    const token = createSessionToken(user, session.id);
     const cookieStore = await cookies();
     cookieStore.set("admin_session", token, {
       httpOnly: true,

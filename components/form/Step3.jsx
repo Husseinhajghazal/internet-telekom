@@ -9,12 +9,12 @@ const Step3 = ({ values, errors, touched, setFieldValue }) => {
   const options = [
     {
       name: "selectedService",
-      value: "upgrade",
+      value: "shurn-turknet",
       selected:
         values.serviceType === "services" &&
-        values.selectedService === "upgrade",
+        values.selectedService === "shurn-turknet",
       icon: "/animations/no%20transactions.json",
-      title: "تحويل من عقد لبدون عقد",
+      title: "تحويل لشركة آخرى",
       description: "",
       size: "small",
       color: "indigo",
@@ -24,7 +24,7 @@ const Step3 = ({ values, errors, touched, setFieldValue }) => {
       hidden: values.hasInternet === "no",
       onClick: () => {
         setFieldValue("serviceType", "services");
-        setFieldValue("selectedService", "upgrade");
+        setFieldValue("selectedService", "shurn-turknet");
         setFieldValue("contractPreference", "without");
       },
     },
@@ -48,7 +48,7 @@ const Step3 = ({ values, errors, touched, setFieldValue }) => {
       value: "services",
       selected:
         values.serviceType === "services" &&
-        values.selectedService !== "upgrade",
+        values.selectedService !== "shurn-turknet",
       icon: "/animations/Customer%20Service%20Man%20Waving%20(Mobile%20Phone%20Repair).json",
       title: "خدمات تقنية",
       description: "الخدمات المتعددة المتوفرة لدينا",

@@ -21,6 +21,7 @@ import {
   MdOutlinePinDrop,
   MdCancel,
   MdError,
+  MdPictureAsPdf,
 } from "react-icons/md";
 import { FaBuildingCircleCheck, FaIdCard } from "react-icons/fa6";
 import { PiSpeedometerFill } from "react-icons/pi";
@@ -243,9 +244,7 @@ export default function EditApplicationPage() {
   useEffect(() => {
     setFormData((prev) => {
       let newCompany = prev.internetCompany;
-      if (prev.selectedService === "upgrade") {
-        newCompany = "Turknet";
-      } else if (
+      if (
         prev.serviceType === "newline" &&
         prev.contractPreference === "without"
       ) {
@@ -295,6 +294,7 @@ export default function EditApplicationPage() {
     const fetchApp = async () => {
       try {
         const res = await fetch(`/api/panel/applications/${id}`);
+        if (res.status === 401) { router.push("/panel/login"); return; }
         const data = await res.json();
         if (!res.ok)
           throw new Error(data.error || "Failed to load application");
@@ -609,9 +609,11 @@ export default function EditApplicationPage() {
         body: payload,
       });
 
+      if (res.status === 401) { router.push("/panel/login"); return; }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "فشل الحفظ");
       originalData.current = { ...formData, invoiceFiles: [] };
+      window.dispatchEvent(new Event("expiringCountInvalidated"));
       router.push(backPath);
     } catch (err) {
       showToast(err.message || "حدث خطأ أثناء الحفظ");
@@ -631,8 +633,7 @@ export default function EditApplicationPage() {
     formData.serviceType === "newline"
       ? "newline"
       : formData.serviceType === "services" &&
-          (formData.selectedService === "upgrade" ||
-            formData.selectedService === "shurn" ||
+          (formData.selectedService === "shurn" ||
             formData.selectedService === "shurn-turknet")
         ? "change-company"
         : formData.serviceType === "services"
@@ -669,6 +670,18 @@ export default function EditApplicationPage() {
     "UNDER_CHANGE",
     "UNDER_TRANSFER",
     "UNDER_RENEW",
+    "OPEN_REGISTRATION",
+  ];
+  const SERVICES_ALLOWED_STATUSES = [
+    "NEW",
+    "UNDER_REVIEW",
+    "UNDER_OBSERVATION",
+    "OPEN_REGISTRATION",
+    "TECHNICAL_PROBLEM",
+    "TRYING_TO_PERSUADE",
+    "DELAYED",
+    "COMPLETED",
+    "REJECTED",
   ];
 
   let editAllowedStatuses = ADDED_STATUSES.includes(formData.status)
@@ -676,8 +689,8 @@ export default function EditApplicationPage() {
     : Object.keys(STATUS_LABELS).filter((s) => !ADDED_STATUSES.includes(s));
 
   if (fromView === "services") {
-    editAllowedStatuses = editAllowedStatuses.filter(
-      (s) => !INTERNET_ONLY_STATUSES.includes(s),
+    editAllowedStatuses = editAllowedStatuses.filter((s) =>
+      SERVICES_ALLOWED_STATUSES.includes(s),
     );
   } else if (fromView === "internet" || fromView === "expiring") {
     editAllowedStatuses = editAllowedStatuses.filter(
@@ -941,7 +954,7 @@ export default function EditApplicationPage() {
                     updates.serviceType = "newline";
                   } else if (val === "change-company") {
                     updates.serviceType = "services";
-                    updates.selectedService = "upgrade";
+                    updates.selectedService = "shurn";
                   } else if (val === "services") {
                     updates.serviceType = "services";
                   } else {
@@ -992,9 +1005,8 @@ export default function EditApplicationPage() {
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="upgrade">تحويل من عقد لبدون عقد</option>
-                  <option value="shurn">خدمة شورن لGöknet</option>
-                  <option value="shurn-turknet">خدمة شورن لTurknet</option>
+                  <option value="shurn">خدمة شورن لــ GOKNET</option>
+                  <option value="shurn-turknet">خدمة شورن لــ TURKNET</option>
                 </select>
               </div>
             )}
@@ -1079,8 +1091,6 @@ export default function EditApplicationPage() {
                     </option>
                     <option value="Telenet">Telenet</option>
                   </>
-                ) : formData.selectedService === "upgrade" ? (
-                  <option value="Turknet">Turknet</option>
                 ) : formData.serviceType === "newline" &&
                   formData.contractPreference === "without" ? (
                   <option value="Turknet">Turknet</option>
@@ -1167,8 +1177,7 @@ export default function EditApplicationPage() {
             {((formData.serviceType === "newline" &&
               formData.contractPreference === "without") ||
               (formData.serviceType === "services" &&
-                (formData.selectedService === "upgrade" ||
-                  formData.selectedService === "shurn" ||
+                (formData.selectedService === "shurn" ||
                   formData.selectedService === "shurn-turknet"))) && (
               <div>
                 <label className={labelClass}>نوع التقنية</label>
@@ -1219,13 +1228,13 @@ export default function EditApplicationPage() {
                 </select>
               </div>
             )}
-            {((formData.serviceType === "services" &&
-              formData.selectedService !== "shurn") ||
-              (formData.serviceType === "newline" &&
-                formData.contractPreference === "without")) && (
+            {formData.status !== "DELAYED" &&
+              ((formData.serviceType === "services" &&
+                formData.selectedService !== "shurn") ||
+                (formData.serviceType === "newline" &&
+                  formData.contractPreference === "without")) && (
               <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 {(formData.serviceType === "newline" ||
-                  formData.selectedService === "upgrade" ||
                   formData.selectedService === "shurn-turknet") && (
                   <>
                     <div className="flex items-center gap-3">
@@ -1292,7 +1301,6 @@ export default function EditApplicationPage() {
                   </div>
                 )}
                 {(formData.serviceType === "newline" ||
-                  formData.selectedService === "upgrade" ||
                   formData.selectedService === "shurn-turknet") && (
                   <div>
                     <label className={labelClass}>عدد الخصومات</label>
@@ -1501,7 +1509,7 @@ export default function EditApplicationPage() {
                 rows={3}
                 value={formData.note}
                 onChange={handleChange}
-                className={inputClass}
+                className={`${inputClass} bg-orange-50/50! border-orange-200! focus:border-orange-300! focus:ring-orange-500/20!`}
               />
             </div>
 
@@ -1521,7 +1529,7 @@ export default function EditApplicationPage() {
 
             <div className="md:col-span-2 space-y-4">
               <div className="flex items-center justify-between">
-                <label className={labelClass + " mb-0!"}>الصور المرفقة</label>
+                <label className={labelClass + " mb-0!"}>المرفقات</label>
                 {formData.invoiceFiles.length +
                   formData.invoiceFileUrls.length <
                   5 && (
@@ -1530,7 +1538,7 @@ export default function EditApplicationPage() {
                     className="flex items-center gap-2 text-sm text-cyan-600 hover:text-cyan-800 font-bold bg-cyan-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
                   >
                     <TbFileInvoiceFilled size={18} />
-                    إضافة صورة
+                    إضافة ملف
                   </label>
                 )}
               </div>
@@ -1538,7 +1546,7 @@ export default function EditApplicationPage() {
               <input
                 type="file"
                 id="admin-invoice-upload"
-                accept="image/*"
+                accept="image/*,application/pdf"
                 multiple
                 className="hidden"
                 onChange={async (e) => {
@@ -1567,65 +1575,92 @@ export default function EditApplicationPage() {
               {(formData.invoiceFiles.length > 0 ||
                 formData.invoiceFileUrls.length > 0) && (
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                  {formData.invoiceFileUrls.map((url, idx) => (
-                    <div
-                      key={`saved-${idx}`}
-                      className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-50 flex flex-col justify-between"
-                    >
-                      <img
-                        src={url}
-                        alt={`Saved ${idx}`}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newUrls = [...formData.invoiceFileUrls];
-                            newUrls.splice(idx, 1);
-                            setFormData((prev) => ({
-                              ...prev,
-                              invoiceFileUrls: newUrls,
-                            }));
-                          }}
-                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                          title="حذف"
-                        >
-                          <MdClose size={20} />
-                        </button>
+                  {formData.invoiceFileUrls.map((url, idx) => {
+                    const isPdf = url.toLowerCase().includes(".pdf");
+                    return (
+                      <div
+                        key={`saved-${idx}`}
+                        className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-gray-50 flex items-center justify-center"
+                      >
+                        {isPdf ? (
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full h-full flex flex-col items-center justify-center gap-1 text-red-500 hover:bg-red-50 transition-colors"
+                          >
+                            <MdPictureAsPdf size={44} />
+                            <span className="text-xs text-gray-500">PDF</span>
+                          </a>
+                        ) : (
+                          <img
+                            src={url}
+                            alt={`Saved ${idx}`}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newUrls = [...formData.invoiceFileUrls];
+                              newUrls.splice(idx, 1);
+                              setFormData((prev) => ({
+                                ...prev,
+                                invoiceFileUrls: newUrls,
+                              }));
+                            }}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            title="حذف"
+                          >
+                            <MdClose size={20} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
-                  {formData.invoiceFiles.map((_file, idx) => (
-                    <div
-                      key={`new-${idx}`}
-                      className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex flex-col justify-between"
-                    >
-                      <img
-                        src={blobUrls[idx]}
-                        alt={`New ${idx}`}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newFiles = [...formData.invoiceFiles];
-                            newFiles.splice(idx, 1);
-                            setFormData((prev) => ({
-                              ...prev,
-                              invoiceFiles: newFiles,
-                            }));
-                          }}
-                          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                          title="حذف"
-                        >
-                          <MdClose size={20} />
-                        </button>
+                  {formData.invoiceFiles.map((file, idx) => {
+                    const isPdf = file.type === "application/pdf";
+                    return (
+                      <div
+                        key={`new-${idx}`}
+                        className="relative group rounded-xl overflow-hidden border-2 border-green-400 shadow-sm aspect-square bg-green-50 flex items-center justify-center"
+                      >
+                        {isPdf ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-red-500">
+                            <MdPictureAsPdf size={44} />
+                            <span className="text-xs text-gray-500 px-2 text-center line-clamp-2">
+                              {file.name}
+                            </span>
+                          </div>
+                        ) : (
+                          <img
+                            src={blobUrls[idx]}
+                            alt={`New ${idx}`}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newFiles = [...formData.invoiceFiles];
+                              newFiles.splice(idx, 1);
+                              setFormData((prev) => ({
+                                ...prev,
+                                invoiceFiles: newFiles,
+                              }));
+                            }}
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            title="حذف"
+                          >
+                            <MdClose size={20} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -1812,8 +1847,7 @@ export default function EditApplicationPage() {
                 {((formData.serviceType === "newline" &&
                   formData.contractPreference === "without") ||
                   (formData.serviceType === "services" &&
-                    (formData.selectedService === "upgrade" ||
-                      formData.selectedService === "shurn" ||
+                    (formData.selectedService === "shurn" ||
                       formData.selectedService === "shurn-turknet"))) && (
                   <Row
                     label="نوع التقنية"
@@ -1905,11 +1939,11 @@ export default function EditApplicationPage() {
                   </Row>
                 )}
 
-                {((formData.serviceType === "services" &&
-                  (formData.selectedService === "upgrade" ||
-                    formData.selectedService === "shurn-turknet")) ||
-                  (formData.serviceType === "newline" &&
-                    formData.contractPreference === "without")) && (
+                {formData.status !== "DELAYED" &&
+                  ((formData.serviceType === "services" &&
+                    formData.selectedService === "shurn-turknet") ||
+                    (formData.serviceType === "newline" &&
+                      formData.contractPreference === "without")) && (
                   <>
                     <Row
                       label="موافقة الكترونية"
@@ -1935,7 +1969,6 @@ export default function EditApplicationPage() {
                       </Row>
                     )}
                     {(formData.serviceType === "newline" ||
-                      formData.selectedService === "upgrade" ||
                       formData.selectedService === "shurn-turknet") && (
                       <Row
                         label="عدد الخصومات"

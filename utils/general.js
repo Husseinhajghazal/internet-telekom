@@ -3,9 +3,10 @@ import { STATUS_LABELS } from "./data";
 
 const describeServiceType = (serviceType = "", selectedService = "") => {
   if (serviceType === "newline") return "خط إنترنت جديد";
-  if (serviceType === "services" && selectedService === "upgrade") return "تحويل من عقد لبدون عقد";
-  if (serviceType === "services" && selectedService === "shurn") return "خدمة شورن لGöknet";
-  if (serviceType === "services" && selectedService === "shurn-turknet") return "خدمة شورن لTurknet";
+  if (serviceType === "services" && selectedService === "shurn")
+    return "خدمة شورن لــ GOKNET";
+  if (serviceType === "services" && selectedService === "shurn-turknet")
+    return "خدمة شورن لــ TURKNET";
   if (serviceType === "services") return "خدمات";
   if (serviceType === "inquiry") return "استشارات";
   return serviceType || "—";
@@ -47,10 +48,9 @@ const describeSelectedService = (selectedService = "") => {
     "transfer-address": "نقل خط الإنترنت لعنوان آخر",
     renew: "تجديد الاشتراك",
     freeze: "تجميد الاشتراك",
-    upgrade: "تحويل من عقد لبدون عقد",
     "change-phone": "تغيير رقم الموبايل المثبت",
-    shurn: "خدمة شورن لGöknet",
-    "shurn-turknet": "خدمة شورن لTurknet",
+    shurn: "خدمة شورن لــ GOKNET",
+    "shurn-turknet": "خدمة شورن لــ TURKNET",
   };
   return map[selectedService] || selectedService || "—";
 };
@@ -153,7 +153,7 @@ const validateTC = (tc) => {
   const finalDigit10 = (digit10 + 10) % 10;
   if (finalDigit10 !== n[9]) return false;
 
-  const sumFirst10 = (sumOdd + sumEven + n[9]);
+  const sumFirst10 = sumOdd + sumEven + n[9];
   if (sumFirst10 % 10 !== n[10]) return false;
 
   return true;
@@ -166,7 +166,7 @@ const getStepFieldOrder = (step, values) => {
   if (step === 4) {
     if (
       values?.serviceType === "services" &&
-      values?.selectedService === "upgrade"
+      values?.selectedService === "shurn-turknet"
     )
       return [];
     if (values?.serviceType === "services") return ["selectedService"];
@@ -180,7 +180,7 @@ const getStepFieldOrder = (step, values) => {
   }
   if (step === 6) {
     if (values?.serviceType === "inquiry") return [];
-    if (values?.serviceType === "services" || values?.serviceType === "upgrade")
+    if (values?.serviceType === "services")
       return ["internetCompany", "address"];
     return ["address"];
   }
@@ -193,7 +193,7 @@ const getNextStep = (step, values) => {
   if (step === 3) {
     if (
       values.serviceType === "services" &&
-      values.selectedService === "upgrade"
+      values.selectedService === "shurn-turknet"
     )
       return 5;
     return 4;
@@ -217,7 +217,7 @@ const getPreviousStep = (step, values) => {
   if (step === 5) {
     if (
       values.serviceType === "services" &&
-      values.selectedService === "upgrade"
+      values.selectedService === "shurn-turknet"
     )
       return 3;
     return 4;
@@ -225,7 +225,7 @@ const getPreviousStep = (step, values) => {
   if (step === 6) {
     if (
       values.serviceType === "services" &&
-      values.selectedService === "upgrade"
+      values.selectedService === "shurn-turknet"
     ) {
       return 5;
     }
@@ -352,12 +352,19 @@ const statusBadgeClass = (status) => {
       return "bg-violet-100 text-violet-900 ring-1 ring-violet-200/60";
     case "UNDER_RENEW":
       return "bg-fuchsia-100 text-fuchsia-900 ring-1 ring-fuchsia-200/60";
+    case "OPEN_REGISTRATION":
+      return "bg-lime-100 text-lime-800 ring-1 ring-lime-200/60";
     default:
       return "bg-gray-100 text-gray-800";
   }
 };
 
-const compressImage = async (file, maxWidth = 1200, maxHeight = 1200, quality = 0.8) => {
+const compressImage = async (
+  file,
+  maxWidth = 1200,
+  maxHeight = 1200,
+  quality = 0.8,
+) => {
   return new Promise((resolve) => {
     if (!file.type.startsWith("image/") || file.type === "image/gif") {
       resolve(file); // Don't compress non-images or GIFs
@@ -404,7 +411,7 @@ const compressImage = async (file, maxWidth = 1200, maxHeight = 1200, quality = 
             resolve(compressedFile);
           },
           "image/jpeg",
-          quality
+          quality,
         );
       };
       img.onerror = () => resolve(file); // fallback
@@ -413,7 +420,7 @@ const compressImage = async (file, maxWidth = 1200, maxHeight = 1200, quality = 
   });
 };
 
-  export {
+export {
   describeContractPreference,
   describeNoContractTechType,
   describeSelectedInquiry,
@@ -435,5 +442,5 @@ const compressImage = async (file, maxWidth = 1200, maxHeight = 1200, quality = 
   normalizeIndex,
   describeStatus,
   statusBadgeClass,
-  compressImage
+  compressImage,
 };

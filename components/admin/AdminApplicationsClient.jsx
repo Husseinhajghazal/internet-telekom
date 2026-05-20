@@ -32,6 +32,8 @@ import {
   MdDelete,
   MdHistory,
   MdSend,
+  MdExpandMore,
+  MdExpandLess,
 } from "react-icons/md";
 import { RxReset } from "react-icons/rx";
 import { FaWhatsapp } from "react-icons/fa";
@@ -55,18 +57,18 @@ const SERVICES_ONLY_STATUSES = [
   "UNDER_CHANGE",
   "UNDER_TRANSFER",
   "UNDER_RENEW",
+  "OPEN_REGISTRATION",
 ];
 
 const SERVICES_PAGE_ALLOWED_STATUSES = [
   "NEW",
   "UNDER_REVIEW",
   "UNDER_OBSERVATION",
-  "UNDER_TRANSFER",
-  "UNDER_RENEW",
-  "UNDER_FREEZING",
-  "UNDER_CANCELING",
-  "UNDER_CHANGE",
+  "OPEN_REGISTRATION",
   "TECHNICAL_PROBLEM",
+  "TRYING_TO_PERSUADE",
+  "DELAYED",
+  "COMPLETED",
   "REJECTED",
 ];
 
@@ -547,9 +549,7 @@ ${reviewLink}
     () => getStoredFilters()?.statusFilter ?? "",
   );
   const [dateField, setDateField] = useState(
-    () =>
-      getStoredFilters()?.dateField ??
-      (isDeletedMode ? "updatedAt" : "createdAt"),
+    () => getStoredFilters()?.dateField ?? "updatedAt",
   );
   const [dateFrom, setDateFrom] = useState(() => {
     const saved = getStoredFilters()?.dateFrom;
@@ -571,6 +571,10 @@ ${reviewLink}
   const [topTypeFilter, setTopTypeFilter] = useState(
     () => getStoredFilters()?.topTypeFilter ?? "",
   );
+  const [subTypeFilter, setSubTypeFilter] = useState(
+    () => getStoredFilters()?.subTypeFilter ?? "",
+  );
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [lastClickedAppId, setLastClickedAppId] = useState(() => {
     try {
       return sessionStorage.getItem(`${storageKey}_last`) || null;
@@ -622,6 +626,11 @@ ${reviewLink}
     } catch {}
   };
 
+  const getTodayISO = () => {
+    const now = new Date();
+    return new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  };
+
   const resetFilters = () => {
     setSearchInput("");
     setDebouncedQ("");
@@ -630,8 +639,9 @@ ${reviewLink}
     setDebouncedCompany("");
     setSelectedServiceFilter("");
     setTopTypeFilter("");
-    setDateField(isDeletedMode ? "updatedAt" : "createdAt");
-    setDateFrom("");
+    setSubTypeFilter("");
+    setDateField("updatedAt");
+    setDateFrom(getTodayISO());
     setDateTo("");
     setPage(1);
     setLastClickedAppId(null);
@@ -666,7 +676,7 @@ ${reviewLink}
       if (!isExpiringMode) {
         if (statusFilter) params.set("status", statusFilter);
         if (!debouncedQ) {
-          if (dateField && dateField !== "createdAt")
+          if (dateField && dateField !== "updatedAt")
             params.set("dateField", dateField);
           if (dateFrom) params.set("dateFrom", dateFrom);
           if (dateTo) params.set("dateTo", dateTo);
@@ -677,6 +687,16 @@ ${reviewLink}
         params.set("selectedService", selectedServiceFilter);
       if (!isServicesMode && topTypeFilter)
         params.set("topType", topTypeFilter);
+      if (subTypeFilter && topTypeFilter === "switch") {
+        params.set("selectedService", subTypeFilter);
+      } else if (isAddedMode && subTypeFilter) {
+        if (topTypeFilter === "newline")
+          params.set("contractPreference", subTypeFilter);
+        else if (topTypeFilter === "services")
+          params.set("selectedService", subTypeFilter);
+        else if (topTypeFilter === "inquiry")
+          params.set("selectedInquiry", subTypeFilter);
+      }
       return params.toString();
     },
     [
@@ -692,6 +712,7 @@ ${reviewLink}
       debouncedCompany,
       selectedServiceFilter,
       topTypeFilter,
+      subTypeFilter,
     ],
   );
 
@@ -701,6 +722,10 @@ ${reviewLink}
       setError(null);
       try {
         const res = await fetch(`/api/panel/applications?${buildQuery(p)}`);
+        if (res.status === 401) {
+          router.push("/panel/login");
+          return;
+        }
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(json.error || "فشل التحميل");
@@ -713,12 +738,21 @@ ${reviewLink}
         setLoading(false);
       }
     },
-    [buildQuery],
+    [buildQuery, router],
   );
 
   useEffect(() => {
     load(page);
   }, [page, load]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") load(page);
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
+  }, [load, page]);
 
   const handleCreateBlankApp = () => {
     router.push(
@@ -816,6 +850,7 @@ ${reviewLink}
         return;
       }
       setConfirm(null);
+      window.dispatchEvent(new Event("expiringCountInvalidated"));
       await load(page);
     } finally {
       setActionId(null);
@@ -836,6 +871,7 @@ ${reviewLink}
         return;
       }
       setConfirm(null);
+      window.dispatchEvent(new Event("expiringCountInvalidated"));
       await load(page);
     } finally {
       setActionId(null);
@@ -856,6 +892,7 @@ ${reviewLink}
         return;
       }
       setConfirm(null);
+      window.dispatchEvent(new Event("expiringCountInvalidated"));
       await load(page);
       if (detailApp?.id === id) {
         setDetailApp(json);
@@ -947,6 +984,7 @@ ${reviewLink}
         return;
       }
       setStatusApp(null);
+      window.dispatchEvent(new Event("expiringCountInvalidated"));
       await load(page);
     } finally {
       setActionId(null);
@@ -1019,7 +1057,8 @@ ${reviewLink}
     setDebouncedCompany("");
     setSelectedServiceFilter("");
     setTopTypeFilter("");
-    setDateField("createdAt");
+    setSubTypeFilter("");
+    setDateField("updatedAt");
     setDateFrom("");
     setDateTo("");
     setPage(1);
@@ -1134,205 +1173,347 @@ ${reviewLink}
       </div>
 
       {/* Search & filters */}
-      {/* Search & filters */}
-      <div className="rounded-3xl border border-cyan-100/80 bg-white/95 p-4 md:p-6 shadow-md shadow-cyan-500/5 text-right space-y-4">
-        <div className="flex items-center gap-2 text-gray-800 font-bold border-b border-gray-100 pb-3">
-          <MdFilterList style={{ color: ACCENT }} size={22} />
-          <span>بحث وتصفية</span>
-        </div>
-
-        {/* Search Input (Above all filters) */}
-        <div className="relative">
-          <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-            بحث (الإسم، رقم الطلب، الموبايل)
-          </label>
-          <div className="relative">
-            <MdSearch
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-              size={20}
-            />
-            <input
-              type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="ابحث…"
-              className="w-full rounded-2xl border border-gray-200 bg-slate-50/80 py-2.5 pr-10 pl-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-500/20"
-              dir="rtl"
-            />
+      <div className="rounded-3xl border border-cyan-100/80 bg-white/95 shadow-md shadow-cyan-500/5 text-right">
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((v) => !v)}
+          className="w-full flex items-center justify-between gap-2 p-4 md:px-6 md:py-5 text-gray-800 font-bold"
+        >
+          <div className="flex items-center gap-2">
+            <MdFilterList style={{ color: ACCENT }} size={22} />
+            <span>بحث وتصفية</span>
           </div>
-        </div>
-
-        {/* Dropdown Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-          {/* Service Type / Top Type */}
-          {isServicesMode ? (
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                نوع الخدمة
-              </label>
-              <select
-                value={selectedServiceFilter}
-                onChange={(e) => {
-                  setSelectedServiceFilter(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-              >
-                <option value="">كل الخدمات</option>
-                <option value="cancel">إلغاء الاشتراك</option>
-                <option value="transfer-name">نقل ملكية</option>
-                <option value="transfer-address">نقل خط لعنوان آخر</option>
-                <option value="renew">تجديد الاشتراك</option>
-                <option value="freeze">تجميد الاشتراك</option>
-                <option value="change-phone">تغيير رقم الموبايل</option>
-              </select>
-            </div>
+          {filtersOpen ? (
+            <MdExpandLess size={22} className="text-gray-400" />
           ) : (
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                نوع الطلب
-              </label>
-              <select
-                value={topTypeFilter}
-                onChange={(e) => {
-                  setTopTypeFilter(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-              >
-                <option value="">كل الأنواع</option>
-                <option value="newline">خط إنترنت جديد</option>
-                <option value="switch">تحويل لشركة ٱخرى</option>
-                {isAddedMode && <option value="services">خدمات</option>}
-              </select>
-            </div>
+            <MdExpandMore size={22} className="text-gray-400" />
           )}
+        </button>
 
-          {/* Company */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-              شركة الإنترنت
-            </label>
-            <select
-              value={internetCompanyFilter}
-              onChange={(e) => {
-                setInternetCompanyFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-            >
-              <option value="">كل الشركات</option>
-              <option value="Türk Telekom">Türk Telekom</option>
-              <option value="Göknet">Göknet</option>
-              <option value="Turknet">Turknet</option>
-            </select>
-          </div>
+        <div
+          className={`grid transition-all duration-300 ease-in-out ${filtersOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+        >
+          <div className="overflow-hidden">
+            <div className="px-4 md:px-6 pb-4 md:pb-6 pt-4 space-y-4 border-t border-gray-100">
+              {/* Search Input (Above all filters) */}
+              <div className="relative">
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                  بحث (الإسم، رقم الطلب، الموبايل)
+                </label>
+                <div className="relative">
+                  <MdSearch
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    size={20}
+                  />
+                  <input
+                    type="search"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="ابحث…"
+                    className="w-full rounded-2xl border border-gray-200 bg-slate-50/80 py-2.5 pr-10 pl-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-500/20"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
 
-          {/* Status */}
-          {!isDeletedMode && !isExpiringMode && (
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                حالة الطلب
-              </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-              >
-                <option value="">كل الحالات</option>
-                {Object.entries(STATUS_LABELS)
-                  .filter(([key]) => {
-                    if (isServicesMode)
-                      return SERVICES_PAGE_ALLOWED_STATUSES.includes(key);
-                    if (!isServicesMode && SERVICES_ONLY_STATUSES.includes(key))
-                      return false;
-                    return isAddedMode
-                      ? key === "NOT_COMPLETED" || key === "COMPLETED"
-                      : key !== "NOT_COMPLETED" && key !== "COMPLETED";
-                  })
-                  .map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
+              {/* Dropdown Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                {/* Service Type / Top Type */}
+                {!isDeletedMode &&
+                  (isServicesMode ? (
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                        نوع الخدمة
+                      </label>
+                      <select
+                        value={selectedServiceFilter}
+                        onChange={(e) => {
+                          setSelectedServiceFilter(e.target.value);
+                          setPage(1);
+                        }}
+                        className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+                      >
+                        <option value="">كل الخدمات</option>
+                        <option value="cancel">إلغاء الاشتراك</option>
+                        <option value="transfer-name">نقل ملكية</option>
+                        <option value="transfer-address">
+                          نقل خط لعنوان آخر
+                        </option>
+                        <option value="renew">تجديد الاشتراك</option>
+                        <option value="freeze">تجميد الاشتراك</option>
+                        <option value="change-phone">تغيير رقم الموبايل</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                        نوع الطلب
+                      </label>
+                      <select
+                        value={topTypeFilter}
+                        onChange={(e) => {
+                          setTopTypeFilter(e.target.value);
+                          setSubTypeFilter("");
+                          setPage(1);
+                        }}
+                        className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+                      >
+                        <option value="">كل الأنواع</option>
+                        <option value="newline">خط إنترنت جديد</option>
+                        <option value="switch">تحويل لشركة ٱخرى</option>
+                        {isAddedMode && <option value="services">خدمات</option>}
+                      </select>
+                    </div>
                   ))}
-              </select>
-            </div>
-          )}
-        </div>
 
-        {/* Date Filters */}
-        {!isExpiringMode && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 pt-2 border-t border-gray-50">
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                تصفية حسب التواريخ
-              </label>
-              <select
-                value={dateField}
-                onChange={(e) => {
-                  setDateField(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
-              >
-                <option value="createdAt">تاريخ التسجيل</option>
-                {isDeletedMode && (
-                  <option value="updatedAt">تاريخ الحذف</option>
+                {/* Sub-type filter (added mode only) */}
+                {isAddedMode && topTypeFilter && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                      {topTypeFilter === "newline" && "نوع العقد"}
+                      {topTypeFilter === "switch" && "شركة الإنترنت"}
+                      {topTypeFilter === "services" && "الخدمة"}
+                      {topTypeFilter === "inquiry" && "نوع الاستفسار"}
+                    </label>
+                    <select
+                      value={subTypeFilter}
+                      onChange={(e) => {
+                        setSubTypeFilter(e.target.value);
+                        setPage(1);
+                      }}
+                      className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+                    >
+                      <option value="">الكل</option>
+                      {topTypeFilter === "newline" && (
+                        <>
+                          <option value="with">مع عقد إشتراك</option>
+                          <option value="without">بدون عقد إشتراك</option>
+                        </>
+                      )}
+                      {topTypeFilter === "switch" && (
+                        <>
+                          <option value="shurn">Göknet</option>
+                          <option value="shurn-turknet">Turknet</option>
+                        </>
+                      )}
+                      {topTypeFilter === "services" && (
+                        <>
+                          <option value="cancel">إلغاء الاشتراك</option>
+                          <option value="transfer-name">نقل ملكية</option>
+                          <option value="transfer-address">
+                            نقل خط لعنوان آخر
+                          </option>
+                          <option value="renew">تجديد الاشتراك</option>
+                          <option value="freeze">تجميد الاشتراك</option>
+                          <option value="change-phone">
+                            تغيير رقم الموبايل
+                          </option>
+                        </>
+                      )}
+                      {topTypeFilter === "inquiry" && (
+                        <>
+                          <option value="pricing">
+                            استفسار عن الأسعار والعروض
+                          </option>
+                          <option value="coverage">
+                            استفسار عن تغطية المنطقة
+                          </option>
+                          <option value="technical">
+                            استفسار عن مشكلة تقنية
+                          </option>
+                          <option value="general">استفسار عام</option>
+                          <option value="transfer-issue">نقل الخط</option>
+                          <option value="slow-speed">سرعة الخط</option>
+                          <option value="high-bill">الفاتورة مرتفعة</option>
+                          <option value="internet-down">الإنترنت متوقف</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
                 )}
+
+                {/* Company */}
                 {!isDeletedMode && !isAddedMode && (
-                  <option value="completedAt">تاريخ التفعيل</option>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                      شركة الإنترنت
+                    </label>
+                    <select
+                      value={topTypeFilter === "switch" ? subTypeFilter : internetCompanyFilter}
+                      onChange={(e) => {
+                        if (topTypeFilter === "switch") {
+                          setSubTypeFilter(e.target.value);
+                        } else {
+                          setInternetCompanyFilter(e.target.value);
+                        }
+                        setPage(1);
+                      }}
+                      className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+                    >
+                      <option value="">كل الشركات</option>
+                      {topTypeFilter === "switch" ? (
+                        <>
+                          <option value="shurn">Göknet</option>
+                          <option value="shurn-turknet">Turknet</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="Türk Telekom">Türk Telekom</option>
+                          <option value="Göknet">Göknet</option>
+                          <option value="Turknet">Turknet</option>
+                          {isServicesMode && (
+                            <>
+                              <option value="Turkcell Superonline">
+                                Turkcell Superonline
+                              </option>
+                              <option value="Vodafone Net">Vodafone Net</option>
+                              <option value="Türksat Kablonet">
+                                Türksat Kablonet
+                              </option>
+                              <option value="Millenicom">Millenicom</option>
+                              <option value="Netspeed">Netspeed</option>
+                              <option value="D-Smart Net">D-Smart Net</option>
+                              <option value="Digiturk İnternet">
+                                Digiturk İnternet
+                              </option>
+                              <option value="GIBIRNet">GIBIRNet</option>
+                              <option value="Comnet">Comnet</option>
+                              <option value="Turkcell Fiber">
+                                Turkcell Fiber
+                              </option>
+                              <option value="FixNet">FixNet</option>
+                              <option value="Oris Telekom">Oris Telekom</option>
+                              <option value="İnternet Kutusu">
+                                İnternet Kutusu
+                              </option>
+                              <option value="Niobe Telekom">Niobe Telekom</option>
+                              <option value="PoyrazNet">PoyrazNet</option>
+                              <option value="Smile ADSL">Smile ADSL</option>
+                              <option value="Bimcell Ev İnterneti">
+                                Bimcell Ev İnterneti
+                              </option>
+                              <option value="Telenet">Telenet</option>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </select>
+                  </div>
                 )}
-                {!isDeletedMode && !isAddedMode && (
-                  <option value="delayedUntil">تاريخ التأجيل</option>
+
+                {/* Status */}
+                {!isDeletedMode && !isExpiringMode && (
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                      حالة الطلب
+                    </label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => {
+                        setStatusFilter(e.target.value);
+                        setPage(1);
+                      }}
+                      className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+                    >
+                      <option value="">كل الحالات</option>
+                      {Object.entries(STATUS_LABELS)
+                        .filter(([key]) => {
+                          if (isServicesMode)
+                            return SERVICES_PAGE_ALLOWED_STATUSES.includes(key);
+                          if (
+                            !isServicesMode &&
+                            SERVICES_ONLY_STATUSES.includes(key)
+                          )
+                            return false;
+                          return isAddedMode
+                            ? key === "NOT_COMPLETED" || key === "COMPLETED"
+                            : key !== "NOT_COMPLETED" && key !== "COMPLETED";
+                        })
+                        .map(([key, label]) => (
+                          <option key={key} value={key}>
+                            {label}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
                 )}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                من تاريخ
-              </label>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => {
-                  setDateFrom(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                إلى تاريخ
-              </label>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => {
-                  setDateTo(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
-              />
+              </div>
+
+              {/* Date Filters */}
+              {!isExpiringMode && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 pt-2 border-t border-gray-50">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                      تصفية حسب التواريخ
+                    </label>
+                    <select
+                      value={dateField}
+                      onChange={(e) => {
+                        setDateField(e.target.value);
+                        setPage(1);
+                      }}
+                      className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
+                    >
+                      <option value="updatedAt">
+                        {isDeletedMode
+                          ? "تاريخ الحذف"
+                          : "تاريخ التسجيل / التحديث"}
+                      </option>
+                      <option value="createdAt">تاريخ التسجيل فقط</option>
+                      {!isDeletedMode && !isAddedMode && (
+                        <option value="completedAt">تاريخ التفعيل</option>
+                      )}
+                      {!isDeletedMode && !isAddedMode && (
+                        <option value="delayedUntil">تاريخ التأجيل</option>
+                      )}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                      من تاريخ
+                    </label>
+                    <input
+                      type="date"
+                      value={dateFrom}
+                      onChange={(e) => {
+                        setDateFrom(e.target.value);
+                        setPage(1);
+                      }}
+                      className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                      إلى تاريخ
+                    </label>
+                    <input
+                      type="date"
+                      value={dateTo}
+                      onChange={(e) => {
+                        setDateTo(e.target.value);
+                        setPage(1);
+                      }}
+                      className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Reset Button (Below date filters) */}
+              <div className="flex justify-end pt-3">
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  disabled={!mounted || !hasActiveFilters}
+                  title="مسح الفلاتر"
+                  className="inline-flex w-full md:w-fit justify-center items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold bg-white border border-cyan-300 text-cyan-700 hover:bg-cyan-50/50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <RxReset size={18} />
+                  مسح الفلاتر
+                </button>
+              </div>
             </div>
           </div>
-        )}
-
-        {/* Reset Button (Below date filters) */}
-        <div className="flex justify-end pt-3">
-          <button
-            type="button"
-            onClick={resetFilters}
-            disabled={!mounted || !hasActiveFilters}
-            title="مسح الفلاتر"
-            className="inline-flex w-full md:w-fit justify-center items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold bg-white border border-cyan-300 text-cyan-700 hover:bg-cyan-50/50 transition disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <RxReset size={18} />
-            مسح الفلاتر
-          </button>
         </div>
       </div>
 
@@ -1709,6 +1890,9 @@ ${reviewLink}
         <ApplicationDetailModal
           application={detailApp}
           isDeletedMode={isDeletedMode}
+          isAddedMode={isAddedMode}
+          isServicesMode={isServicesMode}
+          isExpiringMode={isExpiringMode}
           onClose={() => setDetailApp(null)}
         />
       )}

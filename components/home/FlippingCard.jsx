@@ -28,6 +28,7 @@ const getSpeedIcon = (speedStr) => {
 const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const SpeedIcon = getSpeedIcon(speed);
+  const oldPrice = Math.ceil(parseInt(price, 10) * 1.25);
 
   return (
     <div
@@ -59,6 +60,9 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
             >
               <SpeedIcon className="text-3xl" />
             </div>
+            <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-red-500/40 tracking-wide animate-pulse">
+              خصم 20%
+            </span>
           </div>
 
           {/* speed + price */}
@@ -78,9 +82,14 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
               <span className="text-sm text-gray-500 font-bold mb-1.5">
                 شهرياً / TL
               </span>
-              <span className="text-5xl font-extrabold tracking-tight text-gray-900">
-                {price}
-              </span>
+              <div className="flex flex-col items-end gap-0.5">
+                <span className="text-2xl text-red-400 line-through font-bold leading-none">
+                  {oldPrice}
+                </span>
+                <span className="text-5xl font-extrabold tracking-tight text-gray-900">
+                  {price}
+                </span>
+              </div>
             </div>
 
             {title && (
@@ -154,14 +163,24 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
 
               {/* price chip */}
               <div className="flex items-center justify-between bg-black/20 border border-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm">
-                <span className="text-white/60 text-xs font-semibold">
-                  الاشتراك الشهري
-                </span>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-white font-black text-2xl tracking-tight">
-                    {price}
+                <div className="flex flex-col gap-1">
+                  <span className="text-white/60 text-xs font-semibold">
+                    الاشتراك الشهري
                   </span>
-                  <span className="text-white/50 text-xs font-bold">TL</span>
+                  <span className="inline-flex items-center bg-red-500/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full w-fit">
+                    خصم 20%
+                  </span>
+                </div>
+                <div className="flex flex-col items-end gap-0.5">
+                  <span className="text-white/50 text-lg font-bold line-through leading-none">
+                    {oldPrice} TL
+                  </span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-white font-black text-2xl tracking-tight">
+                      {price}
+                    </span>
+                    <span className="text-white/50 text-xs font-bold">TL</span>
+                  </div>
                 </div>
               </div>
 

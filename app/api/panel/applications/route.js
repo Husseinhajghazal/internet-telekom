@@ -59,7 +59,7 @@ function buildWhere(searchParams) {
 
     const targetDateField = VALID_DATE_FIELDS.includes(dateFieldParam)
       ? dateFieldParam
-      : "createdAt";
+      : "updatedAt";
 
     const dateCondition = {};
 
@@ -94,13 +94,23 @@ function buildWhere(searchParams) {
     andConditions.push({ selectedService: selectedServiceParam });
   }
 
+  const contractPreferenceParam = searchParams.get("contractPreference")?.trim();
+  if (contractPreferenceParam) {
+    andConditions.push({ contractPreference: contractPreferenceParam });
+  }
+
+  const selectedInquiryParam = searchParams.get("selectedInquiry")?.trim();
+  if (selectedInquiryParam) {
+    andConditions.push({ selectedInquiry: selectedInquiryParam });
+  }
+
   const topTypeParam = searchParams.get("topType")?.trim();
   if (topTypeParam === "newline") {
     andConditions.push({ serviceType: "newline" });
   } else if (topTypeParam === "switch") {
     andConditions.push({
       serviceType: "services",
-      selectedService: { in: ["upgrade", "shurn", "shurn-turknet"] },
+      selectedService: { in: ["shurn", "shurn-turknet"] },
     });
   } else if (topTypeParam === "services") {
     andConditions.push({
@@ -124,6 +134,10 @@ function buildWhere(searchParams) {
       { newPhone: { contains: q, mode: "insensitive" } },
       { nationalNumber: { contains: q, mode: "insensitive" } },
       { newNationalNumber: { contains: q, mode: "insensitive" } },
+      { addressCode: { contains: q, mode: "insensitive" } },
+      { newAddressCode: { contains: q, mode: "insensitive" } },
+      { subscriptionNo: { contains: q, mode: "insensitive" } },
+      { notes: { some: { text: { contains: q, mode: "insensitive" } } } },
     ];
 
     // appIndex exact match
@@ -203,7 +217,7 @@ function buildWhere(searchParams) {
     andConditions.push({
       OR: [
         { serviceType: "inquiry" },
-        { serviceType: "services", selectedService: { notIn: ["upgrade", "shurn"] } },
+        { serviceType: "services", selectedService: { notIn: ["upgrade", "shurn", "shurn-turknet"] } },
       ],
     });
   }
@@ -272,7 +286,7 @@ export async function GET(request) {
       } else if (topTypeParam === "switch") {
         searchAnd.push({
           serviceType: "services",
-          selectedService: { in: ["upgrade", "shurn", "shurn-turknet"] },
+          selectedService: { in: ["shurn", "shurn-turknet"] },
         });
       } else if (topTypeParam === "services") {
         searchAnd.push({

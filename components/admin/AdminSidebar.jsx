@@ -36,25 +36,31 @@ export default function AdminSidebar({ userRole, userName }) {
   useEffect(() => {
     let cancelled = false;
     const CACHE_KEY = "adminExpiringCount";
-    const TTL = 6 * 60 * 60 * 1000;
-    const fetchCount = async () => {
+    const TTL = 3 * 60 * 1000;
+    const fetchCount = async (force = false) => {
       try {
         const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-        if (cached && Date.now() - cached.ts < TTL) {
+        if (!force && cached && Date.now() - cached.ts < TTL) {
           if (!cancelled) setExpiringCount(cached.count);
           return;
         }
-        const res = await fetch("/api/panel/applications?view=expiring&page=1");
+        const res = await fetch("/api/panel/expiring-count");
         if (!res.ok) return;
         const json = await res.json();
-        const count = json.total ?? 0;
+        const count = json.count ?? 0;
         localStorage.setItem(CACHE_KEY, JSON.stringify({ count, ts: Date.now() }));
         if (!cancelled) setExpiringCount(count);
       } catch {}
     };
     fetchCount();
+    const onInvalidate = () => {
+      localStorage.removeItem(CACHE_KEY);
+      fetchCount(true);
+    };
+    window.addEventListener("expiringCountInvalidated", onInvalidate);
     return () => {
       cancelled = true;
+      window.removeEventListener("expiringCountInvalidated", onInvalidate);
     };
   }, []);
 

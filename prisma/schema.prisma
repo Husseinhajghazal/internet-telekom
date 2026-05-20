@@ -25,6 +25,7 @@ enum ApplicationStatus {
   UNDER_CHANGE
   UNDER_TRANSFER
   UNDER_RENEW
+  OPEN_REGISTRATION
 }
 
 enum WhatsappStatus {
@@ -97,13 +98,23 @@ model Note {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   fullName  String
-  email     String   @unique
+  email     String        @unique
   password  String
-  role      String   @default("EMPLOYEE")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String        @default("EMPLOYEE")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  sessions  UserSession[]
+}
+
+model UserSession {
+  id          String    @id @default(cuid())
+  userId      String
+  loginAt     DateTime  @default(now())
+  lastSeenAt  DateTime?
+  logoutAt    DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Review {
