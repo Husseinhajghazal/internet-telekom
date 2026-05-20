@@ -483,6 +483,14 @@ export async function POST(request) {
       data.invoiceFileUrl = invoiceFileUrl;
     }
 
+    if (sessionUser.role === "ADMIN") {
+      if (body.createdAt) data.createdAt = new Date(body.createdAt);
+      if (body.completedAt) data.completedAt = new Date(body.completedAt);
+    }
+    if (body.status === "ACTIVATED" && !data.completedAt) {
+      data.completedAt = new Date();
+    }
+
     // Remove undefined values
     Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
 
