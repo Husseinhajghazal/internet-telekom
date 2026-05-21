@@ -45,7 +45,7 @@ function InfiniteScrollRow({ speeds, group }) {
       <div
         ref={ref}
         dir="ltr"
-        className="flex gap-5 overflow-x-auto pb-4 px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex gap-5 overflow-x-auto overflow-y-hidden pt-3 pb-4 px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {tripled.map((item, i) => (
           <div key={i} dir="rtl" className="shrink-0 w-65">
