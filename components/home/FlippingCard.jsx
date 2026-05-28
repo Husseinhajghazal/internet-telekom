@@ -165,7 +165,7 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
               <div className="flex items-center justify-between bg-black/20 border border-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm">
                 <div className="flex flex-col gap-1">
                   <span className="text-white/60 text-xs font-semibold">
-                    الاشتراك الشهري
+                    الإشتراك الشهري
                   </span>
                   <span className="inline-flex items-center bg-red-500/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full w-fit">
                     خصم 35%

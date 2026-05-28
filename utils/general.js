@@ -43,11 +43,11 @@ const describeNoContractTechType = (techType = "") => {
 
 const describeSelectedService = (selectedService = "") => {
   const map = {
-    cancel: "إلغاء الاشتراك",
+    cancel: "إلغاء الإشتراك",
     "transfer-name": "نقل ملكية",
     "transfer-address": "نقل خط الإنترنت لعنوان آخر",
-    renew: "تجديد الاشتراك",
-    freeze: "تجميد الاشتراك",
+    renew: "تجديد الإشتراك",
+    freeze: "تجميد الإشتراك",
     "change-phone": "تغيير رقم الموبايل المثبت",
     shurn: "خدمة شورن لــ GOKNET",
     "shurn-turknet": "خدمة شورن لــ TURKNET",
@@ -55,10 +55,17 @@ const describeSelectedService = (selectedService = "") => {
   return map[selectedService] || selectedService || "—";
 };
 
-const describeReviewService = (serviceType = "", selectedService = "", selectedInquiry = "", contractPreference = "") => {
+const describeReviewService = (
+  serviceType = "",
+  selectedService = "",
+  selectedInquiry = "",
+  contractPreference = "",
+) => {
   if (serviceType === "newline") {
-    if (contractPreference === "with") return "تركيب خط إنترنت جديد مع عقد إشتراك";
-    if (contractPreference === "without") return "تركيب خط إنترنت جديد بدون عقد إشتراك";
+    if (contractPreference === "with")
+      return "تركيب خط إنترنت جديد مع عقد إشتراك";
+    if (contractPreference === "without")
+      return "تركيب خط إنترنت جديد بدون عقد إشتراك";
     return "تركيب خط إنترنت جديد";
   }
   if (serviceType === "inquiry") {
@@ -68,7 +75,7 @@ const describeReviewService = (serviceType = "", selectedService = "", selectedI
       technical: "استفسار عن مشكلة تقنية",
       general: "استفسار عام",
       "transfer-issue": "استفسار عن نقل الخط",
-      "slow-speed": "استفسار عن بطء السرعة",
+      "slow-speed": "استفسار عن بطء الإنترنت",
       "high-bill": "استفسار عن الفاتورة",
       "internet-down": "استفسار عن انقطاع الإنترنت",
     };
@@ -76,19 +83,62 @@ const describeReviewService = (serviceType = "", selectedService = "", selectedI
   }
   if (serviceType === "services") {
     const serviceMap = {
-      cancel: "إلغاء الاشتراك",
-      "transfer-name": "نقل ملكية الاشتراك",
-      "transfer-address": "نقل خط الإنترنت لعنوان آخر",
-      renew: "تجديد الاشتراك",
-      freeze: "تجميد الاشتراك",
-      "change-phone": "تغيير رقم الموبايل",
-      shurn: "تحويل الاشتراك إلى Göknet",
-      "shurn-turknet": "تحويل الاشتراك إلى Turknet",
+      cancel: "خدمة إلغاء الإشتراك",
+      "transfer-name": "خدمة نقل ملكية الإشتراك",
+      "transfer-address": "خدمة نقل خط الإنترنت لعنوان آخر",
+      renew: "خدمة تجديد الإشتراك",
+      freeze: "خدمة تجميد الإشتراك",
+      "change-phone": "خدمة تغيير رقم الموبايل",
+      shurn: "خدمة تحويل الإشتراك إلى Göknet",
+      "shurn-turknet": "خدمة تحويل الإشتراك إلى Turknet",
     };
     return serviceMap[selectedService] || "خدمة تقنية";
   }
   return "خدمة الإنترنت";
 };
+
+const REVIEW_SERVICE_OPTIONS = [
+  {
+    group: "خط إنترنت جديد",
+    items: [
+      "تركيب خط إنترنت جديد مع عقد إشتراك",
+      "تركيب خط إنترنت جديد بدون عقد إشتراك",
+      "تركيب خط إنترنت جديد",
+    ],
+  },
+  {
+    group: "استفسارات",
+    items: [
+      "استفسار عن الأسعار والعروض",
+      "استفسار عن تغطية المنطقة",
+      "استفسار عن مشكلة تقنية",
+      "استفسار عام",
+      "استفسار عن نقل الخط",
+      "استفسار عن بطء الإنترنت",
+      "استفسار عن الفاتورة",
+      "استفسار عن انقطاع الإنترنت",
+      "استشارات",
+    ],
+  },
+  {
+    group: "خدمات",
+    items: [
+      "خدمة إلغاء الإشتراك",
+      "خدمة نقل ملكية الإشتراك",
+      "خدمة نقل خط الإنترنت لعنوان آخر",
+      "خدمة تجديد الإشتراك",
+      "خدمة تجميد الإشتراك",
+      "خدمة تغيير رقم الموبايل",
+      "خدمة تحويل الإشتراك إلى Göknet",
+      "خدمة تحويل الإشتراك إلى Turknet",
+      "خدمة تقنية",
+    ],
+  },
+  {
+    group: "عام",
+    items: ["خدمة الإنترنت"],
+  },
+];
 
 const describeSelectedPackage = (selectedPackage = "") => {
   if (!selectedPackage) return "—";
@@ -461,6 +511,7 @@ export {
   describeSelectedInquiry,
   describeSelectedPackage,
   describeReviewService,
+  REVIEW_SERVICE_OPTIONS,
   describeSelectedService,
   describeServiceType,
   formatPhoneNumber,

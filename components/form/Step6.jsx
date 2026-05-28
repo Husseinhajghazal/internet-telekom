@@ -326,7 +326,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
         {values?.serviceType === "services" && (
           <>
             <FormFieldBlock
-              label="رقم أشتراك او فاتورة الإنترنت"
+              label="رقم إشتراك او فاتورة الإنترنت"
               name="subscriptionNo"
             >
               <Field
@@ -338,7 +338,7 @@ const Step6 = ({ values, errors, touched, setFieldValue }) => {
                     ? "border-red-500"
                     : "border-gray-300"
                 }`}
-                placeholder="رقم أشتراك او فاتورة الإنترنت"
+                placeholder="رقم إشتراك او فاتورة الإنترنت"
               />
             </FormFieldBlock>
 

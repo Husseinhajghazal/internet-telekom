@@ -102,7 +102,7 @@ const PackageSpeedGrid = ({
 
       <div
         ref={scrollRef}
-        className="flex flex-nowrap gap-5 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-10 pt-4 px-3 w-full scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex flex-nowrap gap-5 md:gap-6 overflow-x-auto overflow-y-hidden snap-x snap-mandatory pb-10 pt-4 px-3 w-full scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {speeds.map((speed) => {
           const valueKey = duration
@@ -275,7 +275,7 @@ const PackageSpeedGrid = ({
                     <div className="flex items-center justify-between bg-black/20 border border-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm">
                       <div className="flex flex-col gap-1">
                         <span className="text-white/60 text-xs font-semibold">
-                          الاشتراك الشهري
+                          الإشتراك الشهري
                         </span>
                         {oldPrice && (
                           <span className="inline-flex items-center bg-red-500/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full w-fit">

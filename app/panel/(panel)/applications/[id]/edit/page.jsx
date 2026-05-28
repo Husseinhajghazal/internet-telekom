@@ -51,11 +51,11 @@ const CONTRACT_PREF_OPTIONS = [
 ];
 
 const SELECTED_SERVICE_OPTIONS = [
-  { value: "cancel", label: "إلغاء الاشتراك" },
+  { value: "cancel", label: "إلغاء الإشتراك" },
   { value: "transfer-name", label: "نقل ملكية" },
   { value: "transfer-address", label: "نقل خط الإنترنت لعنوان آخر" },
-  { value: "renew", label: "تجديد الاشتراك" },
-  { value: "freeze", label: "تجميد الاشتراك" },
+  { value: "renew", label: "تجديد الإشتراك" },
+  { value: "freeze", label: "تجميد الإشتراك" },
   { value: "change-phone", label: "تغيير رقم الموبايل المثبت" },
 ];
 
@@ -616,7 +616,16 @@ export default function EditApplicationPage() {
         router.push("/panel/login");
         return;
       }
-      const json = await res.json();
+      if (res.status === 413) {
+        throw new Error("حجم الملفات أكبر من الحد المسموح");
+      }
+      const text = await res.text();
+      let json = {};
+      try {
+        json = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error("استجابة غير صالحة من الخادم");
+      }
       if (!res.ok) throw new Error(json.error || "فشل الحفظ");
       originalData.current = { ...formData, invoiceFiles: [] };
       window.dispatchEvent(new Event("expiringCountInvalidated"));
@@ -1010,8 +1019,8 @@ export default function EditApplicationPage() {
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="shurn">خدمة شورن لــ GOKNET</option>
                   <option value="shurn-turknet">خدمة شورن لــ TURKNET</option>
+                  <option value="shurn">خدمة شورن لــ GOKNET</option>
                 </select>
               </div>
             )}
@@ -1568,6 +1577,18 @@ export default function EditApplicationPage() {
                   const compressedFiles = await Promise.all(
                     newFiles.map((file) => compressImage(file)),
                   );
+
+                  const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20 MB
+                  const oversized = compressedFiles.find(
+                    (f) => f.size > MAX_FILE_BYTES,
+                  );
+                  if (oversized) {
+                    showToast(
+                      `حجم الملف "${oversized.name}" أكبر من 20 ميجابايت`,
+                    );
+                    e.target.value = "";
+                    return;
+                  }
 
                   setFormData((prev) => ({
                     ...prev,

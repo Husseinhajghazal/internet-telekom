@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { MdAdd, MdDelete, MdEdit, MdStar, MdOutlineRefresh, MdSearch, MdFilterList, MdOutlineTag, MdStarBorder, MdCheckCircle, MdCancel } from "react-icons/md";
 import AdminConfirmDialog from "./AdminConfirmDialog";
 import Button from "../Button";
+import { REVIEW_SERVICE_OPTIONS } from "@/utils/general";
 
 export default function AdminReviewsClient() {
   const [reviews, setReviews] = useState([]);
@@ -323,7 +324,20 @@ export default function AdminReviewsClient() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">الخدمة المُقيّمة (اختياري)</label>
-                <input type="text" value={formData.service} onChange={e => setFormData({...formData, service: e.target.value})} className="w-full border border-gray-200 bg-slate-50/50 rounded-2xl p-3 outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition" placeholder="مثال: تقديم على إنترنت فايبر" />
+                <select
+                  value={formData.service}
+                  onChange={e => setFormData({...formData, service: e.target.value})}
+                  className="w-full border border-gray-200 bg-slate-50/50 rounded-2xl p-3 outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition cursor-pointer"
+                >
+                  <option value="">— بدون تحديد —</option>
+                  {REVIEW_SERVICE_OPTIONS.map((group) => (
+                    <optgroup key={group.group} label={group.group}>
+                      {group.items.map((item) => (
+                        <option key={item} value={item}>{item}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">عدد النجوم (1-5)</label>

@@ -114,7 +114,7 @@ const PackagesSection = () => {
                 <FaFileContract className="w-4 h-4 text-white" />
               </div>
               <span className="text-base font-bold bg-linear-to-l from-emerald-600 to-emerald-500 bg-clip-text text-transparent whitespace-nowrap">
-                مع عقد اشتراك
+                مع عقد إشتراك
               </span>
             </div>
             <div className="flex-1 h-px bg-linear-to-r from-emerald-200 to-transparent" />

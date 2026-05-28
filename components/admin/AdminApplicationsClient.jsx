@@ -1237,13 +1237,13 @@ ${reviewLink}
                         className="w-full rounded-2xl border border-gray-200 bg-white py-1.5 px-3 text-sm text-gray-900 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-500/20 cursor-pointer"
                       >
                         <option value="">كل الخدمات</option>
-                        <option value="cancel">إلغاء الاشتراك</option>
+                        <option value="cancel">إلغاء الإشتراك</option>
                         <option value="transfer-name">نقل ملكية</option>
                         <option value="transfer-address">
                           نقل خط لعنوان آخر
                         </option>
-                        <option value="renew">تجديد الاشتراك</option>
-                        <option value="freeze">تجميد الاشتراك</option>
+                        <option value="renew">تجديد الإشتراك</option>
+                        <option value="freeze">تجميد الإشتراك</option>
                         <option value="change-phone">تغيير رقم الموبايل</option>
                       </select>
                     </div>
@@ -1301,13 +1301,13 @@ ${reviewLink}
                       )}
                       {topTypeFilter === "services" && (
                         <>
-                          <option value="cancel">إلغاء الاشتراك</option>
+                          <option value="cancel">إلغاء الإشتراك</option>
                           <option value="transfer-name">نقل ملكية</option>
                           <option value="transfer-address">
                             نقل خط لعنوان آخر
                           </option>
-                          <option value="renew">تجديد الاشتراك</option>
-                          <option value="freeze">تجميد الاشتراك</option>
+                          <option value="renew">تجديد الإشتراك</option>
+                          <option value="freeze">تجميد الإشتراك</option>
                           <option value="change-phone">
                             تغيير رقم الموبايل
                           </option>

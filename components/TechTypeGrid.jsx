@@ -89,7 +89,7 @@ const TechTypeGrid = ({ options, selectedTechType, detailsText }) => {
         </div>
       </div>
 
-      <div className="flex lg:grid flex-nowrap lg:grid-cols-3 overflow-x-auto lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-3 md:px-0 w-full md:max-w-5xl mx-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex lg:grid flex-nowrap lg:grid-cols-3 overflow-x-auto overflow-y-hidden lg:overflow-visible gap-5 md:gap-6 snap-x lg:snap-none snap-mandatory pb-10 pt-4 px-3 md:px-0 w-full md:max-w-5xl mx-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {options.map((opt) => {
           const valueKey = opt.value;
           const isSelected = selectedTechType === valueKey;
@@ -267,7 +267,7 @@ const TechTypeGrid = ({ options, selectedTechType, detailsText }) => {
                     <div className="flex items-center justify-between bg-black/20 border border-white/15 rounded-2xl px-4 py-3 backdrop-blur-sm">
                       <div className="flex flex-col gap-1">
                         <span className="text-white/60 text-xs font-semibold">
-                          الاشتراك الشهري
+                          الإشتراك الشهري
                         </span>
                         {oldPrice && (
                           <span className="inline-flex items-center bg-red-500/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full w-fit">
