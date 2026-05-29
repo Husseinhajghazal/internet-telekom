@@ -37,12 +37,12 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
     >
       {/* 3D flip container */}
       <div
-        className={`relative w-full [transform-style:preserve-3d] transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
+        className={`grid w-full [transform-style:preserve-3d] transition-all duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] ${
           isFlipped ? "[transform:rotateY(180deg)]" : ""
         }`}
       >
-        {/* ═══ FRONT FACE — sets the container height ═══ */}
-        <div className="[backface-visibility:hidden] relative flex flex-col rounded-3xl border-2 border-transparent bg-white/70 backdrop-blur-xl overflow-hidden shadow-md hover:border-gray-200">
+        {/* ═══ FRONT FACE ═══ */}
+        <div className="col-start-1 row-start-1 [backface-visibility:hidden] relative flex flex-col rounded-3xl border-2 border-transparent bg-white/70 backdrop-blur-xl overflow-hidden shadow-md hover:border-gray-200">
           {/* background shadow icon */}
           <div className="absolute -right-12 -bottom-6 pointer-events-none -rotate-12 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 z-0">
             <SpeedIcon className="w-56 h-56 text-gray-100/80" />
@@ -114,10 +114,10 @@ const FlippingCard = ({ speed, price, title, features, palette, popular }) => {
           </div>
         </div>
 
-        {/* ═══ BACK FACE — absolutely positioned, doesn't affect front height ═══ */}
-        <div className="absolute top-0 left-0 w-full [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        {/* ═══ BACK FACE ═══ */}
+        <div className="col-start-1 row-start-1 [backface-visibility:hidden] [transform:rotateY(180deg)]">
           <div
-            className={`rounded-3xl overflow-hidden shadow-2xl ${palette.backGradient} relative`}
+            className={`h-full rounded-3xl overflow-hidden shadow-2xl ${palette.backGradient} relative`}
           >
             {/* background image */}
             <div

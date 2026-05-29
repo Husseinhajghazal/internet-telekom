@@ -61,7 +61,7 @@ const purplePalette = {
 };
 
 const NoContractCards = () => (
-  <div className="flex md:grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto overflow-x-auto pb-4 md:pb-0 md:overflow-visible snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+  <div className="flex md:grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto overflow-x-auto overflow-y-hidden md:overflow-visible pt-3 pb-6 md:pt-0 md:pb-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
     {noContractPackages.map((pkg, i) => (
       <motion.div
         key={pkg.value}
