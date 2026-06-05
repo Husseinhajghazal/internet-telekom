@@ -79,6 +79,10 @@ export async function PATCH(request, { params }) {
       data.isDeleted = body.isDeleted;
     }
 
+    if (body.serviceType !== undefined) {
+      data.serviceType = body.serviceType;
+    }
+
     if (body.whatsappStatus !== undefined) {
       data.whatsappStatus = body.whatsappStatus;
     }

@@ -968,7 +968,7 @@ export default function EditApplicationPage() {
                     updates.serviceType = "newline";
                   } else if (val === "change-company") {
                     updates.serviceType = "services";
-                    updates.selectedService = "shurn";
+                    updates.selectedService = "shurn-turknet";
                   } else if (val === "services") {
                     updates.serviceType = "services";
                   } else {

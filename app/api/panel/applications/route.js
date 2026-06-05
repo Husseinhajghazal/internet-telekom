@@ -13,6 +13,27 @@ function getPackageDurationMonths(selectedPackage) {
   return isNaN(months) ? null : months;
 }
 
+function getExpiresAt(app) {
+  const durationMonths = getPackageDurationMonths(app.selectedPackage);
+  if (!durationMonths || !app.completedAt) return null;
+  const expiresAt = new Date(app.completedAt);
+  expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
+  return expiresAt;
+}
+
+// Matches the set of applications shown on the "expiring" page:
+// near-expiry ACTIVATED contracts + DELAYED contracts whose date has passed.
+function isExpiringApplication(app, now, todayEnd, twoMonthsFromNow) {
+  if (app.status === "ACTIVATED") {
+    const expiresAt = getExpiresAt(app);
+    return !!expiresAt && expiresAt >= now && expiresAt <= twoMonthsFromNow;
+  }
+  if (app.status === "DELAYED") {
+    return !!app.delayedUntil && new Date(app.delayedUntil) <= todayEnd;
+  }
+  return false;
+}
+
 const VALID_STATUSES = [
   "NOT_COMPLETED",
   "NEW",
@@ -327,11 +348,8 @@ export async function GET(request) {
 
       const expiring = allActivated
         .map((app) => {
-          const durationMonths = getPackageDurationMonths(app.selectedPackage);
-          if (!durationMonths || !app.completedAt) return null;
-          const expiresAt = new Date(app.completedAt);
-          expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
-          return { ...app, expiresAt };
+          const expiresAt = getExpiresAt(app);
+          return expiresAt ? { ...app, expiresAt } : null;
         })
         .filter(Boolean)
         .filter(
@@ -362,23 +380,36 @@ export async function GET(request) {
 
     const where = buildWhere(searchParams);
 
-    const [total, allApplications] = await Promise.all([
-      prisma.application.count({ where }),
-      prisma.application.findMany({
-        where,
-        include: {
-          notes: {
-            orderBy: { createdAt: "desc" },
-          },
-          Review: true,
+    const allApplications = await prisma.application.findMany({
+      where,
+      include: {
+        notes: {
+          orderBy: { createdAt: "desc" },
         },
-      }),
-    ]);
+        Review: true,
+      },
+    });
 
-    allApplications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // The internet list excludes contracts that are surfaced on the
+    // "expiring" page so each application shows in exactly one place.
+    let visibleApplications = allApplications;
+    if (searchParams.get("serviceType") === "internet") {
+      const now = new Date();
+      const todayEnd = new Date(now);
+      todayEnd.setHours(23, 59, 59, 999);
+      const twoMonthsFromNow = new Date(now);
+      twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
+      visibleApplications = allApplications.filter(
+        (app) => !isExpiringApplication(app, now, todayEnd, twoMonthsFromNow),
+      );
+    }
 
-    // Apply pagination to sorted results
-    const applications = allApplications.slice(skip, skip + PAGE_SIZE);
+    visibleApplications.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    );
+
+    const total = visibleApplications.length;
+    const applications = visibleApplications.slice(skip, skip + PAGE_SIZE);
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
     return NextResponse.json({

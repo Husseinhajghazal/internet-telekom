@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../lib/prisma";
-import { notifyApplicationSubmittedWhatsApp } from "../../../../../lib/whatsappNotify";
+import { buildApplicationWhatsAppMessageAr } from "../../../../../lib/applicationWhatsAppAr";
 
 export async function POST(request, { params }) {
   try {
@@ -20,14 +20,11 @@ export async function POST(request, { params }) {
       },
     });
 
+    let whatsappText = "";
     try {
-      await notifyApplicationSubmittedWhatsApp(updated);
+      whatsappText = buildApplicationWhatsAppMessageAr(updated);
     } catch (err) {
-      console.error(
-        "[whatsapp notify]",
-        err?.message || err,
-        err?.details || "",
-      );
+      console.error("[whatsapp text]", err?.message || err);
     }
 
     return NextResponse.json({
@@ -37,6 +34,7 @@ export async function POST(request, { params }) {
       step: updated.step,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
+      whatsappText,
     });
   } catch (error) {
     return NextResponse.json(

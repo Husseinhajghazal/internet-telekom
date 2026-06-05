@@ -1,14 +1,34 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import Button from "./Button";
 import { describeStatus, formatDate, statusBadgeClass } from "@/utils/general";
 import { MdHome, MdAddCircleOutline, MdCheckCircle } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
+
+const SUPPORT_WHATSAPP_NUMBER = "902126112122";
 
 const SuccessStep = ({ submissionInfo }) => {
   const appIndex = submissionInfo?.appIndex ?? "------";
   const createdAtLabel = submissionInfo?.createdAt
     ? formatDate(submissionInfo.createdAt)
     : "—";
+
+  const whatsappUrl = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}${
+    submissionInfo?.whatsappText
+      ? `?text=${encodeURIComponent(submissionInfo.whatsappText)}`
+      : ""
+  }`;
+
+  // Auto-open WhatsApp with the application details a few seconds after the
+  // success screen. A top-level navigation (not window.open) is used so it is
+  // not blocked by Chrome's popup blocker, since it runs outside a click.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.href = whatsappUrl;
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [whatsappUrl]);
 
   return (
     <div className="flex flex-row min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50">
@@ -39,9 +59,7 @@ const SuccessStep = ({ submissionInfo }) => {
             <h1 className="text-3xl md:text-5xl font-bold text-gray-800">
               تم إستلام طلبك بنجاح!
             </h1>
-            <p className="text-xl text-gray-600">
-              شكراً لك على تقديم الطلب
-            </p>
+            <p className="text-xl text-gray-600">شكراً لك على تقديم الطلب</p>
           </div>
 
           {/* Details */}
@@ -55,13 +73,13 @@ const SuccessStep = ({ submissionInfo }) => {
               </div>
               <div className="flex items-center justify-start gap-3">
                 <span className="text-gray-700">تاريخ الإرسال:</span>
-                <span className="text-gray-600">
-                  {createdAtLabel}
-                </span>
+                <span className="text-gray-600">{createdAtLabel}</span>
               </div>
               <div className="flex items-center justify-start gap-3">
                 <span className="text-gray-700">حالة الطلب:</span>
-                <span className={`px-3 py-1 rounded-full font-semibold ${statusBadgeClass(submissionInfo?.status)}`}>
+                <span
+                  className={`px-3 py-1 rounded-full font-semibold ${statusBadgeClass(submissionInfo?.status)}`}
+                >
                   {describeStatus(submissionInfo?.status)}
                 </span>
               </div>
@@ -84,7 +102,9 @@ const SuccessStep = ({ submissionInfo }) => {
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-600 font-bold text-sm">2</span>
                   </div>
-                  <span className="text-gray-700">سنتواصل معك في أسرع وقت ممكن</span>
+                  <span className="text-gray-700">
+                    سنتواصل معك في أسرع وقت ممكن
+                  </span>
                 </div>
               </div>
             </div>
@@ -96,45 +116,56 @@ const SuccessStep = ({ submissionInfo }) => {
               <h4 className="text-lg font-semibold text-gray-800">
                 هل تحتاج مساعدة إضافية؟
               </h4>
-                  <a
-                    href="https://wa.me/902126112122"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-xl transition shadow-md shadow-green-500/20 mt-3"
-                  >
-                    <FaWhatsapp size={22} />
-                    تواصل معنا عبر واتساب
-                  </a>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold rounded-xl transition shadow-md shadow-green-500/20 mt-3"
+              >
+                <FaWhatsapp size={22} />
+                تواصل معنا عبر واتساب
+              </a>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-4 justify-center">
-            <Button variant="primary" size="large" onClick={() => window.location.reload()}>
+            <Button
+              variant="primary"
+              size="large"
+              onClick={() => window.location.reload()}
+            >
               طلب جديد
             </Button>
-            <Button variant="secondary" size="large" onClick={() => window.location.href = '/'}>
+            <Button
+              variant="secondary"
+              size="large"
+              onClick={() => (window.location.href = "/")}
+            >
               الصفحة الرئيسية
             </Button>
           </div>
         </div>
       </div>
-      
+
       {/* Sidebar Image */}
       <div className="hidden lg:block lg:w-[30%] shrink-0">
         <div className="fixed top-0 left-0 lg:w-[30%] h-svh bg-blue-50 overflow-hidden">
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/40 to-black/20 z-10 pointer-events-none"></div>
-          
+
           {/* Decorative touches */}
           <div className="absolute bottom-16 left-10 right-10 z-20 text-white flex flex-col gap-5 drop-shadow-xl animate-fade-in-up">
             <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
               <MdCheckCircle className="w-8 h-8 text-green-400" />
             </div>
             <div>
-              <h3 className="text-3xl font-bold mb-3 tracking-wide">جارٍ المراجعة</h3>
+              <h3 className="text-3xl font-bold mb-3 tracking-wide">
+                جارٍ المراجعة
+              </h3>
               <p className="text-white/80 text-sm leading-relaxed opacity-95">
-                نسعد بخدمتك.. طلبك في أيدٍ أمينة وسيتم التواصل معك لإنهاء باقي الإجراءات.
+                نسعد بخدمتك.. طلبك في أيدٍ أمينة وسيتم التواصل معك لإنهاء باقي
+                الإجراءات.
               </p>
             </div>
           </div>

@@ -259,6 +259,7 @@ const ActionMenu = ({
                       kind: "promote",
                       appId: app.id,
                       appIndex: app.appIndex,
+                      ensureServiceType: app.serviceType ? null : "newline",
                     });
                   }}
                   className="w-full px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 transition flex items-center gap-2.5 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
@@ -879,13 +880,13 @@ ${reviewLink}
     }
   };
 
-  const updateStatus = async (id, status) => {
+  const updateStatus = async (id, status, extra = {}) => {
     setActionId(id);
     try {
       const res = await fetch(`/api/panel/applications/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, ...extra }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -966,6 +967,9 @@ ${reviewLink}
     setActionId(statusApp.id);
     try {
       const body = { status: newStatus };
+      if (isExpiringMode && !statusApp.serviceType) {
+        body.serviceType = "newline";
+      }
       if (newStatus === "DELAYED" && delayedUntil) {
         const isoDelayDate = formatIsoDateFromDisplay(delayedUntil);
         if (!isoDelayDate) {
@@ -1992,7 +1996,13 @@ ${reviewLink}
           } else if (confirm.kind === "restore") {
             restoreStatus(confirm.appId);
           } else if (confirm.kind === "promote") {
-            updateStatus(confirm.appId, "NEW");
+            updateStatus(
+              confirm.appId,
+              "NEW",
+              confirm.ensureServiceType
+                ? { serviceType: confirm.ensureServiceType }
+                : {},
+            );
           } else if (confirm.kind === "reject") {
             updateStatus(confirm.appId, "REJECTED");
           } else {
