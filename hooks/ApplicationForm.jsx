@@ -13,6 +13,8 @@ import {
 } from "../utils/general";
 import { USER_AGREEMENT_TEXT } from "../utils/data";
 
+const SUPPORT_WHATSAPP_NUMBER = "902126112122";
+
 const initialValues = {
   name: "",
   newName: "",
@@ -377,9 +379,17 @@ const useApplicationForm = () => {
     }
 
     const result = await response.json();
-    setSubmissionInfo(result);
     setIsConfirmOpen(false);
-    setIsCompleted(true);
+
+    // Skip the success screen — open WhatsApp directly with the application
+    // details so the user can send them from their own number. A top-level
+    // navigation is used so Chrome's popup blocker does not interfere.
+    const whatsappUrl = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}${
+      result.whatsappText
+        ? `?text=${encodeURIComponent(result.whatsappText)}`
+        : ""
+    }`;
+    window.location.href = whatsappUrl;
   };
 
   const handleBack = (values) => {
