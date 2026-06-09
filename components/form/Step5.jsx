@@ -7,6 +7,7 @@ import { ErrorMessage } from "formik";
 import PackageSection from "../PackageSection";
 import TechTypeGrid from "../TechTypeGrid";
 import StepHeader from "../StepHeader";
+import YouTubeEmbed from "../YouTubeEmbed";
 import { FaCrown } from "react-icons/fa";
 import { MdRocketLaunch } from "react-icons/md";
 
@@ -145,13 +146,11 @@ const Step5 = ({
               <FaYoutube className="inline-block ml-2 text-red-500" />
               شاهد الفيديو أدناه لمزيد من التفاصيل
             </h4>
-            <iframe
-              className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"
-              src="https://www.youtube.com/embed/lyav1Uz9DVI"
+            <YouTubeEmbed
+              videoId="lyav1Uz9DVI"
               title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
+              className="w-full max-w-[560px] aspect-video rounded-xl shadow-md overflow-hidden"
+              onPlay={() => setFieldValue("videoWatched", true)}
             />
           </div>
         </div>
@@ -187,13 +186,11 @@ const Step5 = ({
             <FaYoutube className="inline-block ml-2 text-red-500" />
             شاهد الفيديو أدناه لمزيد من التفاصيل
           </h4>
-          <iframe
-            className="w-full max-w-[560px] aspect-video rounded-xl shadow-md"
-            src="https://www.youtube.com/embed/lyav1Uz9DVI"
+          <YouTubeEmbed
+            videoId="lyav1Uz9DVI"
             title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
+            className="w-full max-w-[560px] aspect-video rounded-xl shadow-md overflow-hidden"
+            onPlay={() => setFieldValue("videoWatched", true)}
           />
         </div>
       </div>

@@ -11,6 +11,7 @@ import {
 } from "react-icons/md";
 import { PiSpeedometerFill } from "react-icons/pi";
 import { FaBuildingCircleCheck } from "react-icons/fa6";
+import { FaWhatsapp } from "react-icons/fa";
 import { AiOutlineFieldNumber } from "react-icons/ai";
 import Button from "./Button";
 
@@ -48,8 +49,8 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-3 sm:p-4">
       <div className="absolute inset-0 bg-black/40" onClick={handleCancel} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-200 overflow-hidden">
-        <div className="p-5 sm:p-6 md:p-8 space-y-6 overflow-y-auto max-h-[90vh]">
+      <div className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl border border-gray-200 overflow-hidden flex flex-col">
+        <div className="p-5 sm:p-6 md:p-8 space-y-6 overflow-y-auto flex-1 min-h-0">
           <div className="flex items-start justify-between gap-4">
             <div className="text-right space-y-2">
               <h3 className="text-xl md:text-2xl font-extrabold text-gray-800">
@@ -261,23 +262,16 @@ const ConfirmPopup = ({ confirmValues, handleConfirm, handleCancel }) => {
                 );
               })()}
           </div>
+        </div>
 
-          <div className="flex flex-col md:flex-row gap-3 md:gap-4">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={handleCancel}
-            >
-              تعديل
-            </Button>
-            <Button
-              variant="primary"
-              className="flex-1"
-              onClick={handleConfirm}
-            >
-              تأكيد الطلب
-            </Button>
-          </div>
+        <div className="shrink-0 border-t border-gray-100 bg-white p-4 sm:p-5 md:px-8 flex flex-col md:flex-row gap-3 md:gap-4">
+          <Button variant="secondary" className="flex-1" onClick={handleCancel}>
+            تعديل
+          </Button>
+          <Button variant="whatsapp" className="flex-1" onClick={handleConfirm}>
+            <FaWhatsapp size={20} />
+            تأكيد الطلب وإرساله لواتساب
+          </Button>
         </div>
       </div>
     </div>

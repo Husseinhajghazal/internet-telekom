@@ -6,6 +6,7 @@ import FooterButtons from "../../components/FooterButtons";
 import ProgressBar from "../../components/ProgressBar";
 import ConfirmPopup from "../../components/ConfirmPopup";
 import UserAgreementPopup from "../../components/UserAgreementPopup";
+import VideoReminderPopup from "../../components/VideoReminderPopup";
 import SuccessStep from "../../components/SuccessStep";
 import Step1 from "../../components/form/Step1";
 import Step2 from "../../components/form/Step2";
@@ -25,6 +26,7 @@ const ApplyPage = () => {
     vipContractDuration,
     isConfirmOpen,
     confirmValues,
+    isVideoReminderOpen,
     submissionInfo,
     formRef,
     formInitialValues,
@@ -36,6 +38,8 @@ const ApplyPage = () => {
     handleConfirmSubmission,
     handleBack,
     handleForward,
+    closeVideoReminder,
+    confirmVideoReminderAndProceed,
     handlePhoneChange,
     setFamilyContractDuration,
     setVipContractDuration,
@@ -91,6 +95,13 @@ const ApplyPage = () => {
                   confirmValues={confirmValues}
                   handleConfirm={handleConfirmSubmission}
                   handleCancel={() => setIsConfirmOpen(false)}
+                />
+              )}
+              {isVideoReminderOpen && (
+                <VideoReminderPopup
+                  onWatch={closeVideoReminder}
+                  onContinue={confirmVideoReminderAndProceed}
+                  onVideoPlay={() => setFieldValue("videoWatched", true)}
                 />
               )}
               {isUserAgreementOpen && (

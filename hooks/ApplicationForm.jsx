@@ -56,6 +56,7 @@ const initialValues = {
   lastInvoiceAmount: "",
   selectedInquiry: "",
   noContractTechType: "",
+  videoWatched: false,
 };
 
 const useApplicationForm = () => {
@@ -73,6 +74,7 @@ const useApplicationForm = () => {
   const [vipContractDuration, setVipContractDuration] = useState("12");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [confirmValues, setConfirmValues] = useState(null);
+  const [isVideoReminderOpen, setIsVideoReminderOpen] = useState(false);
   const [isUserAgreementOpen, setIsUserAgreementOpen] = useState(false);
   const formRef = useRef();
 
@@ -406,6 +408,11 @@ const useApplicationForm = () => {
       const stepErrors = fieldOrder.filter((key) => currentErrors?.[key]);
 
       if (stepErrors.length === 0) {
+        // On the package/tech step, nudge the user to watch the video first.
+        if (step === 5 && !values.videoWatched) {
+          setIsVideoReminderOpen(true);
+          return;
+        }
         handleSubmit(values);
       } else {
         const touchedFields = stepErrors.reduce((acc, key) => {
@@ -417,6 +424,13 @@ const useApplicationForm = () => {
     });
   };
 
+  const closeVideoReminder = () => setIsVideoReminderOpen(false);
+
+  const confirmVideoReminderAndProceed = () => {
+    setIsVideoReminderOpen(false);
+    handleSubmit(formRef.current.values);
+  };
+
   return {
     step,
     isCompleted,
@@ -425,6 +439,7 @@ const useApplicationForm = () => {
     vipContractDuration,
     isConfirmOpen,
     confirmValues,
+    isVideoReminderOpen,
     submissionInfo,
     formRef,
     formInitialValues,
@@ -438,6 +453,8 @@ const useApplicationForm = () => {
     handleConfirmSubmission,
     handleBack,
     handleForward,
+    closeVideoReminder,
+    confirmVideoReminderAndProceed,
     handlePhoneChange,
     openUserAgreement,
     closeUserAgreement,

@@ -506,6 +506,7 @@ ${reviewLink}
 شركة الإنترنت: ${app.internetCompany || "-"}
 رقم الإشتراك: ${app.subscriptionNo || "-"}
 العنوان: ${app.address || "-"}
+كود العنوان: ${app.addressCode || "-"}
 
 نحن في انتظارك 🙏
 شركة إنترنت تيليكوم 🌐
