@@ -9,7 +9,7 @@ const noContractPackages = [
     value: "vdsl",
     title: "VDSL",
     speed: "100",
-    price: 699,
+    price: 949,
     popular: false,
     features: [
       "توفير 1370  ليرة أجور التركيب",
@@ -24,7 +24,7 @@ const noContractPackages = [
     value: "fiber",
     title: "Fiber",
     speed: "100",
-    price: 699,
+    price: 949,
     popular: true,
     features: [
       "توفير 1370  ليرة أجور التركيب",
@@ -39,7 +39,7 @@ const noContractPackages = [
     value: "gigafiber",
     title: "GigaFiber",
     speed: "1000",
-    price: 699,
+    price: 949,
     popular: false,
     features: [
       "توفير 1370  ليرة أجور التركيب",
