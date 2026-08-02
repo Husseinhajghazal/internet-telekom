@@ -507,6 +507,11 @@ export default function EditApplicationPage() {
       showToast("رقم الهاتف مطلوب");
       return;
     }
+    // Without a type the request matches no panel list and vanishes after saving.
+    if (!formData.serviceType?.trim()) {
+      showToast("نوع الطلب مطلوب");
+      return;
+    }
     if (!formData.address?.trim()) {
       showToast("العنوان مطلوب");
       return;
@@ -963,6 +968,7 @@ export default function EditApplicationPage() {
                     contractPreference: "",
                     internetCompany: "",
                     selectedService: "",
+                    selectedInquiry: "",
                   };
                   if (val === "newline") {
                     updates.serviceType = "newline";
@@ -971,6 +977,8 @@ export default function EditApplicationPage() {
                     updates.selectedService = "shurn-turknet";
                   } else if (val === "services") {
                     updates.serviceType = "services";
+                  } else if (val === "inquiry") {
+                    updates.serviceType = "inquiry";
                   } else {
                     updates.serviceType = "";
                   }
@@ -980,7 +988,12 @@ export default function EditApplicationPage() {
                 }}
                 className={inputClass}
               >
-                <option value="">غير محدد</option>
+                {/* Kept so legacy unclassified rows still render their current
+                    state, but disabled — saving without a type made the request
+                    disappear from every list. */}
+                <option value="" disabled>
+                  غير محدد
+                </option>
                 {fromView !== "services" && (
                   <>
                     <option value="newline">خط إنترنت جديد</option>
@@ -988,7 +1001,10 @@ export default function EditApplicationPage() {
                   </>
                 )}
                 {fromView !== "internet" && (
-                  <option value="services">خدمات</option>
+                  <>
+                    <option value="services">خدمات</option>
+                    <option value="inquiry">استشارات</option>
+                  </>
                 )}
               </select>
             </div>

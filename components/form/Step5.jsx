@@ -147,7 +147,7 @@ const Step5 = ({
               شاهد الفيديو أدناه لمزيد من التفاصيل
             </h4>
             <YouTubeEmbed
-              videoId="lyav1Uz9DVI"
+              videoId="xJzsYrgtIYc"
               title="YouTube video player"
               className="w-full max-w-[560px] aspect-video rounded-xl shadow-md overflow-hidden"
               onPlay={() => setFieldValue("videoWatched", true)}
@@ -187,7 +187,7 @@ const Step5 = ({
             شاهد الفيديو أدناه لمزيد من التفاصيل
           </h4>
           <YouTubeEmbed
-            videoId="lyav1Uz9DVI"
+            videoId="xJzsYrgtIYc"
             title="YouTube video player"
             className="w-full max-w-[560px] aspect-video rounded-xl shadow-md overflow-hidden"
             onPlay={() => setFieldValue("videoWatched", true)}

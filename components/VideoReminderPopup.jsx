@@ -4,7 +4,7 @@ import Button from "./Button";
 import YouTubeEmbed from "./YouTubeEmbed";
 
 const VideoReminderPopup = ({
-  videoId = "lyav1Uz9DVI",
+  videoId = "xJzsYrgtIYc",
   onWatch,
   onContinue,
   onVideoPlay,

@@ -155,19 +155,6 @@ const contractPackages = [
         ],
       },
       {
-        speed: "500",
-        price: "1099",
-        duration: "18 شهر",
-        features: [
-          "توفير 1480  ليرة أجور التركيب",
-          "الفاتورة حقيقية وثابتة",
-          "التحميل غير محدود",
-          "التسجيل مجاني تماماً",
-          "التركيب خلال 48 ساعة",
-          "راوتر بتقنية الجيل الخامس",
-        ],
-      },
-      {
         speed: "1000",
         price: "1249",
         duration: "18 شهر",
@@ -272,7 +259,7 @@ const contractPackages = [
     speeds: [
       {
         speed: "16",
-        price: "860",
+        price: "1199",
         duration: "12 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -285,7 +272,7 @@ const contractPackages = [
       },
       {
         speed: "24",
-        price: "860",
+        price: "1199",
         duration: "12 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -298,7 +285,7 @@ const contractPackages = [
       },
       {
         speed: "50",
-        price: "910",
+        price: "1249",
         duration: "12 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -311,7 +298,7 @@ const contractPackages = [
       },
       {
         speed: "100",
-        price: "910",
+        price: "1249",
         duration: "12 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -324,7 +311,7 @@ const contractPackages = [
       },
       {
         speed: "200",
-        price: "960",
+        price: "1349",
         duration: "12 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -337,7 +324,7 @@ const contractPackages = [
       },
       {
         speed: "500",
-        price: "1110",
+        price: "1499",
         duration: "12 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -350,7 +337,7 @@ const contractPackages = [
       },
       {
         speed: "1000",
-        price: "1210",
+        price: "1649",
         duration: "12 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -363,7 +350,7 @@ const contractPackages = [
       },
       {
         speed: "16",
-        price: "800",
+        price: "1099",
         duration: "18 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -376,7 +363,7 @@ const contractPackages = [
       },
       {
         speed: "24",
-        price: "800",
+        price: "1099",
         duration: "18 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -389,7 +376,7 @@ const contractPackages = [
       },
       {
         speed: "50",
-        price: "850",
+        price: "1149",
         duration: "18 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -402,7 +389,7 @@ const contractPackages = [
       },
       {
         speed: "100",
-        price: "850",
+        price: "1149",
         duration: "18 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -415,7 +402,7 @@ const contractPackages = [
       },
       {
         speed: "200",
-        price: "1000",
+        price: "1249",
         duration: "18 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -428,7 +415,7 @@ const contractPackages = [
       },
       {
         speed: "500",
-        price: "1050",
+        price: "1399",
         duration: "18 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",
@@ -440,7 +427,7 @@ const contractPackages = [
         ],
       },
       {
-        speed: "1000",
+        speed: "1549",
         price: "1150",
         duration: "18 شهر",
         features: [

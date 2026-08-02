@@ -81,7 +81,9 @@ const ApplyPage = () => {
             return (
               <Form className="min-h-svh bg-linear-to-br from-blue-50 via-white to-cyan-50 flex flex-row">
                 <div className="flex-1 lg:w-[70%] flex flex-col min-h-svh shrink-0 relative min-w-0">
-                  {step === 1 && step1Error && (
+                  {/* Shown on every step: save/upload failures happen on step 6
+                      too, and were previously invisible to the user. */}
+                  {step1Error && (
                 <div
                   key={step1Error}
                   className="mx-6 mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-right text-red-800 text-sm"

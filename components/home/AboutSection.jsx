@@ -80,7 +80,7 @@ const AboutSection = () => {
                       onClick={() => setPlayVideo(true)}
                     >
                       <img
-                        src="https://img.youtube.com/vi/lyav1Uz9DVI/maxresdefault.jpg"
+                        src="https://img.youtube.com/vi/xJzsYrgtIYc/maxresdefault.jpg"
                         alt="تعرف علينا"
                         loading="lazy"
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -92,7 +92,7 @@ const AboutSection = () => {
                   ) : (
                     <iframe
                       className="rounded-3xl w-full h-full"
-                      src="https://www.youtube.com/embed/lyav1Uz9DVI?autoplay=1"
+                      src="https://www.youtube.com/embed/xJzsYrgtIYc?autoplay=1"
                       title="YouTube video player"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

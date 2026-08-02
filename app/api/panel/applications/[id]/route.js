@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../lib/prisma";
 import { isAdminAuthenticated } from "../../../../../lib/admin-api";
-import { diffApplication } from "../../../../../lib/application";
+import {
+  deleteInvoiceFiles,
+  diffApplication,
+  parseInvoiceFileUrls,
+  saveInvoiceFileLocally,
+} from "../../../../../lib/application";
 
+/**
+ * Every member of the ApplicationStatus enum. Must stay in sync with
+ * prisma/schema.prisma and STATUS_LABELS — the panel decides per view which of
+ * these it offers, so a short list here rejects statuses the UI legitimately
+ * shows (previously OPEN_REGISTRATION on the services page and the six
+ * UNDER_* statuses on the expiring page all failed with "حالة غير صالحة").
+ */
 const ALLOWED_STATUSES = [
   "NOT_COMPLETED",
   "NEW",
@@ -16,6 +28,12 @@ const ALLOWED_STATUSES = [
   "ACTIVATED",
   "WAITING_FOR_PORT",
   "UNDER_INSTALLATION",
+  "UNDER_FREEZING",
+  "UNDER_CANCELING",
+  "UNDER_CHANGE",
+  "UNDER_TRANSFER",
+  "UNDER_RENEW",
+  "OPEN_REGISTRATION",
 ];
 
 export async function PATCH(request, { params }) {
@@ -174,6 +192,10 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
+  // Files written during this request, so they can be unlinked if the update fails.
+  let writtenFileUrls = [];
+  let isMultipart = false;
+
   try {
     const resolvedParams = await params;
     const id = resolvedParams?.id;
@@ -184,6 +206,7 @@ export async function PUT(request, { params }) {
     const contentType = request.headers.get("content-type") || "";
     let body = {};
     let invoiceFileUrl = undefined;
+    let keptUrls = [];
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
@@ -195,26 +218,24 @@ export async function PUT(request, { params }) {
       }
 
       const newInvoiceFiles = formData.getAll("invoiceFiles[]").length > 0 ? formData.getAll("invoiceFiles[]") : formData.getAll("invoiceFiles");
-      const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
-      let allUrls = existingUrlsStr.split(",").filter(Boolean);
+      keptUrls = parseInvoiceFileUrls(formData.get("existingInvoiceFileUrls"));
 
-      if (newInvoiceFiles && newInvoiceFiles.length > 0) {
-        // we need to dynamically import or require saveInvoiceFileLocally
-        const { saveInvoiceFileLocally } = require("../../../../../lib/application");
-        const validNewUrls = await Promise.all(
-          newInvoiceFiles
-            .filter((f) => typeof f === "object" && f.size > 0)
-            .map((f) => saveInvoiceFileLocally(f))
-        );
-        allUrls = [...allUrls, ...validNewUrls.filter(Boolean)];
+      const pendingFiles = (newInvoiceFiles || []).filter(
+        (f) => typeof f === "object" && f.size > 0,
+      );
+      if (pendingFiles.length) {
+        writtenFileUrls = (
+          await Promise.all(pendingFiles.map((f) => saveInvoiceFileLocally(f)))
+        ).filter(Boolean);
       }
 
-      invoiceFileUrl = allUrls.join(",") || null;
+      invoiceFileUrl = [...keptUrls, ...writtenFileUrls].join(",") || null;
       // if all urls were deleted, this turns into null (which is correct)
+      isMultipart = true;
     } else {
       body = await request.json();
     }
-    
+
     // Select only editable fields to prevent overwriting generated things
     const data = {
       status: body.status,
@@ -232,7 +253,10 @@ export async function PUT(request, { params }) {
       newOriginalAddressText: body.newOriginalAddressText,
       newAddressCode: body.newAddressCode,
       hasInternet: body.hasInternet,
-      serviceType: body.serviceType,
+      // Never persist an empty serviceType: a row with one matches neither panel
+      // list and disappears from the UI. An empty value here means "unchanged"
+      // (undefined is stripped below), so an existing classification survives.
+      serviceType: body.serviceType === "" ? undefined : body.serviceType,
       contractPreference: body.contractPreference,
       selectedService: body.selectedService,
       selectedPackage: body.selectedPackage,
@@ -274,6 +298,8 @@ export async function PUT(request, { params }) {
 
     const existingApp = await prisma.application.findUnique({ where: { id } });
     if (!existingApp) {
+      // Nothing will reference the uploads we just wrote.
+      await deleteInvoiceFiles(writtenFileUrls);
       return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
     }
 
@@ -306,8 +332,23 @@ export async function PUT(request, { params }) {
       });
     }
 
+    // The row no longer references invoices the admin removed in this edit, so
+    // drop them from disk. Done only after the update committed.
+    if (isMultipart) {
+      const removed = parseInvoiceFileUrls(existingApp.invoiceFileUrl).filter(
+        (url) => !keptUrls.includes(url),
+      );
+      await deleteInvoiceFiles(removed);
+    }
+
     return NextResponse.json(updated);
   } catch (error) {
+    // The row kept its old invoiceFileUrl, so anything written above is unreferenced.
+    await deleteInvoiceFiles(writtenFileUrls);
+
+    if (error?.code === "INVALID_UPLOAD") {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("PUT error:", error);
     return NextResponse.json({ error: "فشل تحديث الطلب" }, { status: 500 });
   }
@@ -328,7 +369,13 @@ export async function DELETE(request, { params }) {
 
     const url = new URL(request.url);
     if (url.searchParams.get("hard") === "true") {
+      const doomed = await prisma.application.findUnique({
+        where: { id },
+        select: { invoiceFileUrl: true },
+      });
       await prisma.application.delete({ where: { id } });
+      // The row is gone for good, so its uploads can never be referenced again.
+      await deleteInvoiceFiles(parseInvoiceFileUrls(doomed?.invoiceFileUrl));
       return NextResponse.json({ success: true });
     }
 

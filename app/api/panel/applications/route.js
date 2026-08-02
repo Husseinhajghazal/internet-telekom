@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import { isAdminAuthenticated } from "../../../../lib/admin-api";
+import {
+  deleteInvoiceFiles,
+  parseInvoiceFileUrls,
+  saveInvoiceFileLocally,
+} from "../../../../lib/application";
 import { formatPhoneNumber } from "@/utils/general";
 
 const PAGE_SIZE = 20;
@@ -48,7 +53,33 @@ const VALID_STATUSES = [
   "WAITING_FOR_PORT",
   "UNDER_INSTALLATION",
   "UNDER_FREEZING",
+  "UNDER_CANCELING",
+  "UNDER_CHANGE",
+  "UNDER_TRANSFER",
+  "UNDER_RENEW",
+  "OPEN_REGISTRATION",
 ];
+
+/** Every serviceType the two list views know how to route. */
+const KNOWN_SERVICE_TYPES = ["newline", "services", "inquiry"];
+/** `services` requests that belong on the internet list rather than the services one. */
+const INTERNET_SELECTED_SERVICES = ["upgrade", "shurn", "shurn-turknet"];
+
+/**
+ * Rows whose serviceType is missing (draft never reached step 3, or an admin saved
+ * "غير محدد") or holds an unexpected value. They match neither list's normal
+ * conditions, so without this they vanish from the panel entirely. They are surfaced
+ * on the internet list, matching the "newline" fallback used elsewhere for such rows.
+ *
+ * The explicit `null` branch is required: SQL `NOT IN (...)` evaluates to NULL — not
+ * true — for a NULL column, so `notIn` alone silently drops exactly these rows.
+ */
+const UNCLASSIFIED_SERVICE_TYPE = {
+  OR: [
+    { serviceType: null },
+    { serviceType: { notIn: KNOWN_SERVICE_TYPES } },
+  ],
+};
 
 const ADDED_VIEW_STATUSES = ["NOT_COMPLETED", "COMPLETED"];
 
@@ -227,14 +258,19 @@ function buildWhere(searchParams) {
   const isDeletedParam = searchParams.get("deleted") === "true";
   andConditions.push({ isDeleted: isDeletedParam });
 
+  // The two lists must partition every non-deleted row between them — anything that
+  // matches neither is unreachable in the panel (no list renders it, and search is
+  // ANDed with this condition, so it can't be found by name/phone either).
   const serviceTypeParam = searchParams.get("serviceType");
   if (serviceTypeParam === "internet") {
     andConditions.push({
       OR: [
         { serviceType: "newline" },
-        { serviceType: "services", selectedService: "upgrade" },
-        { serviceType: "services", selectedService: "shurn" },
-        { serviceType: "services", selectedService: "shurn-turknet" },
+        {
+          serviceType: "services",
+          selectedService: { in: INTERNET_SELECTED_SERVICES },
+        },
+        UNCLASSIFIED_SERVICE_TYPE,
       ],
     });
   } else if (serviceTypeParam === "services") {
@@ -242,7 +278,10 @@ function buildWhere(searchParams) {
       OR: [
         { serviceType: "inquiry" },
         { serviceType: "services", selectedService: null },
-        { serviceType: "services", selectedService: { notIn: ["upgrade", "shurn", "shurn-turknet"] } },
+        {
+          serviceType: "services",
+          selectedService: { notIn: INTERNET_SELECTED_SERVICES },
+        },
       ],
     });
   }
@@ -438,12 +477,19 @@ export async function POST(request) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
+  // Files written during this request. If anything after the write fails we unlink
+  // them, so a rejected create never leaves unreferenced files in public/uploads.
+  let writtenFileUrls = [];
+
   try {
     const contentType = request.headers.get("content-type") || "";
     let body = {};
     let invoiceFileUrl = undefined;
+    let pendingFiles = [];
+    let existingUrls = [];
+    const isMultipart = contentType.includes("multipart/form-data");
 
-    if (contentType.includes("multipart/form-data")) {
+    if (isMultipart) {
       const formData = await request.formData();
       // Extract basic fields
       for (const [key, value] of formData.entries()) {
@@ -456,24 +502,35 @@ export async function POST(request) {
         formData.getAll("invoiceFiles[]").length > 0
           ? formData.getAll("invoiceFiles[]")
           : formData.getAll("invoiceFiles");
-      const existingUrlsStr = formData.get("existingInvoiceFileUrls") || "";
-      let allUrls = existingUrlsStr.split(",").filter(Boolean);
-
-      if (newInvoiceFiles && newInvoiceFiles.length > 0) {
-        const {
-          saveInvoiceFileLocally,
-        } = require("../../../../lib/application");
-        const validNewUrls = await Promise.all(
-          newInvoiceFiles
-            .filter((f) => typeof f === "object" && f.size > 0)
-            .map((f) => saveInvoiceFileLocally(f)),
-        );
-        allUrls = [...allUrls, ...validNewUrls.filter(Boolean)];
-      }
-
-      invoiceFileUrl = allUrls.join(",") || null;
+      existingUrls = parseInvoiceFileUrls(
+        formData.get("existingInvoiceFileUrls"),
+      );
+      pendingFiles = (newInvoiceFiles || []).filter(
+        (f) => typeof f === "object" && f.size > 0,
+      );
     } else {
       body = await request.json();
+    }
+
+    // A row with no serviceType matches neither panel list, so it would be saved
+    // successfully and then be unreachable. Refuse rather than create an orphan.
+    // The edit form blocks this client-side; this is the backstop.
+    // Validated before any upload is written so a rejected create writes nothing.
+    const serviceType = String(body.serviceType ?? "").trim();
+    if (!KNOWN_SERVICE_TYPES.includes(serviceType)) {
+      return NextResponse.json(
+        { error: "يرجى تحديد نوع الطلب قبل الحفظ." },
+        { status: 400 },
+      );
+    }
+
+    if (isMultipart) {
+      if (pendingFiles.length) {
+        writtenFileUrls = (
+          await Promise.all(pendingFiles.map((f) => saveInvoiceFileLocally(f)))
+        ).filter(Boolean);
+      }
+      invoiceFileUrl = [...existingUrls, ...writtenFileUrls].join(",") || null;
     }
 
     // Select only editable fields
@@ -488,7 +545,7 @@ export async function POST(request) {
       originalAddress:
         body.originalAddress === "true" || body.originalAddress === true,
       hasInternet: body.hasInternet,
-      serviceType: body.serviceType,
+      serviceType,
       contractPreference: body.contractPreference,
       selectedService: body.selectedService,
       selectedPackage: body.selectedPackage,
@@ -560,6 +617,12 @@ export async function POST(request) {
 
     return NextResponse.json(application, { status: 201 });
   } catch (error) {
+    // The row was never created, so anything written above is unreferenced.
+    await deleteInvoiceFiles(writtenFileUrls);
+
+    if (error?.code === "INVALID_UPLOAD") {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("POST error:", error);
     return NextResponse.json({ error: "فشل إنشاء الطلب" }, { status: 500 });
   }

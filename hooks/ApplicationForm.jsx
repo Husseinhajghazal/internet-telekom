@@ -290,7 +290,10 @@ const useApplicationForm = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update final draft data.");
+        // Surface the server's reason (oversized file, unsupported type, …)
+        // instead of a generic failure the user can't act on.
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "تعذر حفظ البيانات. حاول مرة أخرى.");
       }
       return;
     }
@@ -324,7 +327,8 @@ const useApplicationForm = () => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update application draft.");
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "تعذر حفظ البيانات. حاول مرة أخرى.");
     }
   };
 
@@ -351,7 +355,16 @@ const useApplicationForm = () => {
       }
     }
 
-    await updateDraftByStep(resolvedId, values, step);
+    try {
+      setStep1Error(null);
+      await updateDraftByStep(resolvedId, values, step);
+    } catch (err) {
+      // Without this the rejection was unhandled and the user just saw the
+      // "next" button do nothing — most visibly when an upload was refused.
+      setStep1Error(err.message || "تعذر حفظ البيانات. حاول مرة أخرى.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
 
     if (step === 6) {
       setConfirmValues(values);
