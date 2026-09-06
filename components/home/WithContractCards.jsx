@@ -427,8 +427,8 @@ const contractPackages = [
         ],
       },
       {
-        speed: "1549",
-        price: "1150",
+        speed: "1000",
+        price: "1549",
         duration: "18 شهر",
         features: [
           "توفير 1680  ليرة أجور التركيب",

@@ -30,6 +30,8 @@ import {
   formatDate,
   describeStatus,
   statusBadgeClass,
+  isInternetApplication,
+  describeWithModem,
 } from "../../utils/general";
 
 const ACCENT = "#18a2e3";
@@ -283,7 +285,7 @@ export default function ApplicationDetailModal({
               <span
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${statusBadgeClass(application.status)}`}
               >
-                {describeStatus(application.status)}
+                {describeStatus(application.status, application)}
               </span>
             </Row>
             {application.status === "DELAYED" && application.delayedUntil && (
@@ -313,10 +315,7 @@ export default function ApplicationDetailModal({
             {application.serviceType === "services" &&
               application.selectedService !== "shurn" &&
               application.selectedService !== "shurn-turknet" && (
-                <Row
-                  label="الخدمة المختارة"
-                  icon={<MdDescription size={18} />}
-                >
+                <Row label="الخدمة المختارة" icon={<MdDescription size={18} />}>
                   {describeSelectedService(application.selectedService)}
                 </Row>
               )}
@@ -391,7 +390,7 @@ export default function ApplicationDetailModal({
             <Row
               label={
                 application.selectedService === "transfer-address"
-                  ? "كود العنوان الحالي (BBK)"
+                  ? "كود العنوان القديم (BBK)"
                   : "كود العنوان (BBK)"
               }
               icon={<MdOutlinePinDrop size={18} />}
@@ -521,6 +520,12 @@ export default function ApplicationDetailModal({
                 {application.note}
               </Row>
             ) : null}
+
+            {isInternetApplication(application) && (
+              <Row label="المودم" icon={<MdDescription size={18} />}>
+                {describeWithModem(application.withModem)}
+              </Row>
+            )}
 
             {((application.serviceType === "services" &&
               application.selectedService !== "shurn") ||

@@ -1,5 +1,9 @@
 import moment from "moment";
-import { STATUS_LABELS } from "./data";
+import {
+  STATUS_LABELS,
+  SERVICES_STATUS_LABELS,
+  INTERNET_SELECTED_SERVICES,
+} from "./data";
 
 const describeServiceType = (serviceType = "", selectedService = "") => {
   if (serviceType === "newline") return "خط إنترنت جديد";
@@ -397,7 +401,47 @@ function formatDate(date, type = "2") {
 
 const normalizeIndex = (value) => String(value || "").replace(/\D/g, "");
 
-function describeStatus(status) {
+/**
+ * Mirrors the `/panel/services` half of the partition in
+ * app/api/panel/applications/route.js: every `inquiry` row, plus `services` rows whose
+ * selectedService is not one of the internet-list carve-outs (a null selectedService
+ * counts as services, matching the route's explicit `selectedService: null` branch).
+ * Change one and you must change the other, or a row will be labelled for a list it
+ * does not appear on.
+ */
+const isServicesApplication = (application) => {
+  const serviceType = application?.serviceType;
+  if (serviceType === "inquiry") return true;
+  if (serviceType !== "services") return false;
+  return !INTERNET_SELECTED_SERVICES.includes(application?.selectedService);
+};
+
+/**
+ * The internet list is the complement of the services one, so unclassified rows (which
+ * the panel surfaces on the internet list) count as internet here too.
+ */
+const isInternetApplication = (application) => !isServicesApplication(application);
+
+/** true → the subscription ships with a modem; false → the customer supplies one. */
+const describeWithModem = (withModem) =>
+  withModem === false ? "المودم على المشترك" : "مع مودم";
+
+/**
+ * `context` is optional and affects wording only — never the stored enum key:
+ *   - an application object → the services wording is used when it belongs to the
+ *     services list (see isServicesApplication)
+ *   - `true` → force the services wording, for lists of bare status keys rendered on a
+ *     services-only screen where there is no single row to inspect
+ *   - omitted/false → the default labels
+ */
+function describeStatus(status, context) {
+  const useServicesWording =
+    context === true || (!!context && isServicesApplication(context));
+
+  if (useServicesWording && SERVICES_STATUS_LABELS[status]) {
+    return SERVICES_STATUS_LABELS[status];
+  }
+
   return STATUS_LABELS[status] || status || "—";
 }
 
@@ -528,6 +572,9 @@ export {
   formatDate,
   normalizeIndex,
   describeStatus,
+  isServicesApplication,
+  isInternetApplication,
+  describeWithModem,
   statusBadgeClass,
   compressImage,
 };

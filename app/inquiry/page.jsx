@@ -285,7 +285,7 @@ export default function InquiryPage() {
                       <div className="flex-1 min-w-0 space-y-1.5">
                         <div className="flex items-center justify-between gap-2">
                           <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${statusBadgeClass(app.status)}`}>
-                            {describeStatus(app.status)}
+                            {describeStatus(app.status, app)}
                           </span>
                           <span className="text-sm font-extrabold text-gray-900">
                             طلب رقم #{app.appIndex}

@@ -128,7 +128,7 @@ const ApplicationInfoView = ({ application, loading, error }) => {
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold ${statusBadgeClass(application.status)}`}
                 >
-                  {describeStatus(application.status)}
+                  {describeStatus(application.status, application)}
                 </span>
               </Row>
               <Row label="تاريخ التسجيل" icon={<MdCalendarMonth size={18} />}>

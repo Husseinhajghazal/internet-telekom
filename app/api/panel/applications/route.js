@@ -4,9 +4,11 @@ import { isAdminAuthenticated } from "../../../../lib/admin-api";
 import {
   deleteInvoiceFiles,
   parseInvoiceFileUrls,
+  parseWithModem,
   saveInvoiceFileLocally,
 } from "../../../../lib/application";
 import { formatPhoneNumber } from "@/utils/general";
+import { INTERNET_SELECTED_SERVICES } from "@/utils/data";
 
 const PAGE_SIZE = 20;
 
@@ -62,8 +64,6 @@ const VALID_STATUSES = [
 
 /** Every serviceType the two list views know how to route. */
 const KNOWN_SERVICE_TYPES = ["newline", "services", "inquiry"];
-/** `services` requests that belong on the internet list rather than the services one. */
-const INTERNET_SELECTED_SERVICES = ["upgrade", "shurn", "shurn-turknet"];
 
 /**
  * Rows whose serviceType is missing (draft never reached step 3, or an admin saved
@@ -570,6 +570,7 @@ export async function POST(request) {
         body.paidByUserName === "true" || body.paidByUserName === true,
       paidByName: body.paidByName,
       discountCount: body.discountCount,
+      withModem: parseWithModem(body.withModem),
       createdBy: body.createdBy || sessionUser.fullName,
       lastUpdatedBy: sessionUser.fullName,
     };

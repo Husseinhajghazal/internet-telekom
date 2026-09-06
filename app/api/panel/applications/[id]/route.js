@@ -5,6 +5,7 @@ import {
   deleteInvoiceFiles,
   diffApplication,
   parseInvoiceFileUrls,
+  parseWithModem,
   saveInvoiceFileLocally,
 } from "../../../../../lib/application";
 
@@ -278,6 +279,7 @@ export async function PUT(request, { params }) {
       paidByUserName: body.paidByUserName === "true" || body.paidByUserName === true,
       paidByName: body.paidByName,
       discountCount: body.discountCount,
+      withModem: parseWithModem(body.withModem),
       createdBy: body.createdBy,
       lastUpdatedBy: sessionUser.fullName,
     };

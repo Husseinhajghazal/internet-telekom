@@ -42,6 +42,8 @@ import {
   describeSelectedInquiry,
   describeStatus,
   statusBadgeClass,
+  isInternetApplication,
+  describeWithModem,
 } from "@/utils/general";
 import { useNavigationGuard } from "@/components/admin/NavigationGuardContext";
 
@@ -165,6 +167,7 @@ const INITIAL_FORM_DATA = {
   paidByUserName: false,
   paidByName: "",
   discountCount: "",
+  withModem: true,
   createdBy: "",
   createdAt: "",
   completedAt: "",
@@ -347,6 +350,7 @@ export default function EditApplicationPage() {
           paidByUserName: data.paidByUserName ?? false,
           paidByName: data.paidByName || "",
           discountCount: data.discountCount || "",
+          withModem: data.withModem ?? true,
           createdBy: data.createdBy || "",
           createdAt: data.createdAt
             ? formatDisplayDateFromIso(
@@ -575,6 +579,7 @@ export default function EditApplicationPage() {
         paidByUserName: formData.paidByUserName,
         paidByName: parseEmptyToNull(formData.paidByName),
         discountCount: parseEmptyToNull(formData.discountCount),
+        withModem: formData.withModem,
         createdBy: parseEmptyToNull(formData.createdBy),
         createdAt: formData.createdAt
           ? formatIsoDateFromDisplay(formData.createdAt)
@@ -937,7 +942,7 @@ export default function EditApplicationPage() {
               >
                 {editAllowedStatuses.map((key) => (
                   <option key={key} value={key}>
-                    {STATUS_LABELS[key]}
+                    {describeStatus(key, fromView === "services" || formData)}
                   </option>
                 ))}
               </select>
@@ -1258,6 +1263,29 @@ export default function EditApplicationPage() {
                 </select>
               </div>
             )}
+            {/* Internet-list rows only (newline with or without contract, plus the
+                upgrade/shurn/shurn-turknet services). Gated on the same partition
+                helper the panel lists use so the field follows the row's list. */}
+            {isInternetApplication(formData) && (
+              <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2">
+                <div className="flex items-center gap-3">
+                  <input
+                    name="withModem"
+                    id="withModem"
+                    type="checkbox"
+                    checked={formData.withModem}
+                    onChange={handleChange}
+                    className="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="withModem"
+                    className="text-sm font-semibold text-gray-700 cursor-pointer"
+                  >
+                    {describeWithModem(formData.withModem)}
+                  </label>
+                </div>
+              </div>
+            )}
             {formData.status !== "DELAYED" &&
               ((formData.serviceType === "services" &&
                 formData.selectedService !== "shurn") ||
@@ -1373,7 +1401,7 @@ export default function EditApplicationPage() {
             <div>
               <label className={labelClass}>
                 {formData.selectedService === "transfer-address"
-                  ? "كود العنوان الحالي (BBK)"
+                  ? "كود العنوان القديم (BBK)"
                   : "كود العنوان (BBK)"}
               </label>
               <input
@@ -1838,7 +1866,7 @@ export default function EditApplicationPage() {
                   <span
                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${statusBadgeClass(formData.status)}`}
                   >
-                    {describeStatus(formData.status)}
+                    {describeStatus(formData.status, formData)}
                   </span>
                 </Row>
 
@@ -1924,7 +1952,7 @@ export default function EditApplicationPage() {
                 <Row
                   label={
                     formData.selectedService === "transfer-address"
-                      ? "كود العنوان الحالي (BBK)"
+                      ? "كود العنوان القديم (BBK)"
                       : "كود العنوان (BBK)"
                   }
                   icon={<MdOutlinePinDrop size={18} />}

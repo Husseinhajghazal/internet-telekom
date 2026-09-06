@@ -24,6 +24,7 @@ import {
   describeNoContractTechType,
   describeSelectedInquiry,
   describeSelectedPackage,
+  describeWithModem,
 } from "@/utils/general";
 import Button from "@/components/Button";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
@@ -84,6 +85,7 @@ const FIELD_LABELS = {
   electronicApproval: "موافقة الكترونية",
   approvalViaShipping: "موافقة عبر الشحن",
   paidByUserName: "مدفوع من المشترك",
+  withModem: "المودم",
   paidByName: "إسم الدافع",
   discountCount: "عدد الخصومات",
   createdBy: "من سجل الطلب",
@@ -117,14 +119,16 @@ const VALUE_MAPS = {
   },
 };
 
-const formatLogValue = (key, value) => {
+const formatLogValue = (key, value, application) => {
   if (value === null || value === "" || value === undefined) return "—";
+  // Before the generic boolean branch — this one reads as a phrase, not نعم/لا.
+  if (key === "withModem") return describeWithModem(value);
   if (typeof value === "boolean") return value ? "نعم" : "لا";
   if (["createdAt", "updatedAt", "completedAt", "delayedUntil"].includes(key)) {
     return formatDate(value, "4");
   }
 
-  if (key === "status") return describeStatus(value);
+  if (key === "status") return describeStatus(value, application);
   if (key === "serviceType") return describeServiceType(value);
   if (key === "contractPreference") return describeContractPreference(value);
   if (key === "selectedService") return describeSelectedService(value);
@@ -328,12 +332,12 @@ export default function ApplicationLogsPage() {
                                 </td>
                                 <td className="p-3 border-b border-slate-100">
                                   <span className="inline-block px-2 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold line-through opacity-70">
-                                    {formatLogValue(key, val.old)}
+                                    {formatLogValue(key, val.old, app)}
                                   </span>
                                 </td>
                                 <td className="p-3 border-b border-slate-100">
                                   <span className="inline-block px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold">
-                                    {formatLogValue(key, val.new)}
+                                    {formatLogValue(key, val.new, app)}
                                   </span>
                                 </td>
                               </tr>

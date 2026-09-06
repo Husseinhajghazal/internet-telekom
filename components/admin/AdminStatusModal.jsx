@@ -1,7 +1,7 @@
 "use client";
 
 import { STATUS_LABELS } from "@/utils/data";
-import { formatBirthDate } from "@/utils/general";
+import { formatBirthDate, describeStatus } from "@/utils/general";
 import React, { useState } from "react";
 import { MdClose, MdCalendarMonth } from "react-icons/md";
 
@@ -76,9 +76,9 @@ export default function AdminStatusModal({
             >
               {Object.entries(STATUS_LABELS)
                 .filter(([key]) => !allowedStatuses || allowedStatuses.includes(key))
-                .map(([key, label]) => (
+                .map(([key]) => (
                   <option key={key} value={key}>
-                    {label}
+                    {describeStatus(key, application)}
                   </option>
                 ))}
             </select>

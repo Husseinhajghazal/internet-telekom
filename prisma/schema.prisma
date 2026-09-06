@@ -71,6 +71,7 @@ model Application {
   paidByUserName      Boolean           @default(false)
   paidByName          String?
   discountCount       String?
+  withModem           Boolean           @default(true)
   adminNote           String?
   adminNoteViewed     Boolean           @default(false)
   completedAt         DateTime?

@@ -80,7 +80,7 @@ const SuccessStep = ({ submissionInfo }) => {
                 <span
                   className={`px-3 py-1 rounded-full font-semibold ${statusBadgeClass(submissionInfo?.status)}`}
                 >
-                  {describeStatus(submissionInfo?.status)}
+                  {describeStatus(submissionInfo?.status, submissionInfo)}
                 </span>
               </div>
             </div>

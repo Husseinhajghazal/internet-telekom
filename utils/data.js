@@ -238,10 +238,28 @@ const STATUS_LABELS = {
   ACTIVATED: "مفعل",
 };
 
+/**
+ * `services` requests that belong on the internet list rather than the services one.
+ * Mirrors INTERNET_SELECTED_SERVICES in app/api/panel/applications/route.js — the two
+ * must stay in sync or a row's status label will disagree with the list it lives on.
+ */
+const INTERNET_SELECTED_SERVICES = ["upgrade", "shurn", "shurn-turknet"];
+
+/**
+ * Status labels that read differently on the services side. The enum keys in
+ * prisma/schema.prisma are unchanged — this is wording only, so nothing that filters,
+ * stores or validates a status should ever consult this map.
+ */
+const SERVICES_STATUS_LABELS = {
+  ACTIVATED: "مكتمل",
+};
+
 export {
   USER_AGREEMENT_TEXT,
   PRICES_TL,
   PACKAGE_FEATURES,
   SIDEBAR_CONTENT,
   STATUS_LABELS,
+  SERVICES_STATUS_LABELS,
+  INTERNET_SELECTED_SERVICES,
 };

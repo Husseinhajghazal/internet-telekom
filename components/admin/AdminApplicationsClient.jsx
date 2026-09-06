@@ -48,6 +48,7 @@ import AdminStatusModal from "./AdminStatusModal";
 import AdminCustomerNoteModal from "./AdminCustomerNoteModal";
 import { formatDate, describeStatus, statusBadgeClass } from "@/utils/general";
 import { STATUS_LABELS } from "@/utils/data";
+import { buildApplicationWhatsAppMessageArForStaff } from "@/lib/applicationWhatsAppAr";
 import { useRouter } from "next/navigation";
 
 const SERVICES_ONLY_STATUSES = [
@@ -530,7 +531,13 @@ ${reviewLink}
       setAlertMsg("لا يوجد رقم هاتف متاح.");
       return;
     }
-    window.open(`https://wa.me/90${digits}`, "_blank");
+    // Same details the customer sends at the end of the wizard, re-worded for the
+    // staff -> customer direction. Prefilled only; the employee still presses send.
+    const text = buildApplicationWhatsAppMessageArForStaff(app);
+    window.open(
+      `https://wa.me/90${digits}?text=${encodeURIComponent(text)}`,
+      "_blank",
+    );
     if (isAddedMode) {
       fetch(`/api/panel/applications/${app.id}`, {
         method: "PATCH",
@@ -1443,9 +1450,9 @@ ${reviewLink}
                             ? key === "NOT_COMPLETED" || key === "COMPLETED"
                             : key !== "NOT_COMPLETED" && key !== "COMPLETED";
                         })
-                        .map(([key, label]) => (
+                        .map(([key]) => (
                           <option key={key} value={key}>
-                            {label}
+                            {describeStatus(key, isServicesMode)}
                           </option>
                         ))}
                     </select>
@@ -1724,7 +1731,9 @@ ${reviewLink}
                         >
                           <span className="inline-flex items-center gap-1.5">
                             <a
-                              href={`whatsapp://send?phone=9${app.phone.replace(/\D/g, "")}`}
+                              href={`whatsapp://send?phone=9${app.phone.replace(/\D/g, "")}&text=${encodeURIComponent(
+                                buildApplicationWhatsAppMessageArForStaff(app),
+                              )}`}
                               target="_blank"
                               onClick={() => {
                                 fetch(`/api/panel/applications/${app.id}`, {
@@ -1752,7 +1761,7 @@ ${reviewLink}
                             <span
                               className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-nowrap ${statusBadgeClass(app.status)}`}
                             >
-                              {describeStatus(app.status)}
+                              {describeStatus(app.status, app)}
                             </span>
                           </td>
                         )}

@@ -47,7 +47,7 @@ const Footer = () => {
                     <FaFacebookF size={20} />
                   </a>
                   <a
-                    href="https://www.instagram.com/internettelekom.net.tr"
+                    href="https://www.instagram.com/internettelekom.official"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-pink-500 text-white transition-all duration-300"
@@ -55,7 +55,7 @@ const Footer = () => {
                     <FaInstagram size={20} />
                   </a>
                   <a
-                    href="https://www.tiktok.com/@internettelekom.net.tr"
+                    href="https://www.tiktok.com/@internettelekom.official"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 rounded-full flex items-center justify-center bg-black text-white transition-all duration-300"
